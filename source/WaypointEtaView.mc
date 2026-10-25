@@ -96,7 +96,10 @@ class WaypointEtaView extends WatchUi.DataField {
         var raw;
         var profile = _profile;
         if (profile != null && profile.update(name, distNext, distDest, dist, scale)) {
-            raw = profile.remainingTime(distNext, _estimator, scale);
+            // the next profile point, which may come before the watch's next point
+            name = profile.targetName(name);
+            distNext = profile.targetDist > 1.0 ? profile.targetDist : 1.0;
+            raw = profile.targetTime(_estimator, scale);
             _usingProfile = true;
         } else {
             var grade = 0.0;
@@ -107,6 +110,8 @@ class WaypointEtaView extends WatchUi.DataField {
             raw = _estimator.timeForGrade(distNext, grade, scale);
             _usingProfile = false;
         }
+
+        _name = name;
 
         // smooth the effective speed, not the time, so the countdown doesn't lag
         var lastName = _lastName;

@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=21">
+<link rel="stylesheet" href="css/site.css?v=24">
 </head>
 <body>
 
@@ -19,7 +19,7 @@
     <a class="wordmark" href="./">HowFar<span>?</span></a>
     <nav class="site-nav" aria-label="Sections">
       <a href="#pace">Your pace</a>
-      <a href="#course">Course profile</a>
+      <a href="#course">Your checkpoints</a>
       <a href="#paste">Paste on the watch</a>
       <a href="#library">Your library</a>
       <a href="./">Back to HowFar?</a>
@@ -35,10 +35,10 @@
       <p class="lede">Two optional texts make HowFar? accurate from the first kilometre: your pace from past races, and the course profile with every climb and descent between checkpoints. Make them here, then paste them into the Garmin Connect app.</p>
       <ol class="howto prep-overview" aria-label="The three steps">
         <li><b>Your pace.</b> Add a few of your past races or long mountain runs.</li>
-        <li><b>Course profile.</b> Add the course file of the race you'll run.</li>
+        <li><b>Your checkpoints.</b> Add the course file of the race you'll run, and any points you want to add.</li>
         <li><b>Paste on the watch.</b> Copy each text into HowFar?'s settings in Garmin Connect.</li>
       </ol>
-      <p class="small muted privacy-note">Everything happens in this browser. Your files are not uploaded anywhere, and what you save stays on this device.</p>
+      <p class="small muted privacy-note">Everything happens in this browser. Your files are not uploaded anywhere, and what you save stays on this device. The only exception is the optional “Add huts and villages” button, which asks OpenStreetMap what's around your course.</p>
     </div>
   </section>
 
@@ -122,16 +122,17 @@
     <div class="wrap">
       <div class="section-head">
         <p class="eyebrow">Step 2</p>
-        <h2>The course profile</h2>
+        <h2>Your checkpoints</h2>
         <p class="muted">The race's course file, the same one you load on the watch. HowFar? finds its checkpoints and notes the slope of every stretch between them, so it knows every climb and descent ahead (the <span class="pill">P</span> on the watch).</p>
+        <p class="muted">Your watch tells HowFar? only about the checkpoints in the course you load. Here you can add more: the top and bottom of every big climb, huts and villages along the way. HowFar? counts down to them too, without changing the course on your watch. Your watch's own alerts and checkpoint list stay as they are: only HowFar? knows the points you add.</p>
       </div>
 
       <div class="prep-grid">
         <div class="prep-main">
           <label class="drop" id="courseDrop" for="courseFile">
             <input id="courseFile" type="file" accept=".gpx,.fit,.zip">
-            <span class="drop-title">Add the course</span>
-            <span class="small muted">Choose or drop one GPX, FIT or ZIP file.</span>
+            <span class="drop-title" id="courseDropTitle">Add the course</span>
+            <span class="small muted drop-hint">Choose or drop one GPX, FIT or ZIP file.</span>
           </label>
           <p class="status" id="courseStatus" role="status" aria-live="polite"></p>
 
@@ -162,6 +163,31 @@
               </table>
             </div>
             <p class="step-note" id="courseWarn" hidden></p>
+
+            <div class="add-points" id="addPoints">
+              <h3>Add more points</h3>
+              <p class="small muted">HowFar? will count down to these too. They appear in the list above, where you can untick any of them.</p>
+              <div class="add-row">
+                <button type="button" class="btn" id="addClimbs">Add climb tops and bottoms</button>
+                <label class="field inline" for="climbMin">for climbs of at least
+                  <select id="climbMin"><option value="100">100 m D+</option><option value="200" selected>200 m D+</option><option value="300">300 m D+</option><option value="500">500 m D+</option></select>
+                </label>
+              </div>
+              <div class="add-row">
+                <button type="button" class="btn" id="addPlaces">Add huts and villages</button>
+                <span class="small muted">From <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>: named mountain huts, shelters and villages within 200 m of the course. This is the one thing on this page that goes online: it asks OpenStreetMap's search service for what's inside a rectangle around your course. Only the rectangle's corners are sent, never your file.</span>
+              </div>
+              <details class="small fit-out">
+                <summary>Want your watch itself to know these points too?</summary>
+                <p class="muted">HowFar? doesn't need it, but if you also want your watch's own alerts, checkpoint list and ClimbPro to show the added points, download the course with every ticked checkpoint and load it on the watch instead of the original: in Garmin Connect on a computer, <b>Training &amp; Planning → Courses → Import</b>.</p>
+                <button type="button" class="btn small-btn" id="courseFit">Download the course (FIT)</button>
+              </details>
+              <div class="add-row">
+                <button type="button" class="btn small-btn" id="removeClimbs" hidden>Remove tops and bottoms</button>
+                <button type="button" class="btn small-btn" id="removePlaces" hidden>Remove huts and villages</button>
+              </div>
+              <p class="status" id="addStatus" role="status" aria-live="polite"></p>
+            </div>
 
             <div class="output">
               <details class="small">
@@ -251,6 +277,6 @@
   </div>
 </footer>
 
-<script type="module" src="js/prepare.js?v=6"></script>
+<script type="module" src="js/prepare.js?v=12"></script>
 </body>
 </html>

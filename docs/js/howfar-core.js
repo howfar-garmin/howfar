@@ -62,7 +62,7 @@ function fillDistances(points) {
   }
 }
 
-function project(points, lat, lon) {
+export function project(points, lat, lon) {
   let best = null, bestD = Infinity;
   for (const p of points) {
     if (p.lat == null) continue;

@@ -26,11 +26,11 @@ Works on the **Enduro 3**, **fēnix 8** and **epix Pro (Gen 2)**. Without the st
 
 ## Prepare a race (optional)
 
-The [race prep page](https://howfar-garmin.github.io/howfar/prepare.html) turns your past activities and the race's course file into two texts you paste into HowFar?'s settings in Garmin Connect. It runs in your browser; your files never leave your device.
+The [race prep page](https://howfar-garmin.github.io/howfar/prepare.html) turns your past activities and the race's course file into two texts you paste into HowFar?'s settings in Garmin Connect. You can also add points to count down to: the top and bottom of every big climb, huts and villages. It runs in your browser; your files never leave your device.
 
 ## Privacy
 
-HowFar? collects nothing. What it learns stays on your watch, and the race prep page works without uploading anything.
+HowFar? collects nothing. What it learns stays on your watch, and the race prep page works without uploading anything. Its optional "Add huts and villages" button asks OpenStreetMap what's around your course, sending only the corners of a rectangle around it.
 
 ## Developers
 

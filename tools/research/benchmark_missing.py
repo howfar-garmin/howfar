@@ -62,6 +62,7 @@ class OldMatcher:
         return None
 
     def update(self, name, dist_next, dist_dest, *_):
+        self.target_dist = dist_next
         changed = name != self._last_name or dist_next > self._last_dist + 50
         self._last_name, self._last_dist = name, dist_next
         if changed:
@@ -70,6 +71,15 @@ class OldMatcher:
             if idx is not None and dist_next <= self.entries[idx][1] * 1.1 + 50:
                 self.current, self._pointer = idx, idx + 1
         return self.current is not None
+
+    def target_name(self, watch_name):
+        return watch_name
+
+    def target_time(self, est, scale):
+        return self.remaining_time(self.target_dist, est, scale)
+
+    def following(self):
+        return None
 
     def remaining_time(self, dist_next, est, scale):
         """Time over the last dist_next metres of the entry (the last chunk may be shorter)."""
@@ -94,6 +104,7 @@ def replay(points, wps, elev, profile, mode, imported, stretch, unknown):
     field = FieldLogic(imported=imported)
     if mode != "none":
         field.profile = (OldMatcher if mode == "old" else ProfileMatcher)(STEP, profile)
+        field.profile.own_points = False  # scored against the watch's next point
     stops = R.stop_time_index(points)
     arrival, k = {}, 0
     for i, p in enumerate(points):

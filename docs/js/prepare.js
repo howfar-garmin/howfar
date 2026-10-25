@@ -1,6 +1,7 @@
 // HowFar? race prep page: pace from past activities, course profile, library. Everything runs
 // in the browser; files are never uploaded. The calculations are in howfar-core.js.
-import * as core from "./howfar-core.js?v=4";
+import * as core from "./howfar-core.js?v=5";
+import * as extra from "./extra-points.js?v=4";
 
 const FIT_SDK = "https://cdn.jsdelivr.net/npm/@garmin/fitsdk@21.217.0/+esm";
 const JSZIP = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
@@ -355,9 +356,16 @@ function renderCourse() {
   $("courseResult").hidden = !v;
   if (!v) return;
   const real = v.checkpoints.filter((c) => !c.finish);
+  $("courseDrop").classList.add("compact");
+  $("courseDropTitle").textContent = "Replace the course";
+  $("addPoints").hidden = !course.parsed;
+  const has = (kinds) => (course.candidates || []).some((c) => kinds.includes(c.added));
+  $("removeClimbs").hidden = !has(["top", "bottom"]);
+  $("removePlaces").hidden = !has(["hut", "village"]);
   $("courseSummary").innerHTML = `<b>${esc(course.file)}</b>: ${km(v.length)}, ${num(v.up)} m of climbing, ${real.length} checkpoint${real.length === 1 ? "" : "s"}.`;
   drawCourse(v.profile, v.checkpoints);
-  const row = (c, pick) => `<tr><td>${pick}${esc(c.name)}${pick ? "</label>" : ""}</td><td class="num">${(c.d / 1000).toFixed(1)}</td><td class="num">${km(c.seg)}</td><td class="num">${num(c.climb)} m</td></tr>`;
+  const tag = (c) => (c.added ? `<span class="added-tag">added: ${extra.ADDED_LABELS[c.added]}</span>` : "");
+  const row = (c, pick) => `<tr><td>${pick}${esc(c.name)}${pick ? "</label>" : ""}${tag(c)}</td><td class="num">${(c.d / 1000).toFixed(1)}</td><td class="num">${km(c.seg)}</td><td class="num">${num(c.climb)} m</td></tr>`;
   const cands = course.parsed && course.candidates;
   $("coursePickNote").hidden = !cands || !cands.length;
   if (cands) {
@@ -366,7 +374,7 @@ function renderCourse() {
     $("courseRows").innerHTML = cands.map((c, i) => {
       const box = `<label class="cp-pick"><input type="checkbox" data-cp="${i}"${c.on ? " checked" : ""}>`;
       if (c.on) return row(real[k++], box);
-      return `<tr class="off"><td>${box}${esc(c.name)}</label></td><td class="num">${(c.dist / 1000).toFixed(1)}</td><td class="num">–</td><td class="num">–</td></tr>`;
+      return `<tr class="off"><td>${box}${esc(c.name)}</label>${tag(c)}</td><td class="num">${(c.dist / 1000).toFixed(1)}</td><td class="num">–</td><td class="num">–</td></tr>`;
     }).join("") + v.checkpoints.filter((c) => c.finish).map((c) => row(c, "")).join("");
   } else {
     $("courseRows").innerHTML = v.checkpoints.map((c) => row(c, "")).join("");
@@ -394,10 +402,92 @@ function recomputeCourse() {
   }
   course.offTrack = c.skipped.length - c.otherFinishes.length;
   course.skipped = c.skipped.filter((n) => !course.candidates.some((p) => p.name === n && p.on));
-  const picked = course.candidates.filter((p) => p.on).map((p) => ({ name: p.name, dist: p.dist }));
-  course.view = courseView(c.points, picked, Number($("courseMax").value));
+  const picked = course.candidates.filter((p) => p.on);
+  course.view = courseView(c.points, picked.map((p) => ({ name: p.name, dist: p.dist })), Number($("courseMax").value));
+  let k = 0;
+  for (const cp of course.view.checkpoints) if (!cp.finish && picked[k]) cp.added = picked[k++].added;
   renderCourse();
 }
+
+// ---------------------------------------------------------------- step 2: adding points
+
+function addPoints(kind, found) {
+  // a new run replaces the points the same button added before
+  course.candidates = course.candidates.filter((c) => !kind.includes(c.added)).concat(found.map((p) => ({ ...p, on: true })))
+    .sort((a, b) => a.dist - b.dist);
+  course.dirty = true;
+  $("courseSaved").textContent = "";
+  recomputeCourse();
+}
+
+const courseCheckpoints = () => course.candidates.filter((c) => !c.added);
+
+$("addClimbs").addEventListener("click", () => {
+  if (!course.parsed || !course.candidates) return;
+  const kinds = ["top", "bottom"];
+  const others = course.candidates.filter((c) => c.added && !kinds.includes(c.added));
+  const found = extra.climbPoints(core.courseFrom(course.parsed).points, Number($("climbMin").value), courseCheckpoints(), others);
+  addPoints(kinds, found);
+  status($("addStatus"), found.length
+    ? `Added ${found.length} climb top${found.length === 1 ? "" : "s"} and bottom${found.length === 1 ? "" : "s"}.`
+    : "No climbs that big on this course, away from its checkpoints. Try a smaller size.");
+});
+
+$("addPlaces").addEventListener("click", async (e) => {
+  if (!course.parsed || !course.candidates) return;
+  const btn = e.currentTarget, st = $("addStatus");
+  const points = core.courseFrom(course.parsed).points;
+  btn.disabled = true;
+  status(st, "Asking OpenStreetMap…");
+  try {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 90000);
+    const res = await fetch(extra.OVERPASS_URL, { method: "POST", body: new URLSearchParams({ data: extra.overpassQuery(points) }), signal: ctl.signal });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error([429, 502, 503, 504].includes(res.status) ? "OpenStreetMap is busy right now. Try again in a minute." : `OpenStreetMap answered with an error (${res.status}).`);
+    const kinds = ["hut", "village"];
+    const others = course.candidates.filter((c) => c.added && !kinds.includes(c.added));
+    const found = extra.placePoints(await res.json(), points, core.project, courseCheckpoints(), others);
+    addPoints(kinds, found);
+    status(st, found.length ? `Added ${found.length} hut${found.length === 1 ? "" : "s"} and village${found.length === 1 ? "" : "s"}.` : "OpenStreetMap has no named huts or villages along this course, away from its checkpoints.");
+  } catch (err) {
+    status(st, err.name === "AbortError" ? "OpenStreetMap didn't answer in time. Try again later." : err.message.startsWith("OpenStreetMap") ? err.message : "Couldn't reach OpenStreetMap. Check your connection and try again.", true);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+$("courseFit").addEventListener("click", async (e) => {
+  if (!course.parsed || !course.candidates) return;
+  const btn = e.currentTarget;
+  btn.disabled = true;
+  try {
+    const fit = await import(FIT_SDK);
+    const points = core.courseFrom(course.parsed).points;
+    const name = course.name.trim() || baseName(course.file);
+    const bytes = extra.courseFit(fit, name, points, course.candidates.filter((c) => c.on));
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([bytes], { type: "application/octet-stream" }));
+    a.download = name.replace(/[^\w .,()-]+/g, "_") + ".fit";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  } catch (err) {
+    status($("addStatus"), "Couldn't make the FIT file: " + err.message, true);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+$("removeClimbs").addEventListener("click", () => {
+  addPoints(["top", "bottom"], []);
+  status($("addStatus"), "Removed the climb tops and bottoms.");
+});
+$("removePlaces").addEventListener("click", () => {
+  addPoints(["hut", "village"], []);
+  status($("addStatus"), "Removed the huts and villages.");
+});
 
 $("courseRows").addEventListener("change", (e) => {
   const i = e.target.dataset && e.target.dataset.cp;

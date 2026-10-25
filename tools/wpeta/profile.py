@@ -125,9 +125,16 @@ class ProfileMatcher:
     The watch's course may be another version of the course, a bit longer or shorter, so the
     watch's distances are converted with `ratio` (profile metres per watch course metre),
     learned at each point the profile knows from how far both say the finish is.
+
+    What the field counts down to (`target_*`) is the next profile point ahead of you, which
+    can be one the watch's course doesn't have (a climb top or a hut added on the race prep
+    page), or the watch's next point when that comes first. Where you are is always taken
+    from the watch's next point, so the watch's checkpoints keep anchoring it.
     """
 
     SLACK = 100.0  # m: a stretch may start this far before the profile's start
+    PASSED = 5.0  # m: a profile point this close behind or ahead counts as reached
+    own_points = True  # count down to the profile's own points too (research replays turn it off)
     MIN_RATIO_DIST = 2000.0  # m to the finish below which the ratio isn't updated any more
     RATIO_LO = 0.8
     RATIO_HI = 1.25
@@ -146,13 +153,16 @@ class ProfileMatcher:
     def reset(self) -> None:
         self._pointer = 0
         self.current: int | None = None  # entry of a point known by name
-        self.loc: float | None = None
+        self.loc: float | None = None  # where the watch's next point is on the profile
         self.mismatched = False
         self.ratio: float | None = None
         self._last_name: str | None = None
         self._last_dist = 0.0
         self._here: float | None = None  # where you were at the last update with a located point
         self._here_watch: float | None = None  # and the watch's distance then
+        self.target_end: float | None = None  # profile metres of what the field counts down to
+        self.target_index: int | None = None  # its entry, None for a watch point the profile lacks
+        self.target_dist = 0.0  # watch course metres to it
 
     # --- walking the profile: stretches of constant grade --------------------------------
 
@@ -260,7 +270,31 @@ class ProfileMatcher:
                 self.ratio = r
         self._here = self.loc - dist_next * r
         self._here_watch = watch_dist
+        self._aim(self._here, r)
         return True
+
+    def _aim(self, here: float, r: float) -> None:
+        assert self.loc is not None
+        self.target_end, self.target_index = self.loc, self.current
+        if self.own_points:
+            for i in range(len(self.entries)):
+                end = self.starts[i] + self.entries[i][1]
+                if end > here + self.PASSED:
+                    if end < self.loc - self.PASSED:
+                        self.target_end, self.target_index = end, i
+                    break
+        self.target_dist = max(0.0, (self.target_end - here) / r)
+
+    def target_name(self, watch_name: str | None) -> str | None:
+        """Name of what the field counts down to."""
+        if self.target_index is None or self.target_index == self.current:
+            return watch_name
+        return self.following_name(self.target_index)
+
+    def target_time(self, estimator, scale: float) -> float:
+        """Time from where you are to what the field counts down to."""
+        assert self._here is not None and self.target_end is not None
+        return max(self._time_between(self._here, self.target_end, estimator, scale), 1.0)
 
     def _time_between(self, a: float, b: float, estimator, scale: float) -> float:
         """Time over the profile from a to b; profile metres before its start count at the
@@ -287,11 +321,11 @@ class ProfileMatcher:
         return max(self._time_between(self.loc - dist_next * (self.ratio or 1.0), self.loc, estimator, scale), 1.0)
 
     def following(self) -> int | None:
-        """Entry of the profile point after the next point, if there is one."""
-        if self.loc is None:
+        """Entry of the profile point after the one the field counts down to, if there is one."""
+        if self.target_end is None:
             return None
         for i in range(len(self.entries)):
-            if self.starts[i] + self.entries[i][1] > self.loc + 1:
+            if self.starts[i] + self.entries[i][1] > self.target_end + 1:
                 return i
         return None
 
@@ -300,6 +334,6 @@ class ProfileMatcher:
         return "Finish" if name == FINISH_NAME else name
 
     def following_time(self, i: int, estimator, scale: float) -> float:
-        """Time from the next point to profile point i."""
-        assert self.loc is not None
-        return self._time_between(self.loc, self.starts[i] + self.entries[i][1], estimator, scale)
+        """Time from the point the field counts down to, to profile point i."""
+        assert self.target_end is not None
+        return self._time_between(self.target_end, self.starts[i] + self.entries[i][1], estimator, scale)

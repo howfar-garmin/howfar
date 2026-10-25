@@ -26,7 +26,8 @@ class FieldLogic:
         self.scale = CourseScale()
         self.profile = ProfileMatcher(*profile) if profile else None
         self.using_profile = False
-        self.then_name: str | None = None  # the profile point after the next one
+        self.shown_name: str | None = None  # the point the countdown is for
+        self.then_name: str | None = None  # the profile point after it
         self.then_eta: int | None = None
         self._smooth_speed: float | None = None
         self._last_name: str | None = None
@@ -49,6 +50,7 @@ class FieldLogic:
                 self.estimator.observe(g, v, d)
                 self.model.observe(g, v)
 
+        self.shown_name = name
         if dist_next is None or dist_next <= 0:
             self._smooth_speed = None
             self.then_name = self.then_eta = None
@@ -59,7 +61,10 @@ class FieldLogic:
         scale = self.scale.ratio
 
         if self.profile is not None and self.profile.update(name, dist_next, dist_dest, dist, scale):
-            raw = self.profile.remaining_time(dist_next, self.estimator, scale)
+            # the next profile point, which may come before the watch's next point
+            name = self.profile.target_name(name)
+            dist_next = self.profile.target_dist
+            raw = self.profile.target_time(self.estimator, scale)
             self.using_profile = True
         else:
             grade = 0.0
@@ -73,9 +78,10 @@ class FieldLogic:
         self._last_name = name
         self._last_dist = dist_next
 
-        v = dist_next / raw
+        self.shown_name = name
+        v = max(dist_next, 1.0) / raw
         self._smooth_speed = v if self._smooth_speed is None else self._smooth_speed + (v - self._smooth_speed) * SMOOTHING
-        eta = int(dist_next / self._smooth_speed + 0.5)
+        eta = int(max(dist_next, 1.0) / self._smooth_speed + 0.5)
 
         self.then_name = self.then_eta = None
         if self.using_profile:

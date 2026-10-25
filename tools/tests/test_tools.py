@@ -289,6 +289,28 @@ def test_matcher_following_point():
     assert m.following() is None
 
 
+def test_matcher_counts_down_to_profile_points_the_watch_lacks():
+    from wpeta.model import EtaEstimator, SpeedGradeModel
+
+    est = EtaEstimator(SpeedGradeModel())
+    # the watch knows only B; the profile also has a climb top 800 m in
+    m = ProfileMatcher(100, [("Top 900m", 800, [0] * 8), ("B", 1200, [0] * 12)])
+    assert m.update("B", 1700, 1700, 300.0)
+    assert m.target_name("B") == "Top 900m" and m.target_dist == pytest.approx(500)
+    assert m.target_time(est, 1.0) == pytest.approx(est.time_for_grade(500, 0.0))
+    assert m.following_name(m.following()) == "B"
+    # past the top: the watch's point again
+    assert m.update("B", 1100, 1100, 900.0)
+    assert m.target_name("B") == "B" and m.target_dist == pytest.approx(1100)
+
+
+def test_field_names_the_profile_point():
+    entries = [("Top 900m", 800, [0] * 8), ("B", 1200, [0] * 12)]
+    f = FieldLogic(profile=(100, entries))
+    f.compute(1.0, True, 0.0, 300.0, 2000.0, "B", 2000.0, 300.0)
+    assert f.shown_name == "Top 900m" and f.then_name == "B"
+
+
 def test_field_shows_the_point_after_the_next():
     entries = [("A", 1000, [0] * 10), ("B", 2000, [0] * 20)]
     f = FieldLogic(profile=(100, entries))

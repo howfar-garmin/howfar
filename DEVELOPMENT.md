@@ -23,7 +23,11 @@ The watch's next point is put **on the profile**, and the time is the profile's 
 
 The watch's course may be another version of the course, a bit longer or shorter than the profile's. At each point the profile has, the field compares how far both say the finish is and converts the watch's distances by that ratio. Profile points the watch's course lacks are simply crossed.
 
-Course GPX files often carry every waypoint of the whole race; only those within 200 m of the course's track are kept.
+Course GPX files often carry every waypoint of the whole race; only those within 200 m of the course's track are kept, and a finish line the course passes by but doesn't end at is left out (the race prep page lists it unticked).
+
+The field counts down to the **next profile point**, not only the watch's next point. Points added on the race prep page (climb tops and bottoms, huts and villages from OpenStreetMap) exist only in the profile; where you are always comes from the watch's next point, so the watch's own checkpoints keep anchoring the position. The fourth line, on full-screen fields, is the profile point after that.
+
+On the race prep page, `docs/js/extra-points.js` finds the added points: climbs as in UltraTrailMate (profile resampled every 40 m with a 50 m median, highs and lows standing out by the chosen D+, 900 m apart), places with one Overpass query for the course's bounding box (the only network request the page makes besides loading its libraries). It can also write the course as a FIT file with every ticked checkpoint as a course point, for runners who want the watch itself to know them.
 
 ## Code layout
 
@@ -35,6 +39,7 @@ Course GPX files often carry every waypoint of the whole race; only those within
 | `source/CourseProfile.mc` | `tools/wpeta/profile.py` | `docs/js/howfar-core.js` | the profile text; following the next course point |
 | `source/WaypointEtaView.mc` | `tools/wpeta/field.py` | | per-second logic, drawing |
 | | `tools/wpeta/readers.py` | `docs/js/howfar-core.js` | reading GPX and FIT |
+| | | `docs/js/extra-points.js` | climb tops and bottoms, huts and villages, FIT course out (page only) |
 
 The three must agree: the watch reads the texts the Python tools and the race prep page make. If you change the logic, change all of them; the tests below check that they match.
 

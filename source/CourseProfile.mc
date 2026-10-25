@@ -9,17 +9,25 @@ import Toybox.Lang;
 //   profile's length minus distanceToDestination.
 // The watch's course may be another version of the course, so the watch's distances are
 // converted with ratio (profile metres per watch course metre), learned at each known point.
+// What the field counts down to (target*) is the next profile point ahead of you, which can be
+// one the watch's course doesn't have (a climb top or a hut added on the race prep page), or
+// the watch's next point when that comes first. Where you are is always taken from the
+// watch's next point, so the watch's checkpoints keep anchoring it.
 // Mirrors ProfileMatcher in tools/wpeta/profile.py.
 class CourseProfile {
     const FINISH_NAME = "*";
     const SLACK = 100.0;            // m: a stretch may start this far before the profile's start
+    const PASSED = 5.0;             // m: a profile point this close behind or ahead counts as reached
     const MIN_RATIO_DIST = 2000.0;  // m to the finish below which the ratio isn't updated any more
     const RATIO_LO = 0.8;
     const RATIO_HI = 1.25;
 
     var step as Float = 50.0;
     var current as Number?;   // entry of a point known by name
-    var loc as Float?;
+    var loc as Float?;        // where the watch's next point is on the profile
+    var targetEnd as Float?;  // profile metres of what the field counts down to
+    var targetIndex as Number?;  // its entry, null for a watch point the profile lacks
+    var targetDist as Float = 0.0;  // watch course metres to it
     var mismatched as Boolean = false;
     var ratio as Float?;
     var total as Float = 0.0;
@@ -99,6 +107,9 @@ class CourseProfile {
         _lastDist = 0.0;
         _here = null;
         _hereWatch = null;
+        targetEnd = null;
+        targetIndex = null;
+        targetDist = 0.0;
     }
 
     // --- walking the profile: stretches of constant grade
@@ -231,9 +242,43 @@ class CourseProfile {
                 ratio = rr;
             }
         }
-        _here = at - distNext * rr;
+        var here = at - distNext * rr;
+        _here = here;
         _hereWatch = watchDist;
+        aim(here, at, rr);
         return true;
+    }
+
+    hidden function aim(here as Float, at as Float, r as Float) as Void {
+        targetEnd = at;
+        targetIndex = current;
+        for (var i = 0; i < _names.size(); i++) {
+            var end = _starts[i] + _lengths[i];
+            if (end > here + PASSED) {
+                if (end < at - PASSED) {
+                    targetEnd = end;
+                    targetIndex = i;
+                }
+                break;
+            }
+        }
+        var d = (targetEnd as Float - here) / r;
+        targetDist = d > 0.0 ? d : 0.0;
+    }
+
+    // Name of what the field counts down to
+    function targetName(watchName as String?) as String? {
+        var i = targetIndex;
+        if (i == null || i == current) {
+            return watchName;
+        }
+        return followingName(i);
+    }
+
+    // Time from where you are to what the field counts down to
+    function targetTime(estimator as EtaEstimator, scale as Float) as Float {
+        var t = timeBetween(_here as Float, targetEnd as Float, estimator, scale);
+        return t > 1.0 ? t : 1.0;
     }
 
     // Time over the profile from a to b; profile metres before its start count at the first grade
@@ -265,9 +310,9 @@ class CourseProfile {
         return t > 1.0 ? t : 1.0;
     }
 
-    // Entry of the profile point after the next point, if there is one
+    // Entry of the profile point after the one the field counts down to, if there is one
     function following() as Number? {
-        var at = loc;
+        var at = targetEnd;
         if (at == null) {
             return null;
         }
@@ -283,8 +328,8 @@ class CourseProfile {
         return _names[i].equals(FINISH_NAME) ? "Finish" : _names[i];
     }
 
-    // Time from the next point to profile point i
+    // Time from the point the field counts down to, to profile point i
     function followingTime(i as Number, estimator as EtaEstimator, scale as Float) as Float {
-        return timeBetween(loc as Float, _starts[i] + _lengths[i], estimator, scale);
+        return timeBetween(targetEnd as Float, _starts[i] + _lengths[i], estimator, scale);
     }
 }

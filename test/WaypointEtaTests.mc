@@ -269,3 +269,20 @@ function testProfileFollowingPoint(logger as Test.Logger) as Boolean {
     Test.assert(p.following() == null);
     return true;
 }
+
+(:test)
+function testProfileCountsDownToItsOwnPoints(logger as Test.Logger) as Boolean {
+    var est = new EtaEstimator(new SpeedGradeModel());
+    // the watch knows only B; the profile also has a climb top 800 m in
+    var p = new CourseProfile("p1;100;Top 900m|800|0;B|1200|0");
+    Test.assert(p.update("B", 1700.0, 1700.0, 300.0, 1.0));
+    Test.assert((p.targetName("B") as String).equals("Top 900m"));
+    Test.assert(near(p.targetDist, 500.0, 0.01));
+    Test.assert(near(p.targetTime(est, 1.0), est.timeForGrade(500.0, 0.0, 1.0), 0.01));
+    Test.assert(p.followingName(p.following() as Number).equals("B"));
+    // past the top: the watch's point again
+    Test.assert(p.update("B", 1100.0, 1100.0, 900.0, 1.0));
+    Test.assert((p.targetName("B") as String).equals("B"));
+    Test.assert(near(p.targetDist, 1100.0, 0.01));
+    return true;
+}

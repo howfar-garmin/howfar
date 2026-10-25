@@ -378,3 +378,10 @@ label.btn { cursor: pointer; }
 .cp-pick input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
 .prep-table tr.off td { color: var(--ink-3); }
 .prep-table tr.off .cp-pick { text-decoration: line-through; }
+
+/* race prep: what's open in each section */
+.loaded { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: var(--radius); }
+.loaded-kicker { flex-basis: 100%; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+.loaded-name { font-family: var(--font-display); font-size: var(--step-2); font-weight: 600; line-height: 1.15; color: var(--ink); overflow-wrap: anywhere; min-width: 0; }
+.loaded-state { font-size: var(--step--1); font-weight: 600; color: var(--warn); background: var(--warn-soft); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+.loaded-state.saved { color: var(--good); background: var(--good-soft); }

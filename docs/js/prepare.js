@@ -204,7 +204,17 @@ function drawCourse(profile, checkpoints) {
 
 // ---------------------------------------------------------------- step 1: pace
 
-const pace = { id: null, name: "", activities: [] };
+// dirty: changed since it was last saved or opened from the library
+const pace = { id: null, name: "", activities: [], dirty: false };
+
+/** The name of what's open, and whether it's in the library, at the top of its section. */
+function showLoaded(kind, item, fallback) {
+  $(kind + "Title").textContent = item.name.trim() || fallback;
+  const state = $(kind + "State");
+  const saved = item.id && library[kind === "pace" ? "paces" : "courses"].some((x) => x.id === item.id);
+  state.textContent = !saved ? "Not saved yet" : item.dirty ? "Changed since you saved it" : "Saved in your library";
+  state.className = "loaded-state" + (saved && !item.dirty ? " saved" : "");
+}
 
 function paceLayer() {
   const layer = new core.Layer();
@@ -227,6 +237,7 @@ function renderPace() {
     : `${num(samples)} samples, about ${num(samples * 25 / 1000)} km of moving data.`;
   $("paceText").textContent = layer.toString();
   $("paceName").value = pace.name;
+  showLoaded("pace", pace, "Untitled pace");
 }
 
 async function addPaceFiles(fileList) {
@@ -245,6 +256,7 @@ async function addPaceFiles(fileList) {
         id: newId(), file: f.name, date: parsed.startTime, km: learned.km, up: learned.up, hours: learned.hours,
         movingHours: learned.movingHours, obs: learned.observations, paces: learned.layer.paces, weights: learned.layer.weights,
       });
+      pace.dirty = true;
     }
     if (!pace.name && pace.activities.length) pace.name = "My pace, " + new Date().toLocaleDateString(undefined, { month: "short", year: "numeric" });
     status(st, problems.join(" "), problems.length > 0);
@@ -258,19 +270,27 @@ $("paceRows").addEventListener("click", (e) => {
   const id = e.target.getAttribute("data-remove");
   if (!id) return;
   pace.activities = pace.activities.filter((a) => a.id !== id);
+  pace.dirty = true;
   renderPace();
 });
-$("paceName").addEventListener("input", () => (pace.name = $("paceName").value));
+$("paceName").addEventListener("input", () => {
+  pace.name = $("paceName").value;
+  pace.dirty = true;
+  showLoaded("pace", pace, "Untitled pace");
+});
 $("paceCopy").addEventListener("click", (e) => copyText($("paceText").textContent, e.currentTarget));
 $("paceSave").addEventListener("click", () => {
   pace.id = pace.id || newId();
   pace.name = $("paceName").value.trim() || "My pace";
   upsert(library.paces, { id: pace.id, name: pace.name, saved: new Date().toISOString(), activities: pace.activities, text: paceLayer().toString() });
-  $("paceSaved").textContent = saveLibrary() ? "Saved in your library." : "Couldn't save: this browser blocks storage. Use a backup file.";
+  const ok = saveLibrary();
+  $("paceSaved").textContent = ok ? "Saved in your library." : "Couldn't save: this browser blocks storage. Use a backup file.";
+  pace.dirty = !ok;
+  showLoaded("pace", pace, "Untitled pace");
   renderLibrary();
 });
 $("paceNew").addEventListener("click", () => {
-  Object.assign(pace, { id: null, name: "", activities: [] });
+  Object.assign(pace, { id: null, name: "", activities: [], dirty: false });
   $("paceSaved").textContent = "";
   status($("paceStatus"), "");
   renderPace();
@@ -280,7 +300,7 @@ dropZone($("paceDrop"), $("paceFiles"), addPaceFiles);
 // ---------------------------------------------------------------- step 2: course
 
 // candidates: every checkpoint found on the course, { name, dist, on }; unticked ones are left out
-const course = { id: null, name: "", file: "", parsed: null, view: null, candidates: null, offTrack: 0 };
+const course = { id: null, name: "", file: "", parsed: null, view: null, candidates: null, offTrack: 0, dirty: false };
 
 function courseView(points, coursePoints, maxLen) {
   const { step, text, entries } = core.bestProfile(points, coursePoints, maxLen);
@@ -332,6 +352,7 @@ function renderCourse() {
   $("courseMeta").innerHTML = `The text for the setting <b>“Course profile”</b> · one slope every ${v.step} m · ${num(v.text.length)} characters`;
   $("courseText").textContent = v.text;
   $("courseName").value = course.name;
+  showLoaded("course", course, "Untitled course");
 }
 
 function recomputeCourse() {
@@ -353,6 +374,7 @@ $("courseRows").addEventListener("change", (e) => {
   const i = e.target.dataset && e.target.dataset.cp;
   if (i == null || !course.candidates) return;
   course.candidates[Number(i)].on = e.target.checked;
+  course.dirty = true;
   $("courseSaved").textContent = "";
   recomputeCourse();
 });
@@ -367,7 +389,7 @@ async function addCourseFile(fileList) {
     await new Promise((r) => setTimeout(r, 0));
     const parsed = await parse(f);
     if (!parsed.points.some((p) => p.alt != null)) throw new Error(`${f.name} has no elevation data, so no profile can be made from it.`);
-    Object.assign(course, { id: null, name: baseName(f.name), file: f.name, parsed, candidates: null });
+    Object.assign(course, { id: null, name: baseName(f.name), file: f.name, parsed, candidates: null, dirty: true });
     $("courseSaved").textContent = "";
     recomputeCourse();
     status(st, "");
@@ -376,8 +398,15 @@ async function addCourseFile(fileList) {
   }
 }
 
-$("courseMax").addEventListener("change", recomputeCourse);
-$("courseName").addEventListener("input", () => (course.name = $("courseName").value));
+$("courseMax").addEventListener("change", () => {
+  course.dirty = true;
+  recomputeCourse();
+});
+$("courseName").addEventListener("input", () => {
+  course.name = $("courseName").value;
+  course.dirty = true;
+  showLoaded("course", course, "Untitled course");
+});
 $("courseCopy").addEventListener("click", (e) => copyText($("courseText").textContent, e.currentTarget));
 $("courseSave").addEventListener("click", () => {
   const v = course.view;
@@ -387,7 +416,10 @@ $("courseSave").addEventListener("click", () => {
     id: course.id, name: course.name, file: course.file, saved: new Date().toISOString(), text: v.text, step: v.step,
     length: v.length, up: v.up, profile: v.profile, checkpoints: v.checkpoints, skipped: course.skipped || [],
   });
-  $("courseSaved").textContent = saveLibrary() ? "Saved in your library." : "Couldn't save: this browser blocks storage. Use a backup file.";
+  const ok = saveLibrary();
+  $("courseSaved").textContent = ok ? "Saved in your library." : "Couldn't save: this browser blocks storage. Use a backup file.";
+  course.dirty = !ok;
+  showLoaded("course", course, "Untitled course");
   renderLibrary();
 });
 dropZone($("courseDrop"), $("courseFile"), addCourseFile);
@@ -434,12 +466,12 @@ $("library").addEventListener("click", (e) => {
       setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = "Delete"; } }, 3000);
     }
   } else if (kind === "pace") {
-    Object.assign(pace, { id: item.id, name: item.name, activities: item.activities.map((a) => ({ ...a })) });
+    Object.assign(pace, { id: item.id, name: item.name, activities: item.activities.map((a) => ({ ...a })), dirty: false });
     $("paceSaved").textContent = "";
     renderPace();
     $("pace").scrollIntoView({ behavior: "smooth" });
   } else {
-    Object.assign(course, { id: item.id, name: item.name, file: item.file, parsed: null, skipped: item.skipped,
+    Object.assign(course, { id: item.id, name: item.name, file: item.file, parsed: null, skipped: item.skipped, dirty: false,
       view: { step: item.step, text: item.text, profile: item.profile, checkpoints: item.checkpoints, length: item.length, up: item.up } });
     $("courseSaved").textContent = "Opened from your library. To change the checkpoints or the detail level, add the course file again.";
     renderCourse();

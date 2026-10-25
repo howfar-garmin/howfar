@@ -214,7 +214,10 @@ function showLoaded(kind, item, fallback) {
   const saved = item.id && library[kind === "pace" ? "paces" : "courses"].some((x) => x.id === item.id);
   state.textContent = !saved ? "Not saved yet" : item.dirty ? "Changed since you saved it" : "Saved in your library";
   state.className = "loaded-state" + (saved && !item.dirty ? " saved" : "");
+  $(kind + "SaveTop").hidden = saved && !item.dirty;
 }
+
+for (const kind of ["pace", "course"]) $(kind + "SaveTop").addEventListener("click", () => $(kind + "Save").click());
 
 /** The pencil next to the name: edit it in place; Enter or leaving the box keeps it, Esc doesn't. */
 function renamer(kind, item, fallback) {

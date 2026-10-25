@@ -27,7 +27,7 @@ from wpeta.readers import read_course  # noqa: E402
 KEY = "S1"
 # minor points in the demo (the rest are main): the big number counts down to the next main
 # point, and the full-screen watch shows the next minor one on the way
-MINOR = {"Col Passo Alto", "Col de la Crosatie", "Lac Du Fond"}
+MINOR = {"Col d'Arp", "Col Passo Alto", "Col de la Crosatie", "Lac Du Fond"}
 
 # id, short label (chart, table), label next to the choice, benchmark options (trail ahead
 # decides P/~ on the watch). HowFar's first race: nothing remembered from earlier runs.

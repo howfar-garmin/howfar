@@ -34,6 +34,7 @@ ROOT = HERE.parents[1]
 RACES = {
     "TOR": ("Tor des Géants 2023", ROOT / "samples/TOR330_2023.gpx", ROOT / "courses/TOR330-CERT-2026.gpx", True),
     "AW": ("Abbots Way 2018", ROOT / "samples/Abbots_Way_2018.gpx", None, False),
+    "X100": ("TORX100 2025", ROOT / "samples/TORX100_2025.gpx", ROOT / "courses/TOR100-CERT-20260910.gpx", False),
     "S1": ("TORX 2026 section 1", ROOT / "samples/TORX26_Sezione_1.gpx", ROOT / "courses/TOR330-CERT-2026-T1.gpx", False),
     "AN": ("La Via di Annibale skyrace", ROOT / "samples/La_via_di_Annibale_Skyrace.gpx", ROOT / "courses/La via di annibale - 42 km - 2024.gpx", False),
     "STL": ("STL25", ROOT / "samples/STL25.gpx", ROOT / "courses/STL25 def 2026 2.gpx", False),

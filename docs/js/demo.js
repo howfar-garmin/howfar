@@ -290,7 +290,7 @@
   }
 
   // ---------- results table
-  var SHORT = { TOR: "Tor 330", AW: "Abbots Way", S1: "TORX S1", AN: "La Via di Annibale", STL: "STL25" };
+  var SHORT = { TOR: "Tor 330", AW: "Abbots Way", X100: "TORX100", S1: "TORX S1", AN: "La Via di Annibale", STL: "STL25" };
   function buildTable() {
     var table = $("results");
     var RACES = D.races, S = D.scores;

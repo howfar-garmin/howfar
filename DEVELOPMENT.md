@@ -89,15 +89,17 @@ They must agree: the watch reads the profile text the Python tools and the race 
 .venv/bin/python tools/research/demo_export.py --results results.json      # refreshes the site's demo data
 ```
 
-On five races: Tor des Géants 2023 on the official 2026 course (legs where the route changed since are left out of the score), Abbots Way 2018 (no checkpoints in its file, so they go where the runner stopped), TORX 2026 section 1, La Via di Annibale, STL25. Times are scored as the watch rounds them (`benchmark.py --shown`):
+On six races: Tor des Géants 2023 on the official 2026 course (legs where the route changed since are left out of the score), Abbots Way 2018 (no checkpoints in its file, so they go where the runner stopped), TORX100 2025 on the official 2026 course (every leg matches), TORX 2026 section 1, La Via di Annibale, STL25. Times are scored as the watch rounds them (`benchmark.py --shown`):
 
 | Configuration | Average error | Within 5 min | Within 15 min |
 |---|---|---|---|
-| Distance left at the average moving pace so far (the usual watch estimate) | 9.2 min | 40% | 78% |
-| Current race only | 7.1 min | 48% | 88% |
-| + trail ahead (course profile) | 5.2 min | 58% | 95% |
-| + race-day corrections: the field on a first race | 4.1 min | 73% | 96% |
-| + past runs remembered (the other four races) | 4.1 min | 73% | 95% |
+| Distance left at the average moving pace so far (the usual watch estimate) | 8.9 min | 41% | 79% |
+| Current race only | 6.7 min | 50% | 89% |
+| + trail ahead (course profile) | 5.0 min | 60% | 96% |
+| + race-day corrections: the field on a first race | 3.9 min | 73% | 96% |
+| + past runs remembered (the other five races) | 3.9 min | 74% | 95% |
+
+On the TORX100 the course profile adds little (3.0 min without it, 3.2 with it, but 4.2 → 3.6 min 2 km before a checkpoint): almost every checkpoint is a col or a hut, so each leg is a single climb or descent and the average grade already describes it.
 
 When the profile and the watch's course don't list the same checkpoints (`tools/research/benchmark_missing.py`, the four races and 129 activities with checkpoints every 5 km), placing points on the profile beats the old name-only matching, which fell back to "~" for any point the profile lacked:
 

@@ -109,11 +109,12 @@
   function mainFrom(j) { while (j < WP.length - 1 && WP[j].minor) j++; return j; }
   function points(f) {
     var m = mainFrom(f[K]);
-    var via = null;
-    for (var j = f[K]; j < m; j++) if (WP[j].minor) { via = j; break; }
+    var vias = [];
+    for (var j = f[K]; j < m; j++) if (WP[j].minor) vias.push(j);
+    var via = vias.length ? vias[0] : null;
     var then = m < WP.length - 1 ? mainFrom(m + 1) : null;
     var then2 = then != null && then < WP.length - 1 ? mainFrom(then + 1) : null;
-    return { main: m, via: via, then: then, then2: then2 };
+    return { main: m, via: via, vias: vias, then: then, then2: then2 };
   }
 
   // the dot before each time on the watch: green under 45 minutes to go, yellow to 2 hours,
@@ -157,15 +158,24 @@
     // (grey, its time from now), the main checkpoint, then the next main ones with their leg's
     // moving time from leaving the checkpoint before (+h:mm: stops there can't be known);
     // "(learning)" in a free line
+    // two of these small lines fit on this screen (as on a 280-pixel watch): minor points first,
+    // the last one shown counting the others, then "then" lines; "(learning)" in a free one
     var leg = function (j, from) { var s = timeTo(f, j) - timeTo(f, from); return [_t("then") + " " + WP[j].name, "+" + etaHm(s), s]; };
-    setLine($("wMinor"), pts.via != null ? [WP[pts.via].name, _t("in") + " " + etaHm(timeTo(f, pts.via)), timeTo(f, pts.via)] : null);
-    var one = pts.then != null ? leg(pts.then, pts.main) : null;
-    var two = pts.via == null && pts.then2 != null ? leg(pts.then2, pts.then) : null;
-    var note = learning ? [_t("(learning)"), "", null] : null;
-    setLine($("wThen1"), one || note);
-    $("wThen1").classList.toggle("note", !one);
-    setLine($("wThen2"), one && pts.via == null ? (two || note) : null);
-    $("wThen2").classList.toggle("note", !two);
+    var nm = Math.min(2, pts.vias.length);
+    [0, 1].forEach(function (i) {
+      var j = pts.vias[i];
+      var more = i === nm - 1 && pts.vias.length > nm ? " (+" + (pts.vias.length - nm) + ")" : "";
+      setLine($("wMinor" + (i + 1)), i < nm ? [WP[j].name, _t("in") + " " + etaHm(timeTo(f, j)) + more, timeTo(f, j)] : null);
+    });
+    var thens = [];
+    if (pts.then != null) thens.push(leg(pts.then, pts.main));
+    if (pts.then2 != null) thens.push(leg(pts.then2, pts.then));
+    thens = thens.slice(0, 2 - nm);
+    if (learning && nm + thens.length < 2) thens.push([_t("(learning)"), "", null]);
+    [0, 1].forEach(function (i) {
+      setLine($("wThen" + (i + 1)), thens[i] || null);
+      $("wThen" + (i + 1)).classList.toggle("note", !!thens[i] && thens[i][2] == null);
+    });
 
     $("raceClock").textContent = dur(f[T]);
     $("rTime").innerHTML = _t("<b>{time}</b> · {clock} local time", { time: hm(f[T]), clock: clock(f[T]) }) +

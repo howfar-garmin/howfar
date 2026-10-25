@@ -329,6 +329,19 @@ def test_matcher_several_minor_points_in_turn():
     assert m.via is None
 
 
+def test_matcher_lists_every_minor_point_before_the_target():
+    from wpeta.model import EtaEstimator, SpeedGradeModel
+
+    est = EtaEstimator(SpeedGradeModel())
+    entries = [("+Col", 500, [0] * 5), ("+Lake", 500, [0] * 5), ("+Alpe", 500, [0] * 5), ("+Hut", 500, [0] * 5), ("B", 1000, [0] * 10)]
+    m = ProfileMatcher(100, entries)
+    assert m.update("B", 2900, 2900, 100.0)
+    assert [m.following_name(i) for i in m.vias] == ["Col", "Lake", "Alpe", "Hut"]
+    assert m.minor_time(m.vias[2], est, 1.0) == pytest.approx(est.time_for_grade(1400, 0.0))
+    assert m.update("B", 2300, 2300, 700.0)  # past the col
+    assert [m.following_name(i) for i in m.vias] == ["Lake", "Alpe", "Hut"]
+
+
 def test_matcher_skips_a_minor_point_the_watch_counts_down_to():
     # the watch's course has the top too (downloaded with every point), but it's minor
     m = ProfileMatcher(100, [("+Top 900m", 800, [0] * 8), ("B", 1200, [0] * 12)])

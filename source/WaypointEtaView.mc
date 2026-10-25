@@ -2,6 +2,8 @@ import Toybox.Activity;
 import Toybox.Application;
 import Toybox.Graphics;
 import Toybox.Lang;
+import Toybox.Math;
+import Toybox.System;
 import Toybox.WatchUi;
 
 // Per-second logic mirrors FieldLogic in tools/wpeta/field.py.
@@ -26,8 +28,9 @@ class WaypointEtaView extends WatchUi.DataField {
     hidden var _thenSec as Number?;   // its leg's moving time, from leaving the point before it
     hidden var _then2Name as String?; // and the main point after that
     hidden var _then2Sec as Number?;  // ... and its leg's
-    hidden var _viaName as String?;   // the next minor profile point on the way
-    hidden var _viaSec as Number?;
+    hidden var _minorNames as Array<String> = [] as Array<String>;  // the first minor points on the way
+    hidden var _minorSecs as Array<Number> = [] as Array<Number>;   // ... and the time to each, from now
+    hidden var _minorCount as Number = 0;                            // all of them, before the main checkpoint
     hidden var _smoothSpeed as Float?;
     hidden var _lastName as String?;
     hidden var _lastDist as Float = 0.0;
@@ -90,8 +93,9 @@ class WaypointEtaView extends WatchUi.DataField {
             _smoothSpeed = null;
             _thenName = null;
             _thenSec = null;
-            _viaName = null;
-            _viaSec = null;
+            _minorNames = [] as Array<String>;
+            _minorSecs = [] as Array<Number>;
+            _minorCount = 0;
             _then2Name = null;
             _then2Sec = null;
             return;
@@ -146,13 +150,18 @@ class WaypointEtaView extends WatchUi.DataField {
 
         _thenName = null;
         _thenSec = null;
-        _viaName = null;
-        _viaSec = null;
+        _minorNames = [] as Array<String>;
+        _minorSecs = [] as Array<Number>;
+        _minorCount = 0;
         _then2Name = null;
         _then2Sec = null;
-        if (_usingProfile && profile != null && profile.via != null) {
-            _viaName = profile.followingName(profile.via as Number);
-            _viaSec = (profile.viaTime(_estimator, scale) + 0.5).toNumber();
+        if (_usingProfile && profile != null) {
+            var vias = profile.vias;
+            _minorCount = vias.size();
+            for (var j = 0; j < vias.size() && j < MAX_MINOR_LINES; j++) {
+                _minorNames.add(profile.followingName(vias[j]));
+                _minorSecs.add((profile.minorTime(vias[j], _estimator, scale) + 0.5).toNumber());
+            }
         }
         if (_usingProfile && profile != null) {
             var i = profile.following();
@@ -192,14 +201,15 @@ class WaypointEtaView extends WatchUi.DataField {
         _etaSec = null;
         _thenName = null;
         _thenSec = null;
-        _viaName = null;
-        _viaSec = null;
+        _minorNames = [] as Array<String>;
+        _minorSecs = [] as Array<Number>;
+        _minorCount = 0;
         _then2Name = null;
         _then2Sec = null;
     }
 
     const MIN_FONT_WITH_EXTRAS = 4;  // FONT_MEDIUM: smallest font the time gets when label and arrival are shown too
-    const MIN_HEIGHT_WITH_THEN = 150;  // px: fields this tall also show the checkpoint after the next
+    const MIN_HEIGHT_WITH_THEN = 150;  // px: fields this tall show the points around the checkpoint (full screen)
     hidden var _dotR as Float = 3.0;  // px: radius of the coloured dot before each time
     const LEARN_OBS = 160;  // ~4 km of moving: until then today's form is still a guess (grey digits)
 
@@ -254,80 +264,132 @@ class WaypointEtaView extends WatchUi.DataField {
         var unitW = unit.length() > 0 ? dc.getTextWidthInPixels(unit, Graphics.FONT_XTINY) + 4 : 0;
         var digitsW = maxW - unitW - dotW;
 
-        // tall fields: the arrival beside the time, freeing two lines below it for the minor point
-        // on the way (via) and the main point after the next (then), while the time can still be big
+        // the arrival beside the time; on tall fields, the points around it in the order you meet them
         var thenName = _thenName;
-        var thenSec = _thenSec;
-        var viaName = _viaName;
-        var viaSec = _viaSec;
+        var minorCount = _minorCount;
         var arriveSide = eta == null ? "" : "@" + WpUtil.formatClock(eta);
-        var sideW = (unitW > dc.getTextWidthInPixels(arriveSide, Graphics.FONT_XTINY) + 4
-            ? unitW : dc.getTextWidthInPixels(arriveSide, Graphics.FONT_XTINY) + 4);
-        var withThen = eta != null && (thenName != null || viaName != null) && h >= MIN_HEIGHT_WITH_THEN
-            && fitFont(dc, main, maxW - sideW - dotW, h * 0.5) <= MIN_FONT_WITH_EXTRAS;
-
-        // label and arrival only when the time can still be big; otherwise the time alone
-        var withExtras = fitFont(dc, main, withThen ? maxW - sideW - dotW : digitsW, h * 0.5);
-        if (h < 90 || withExtras > MIN_FONT_WITH_EXTRAS) {
-            drawTime(dc, w / 2, h / 2, f[fitFont(dc, main, digitsW, h * 0.95)], main, unit, timeColor, fg, dot);
-            return;
-        }
-
-        var bottomObscured = (obs & WatchUi.DataField.OBSCURE_BOTTOM) != 0;
-        var topY = h * ((obs & WatchUi.DataField.OBSCURE_TOP) != 0 ? 0.24 : 0.15);
-        var bottomY = h * (bottomObscured ? 0.76 : 0.85);
+        var arriveW = dc.getTextWidthInPixels(arriveSide, Graphics.FONT_XTINY) + 4;
+        var sideW = unitW > arriveW ? unitW : arriveW;
+        var grey = bg == Graphics.COLOR_BLACK ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_DK_GRAY;
+        var lineH = dc.getFontHeight(Graphics.FONT_XTINY);
         var label = "WPT ETA";
         var name = _name;
         if (eta != null) {
             label = (_usingProfile ? "P " : "~ ") + (name != null ? name : "WPT");
             label = fitText(dc, label, "", maxW);
         }
-        var arrive = eta == null ? "" : "@ " + WpUtil.formatClock(eta) + (learning ? " " + _learningWord : "");
-        if (!withThen) {
-            dc.drawText(w / 2, topY, Graphics.FONT_XTINY, label, center);
-        } else {
-            // top to bottom in the order you meet them: the minor point on the way (grey, its time
-            // from now), the main checkpoint and the time to it, then the next main checkpoints with
-            // their leg's moving time (+h:mm). The arrival is the big number's only.
-            var grey = bg == Graphics.COLOR_BLACK ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_DK_GRAY;
-            var hasVia = viaName != null && viaSec != null;
-            var botW = (bottomObscured ? w * 0.8 : maxW) - dotW;  // a round screen is still 0.8 wide this low
-            var then2Name = _then2Name;
-            var then2Sec = _then2Sec;
-            var lowY = h * (hasVia ? 0.74 : 0.67);
-            var lowW = (sidesObscured ? w * 0.84 : maxW) - dotW;  // a round screen is about 0.85 wide there
-            var lowerY = h * (bottomObscured ? 0.80 : 0.84);
-            if (hasVia) {
-                // near the top a round screen is only about 0.6 wide
-                drawLine(dc, w / 2, h * 0.13, fitText(dc, viaName as String, " " + _inWord + " " + WpUtil.etaHm(viaSec as Number), w * 0.6 - dotW),
-                    grey, dotColor(viaSec as Number, bg));
-                dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
-            }
-            dc.drawText(w / 2, hasVia ? h * 0.26 : topY, Graphics.FONT_XTINY, label, center);
-            drawTimeWithArrival(dc, w / 2, h * (hasVia ? 0.49 : 0.42), f[withExtras], main, unit, arriveSide, timeColor, fg, dot);
-            var lowFree = true;
-            var lowerFree = !hasVia;
-            if (thenName != null && thenSec != null) {
-                drawLine(dc, w / 2, lowY, fitText(dc, _thenWord + " " + thenName, " +" + WpUtil.etaHm(thenSec as Number), lowW),
-                    fg, dotColor(thenSec as Number, bg));
-                lowFree = false;
-                if (!hasVia && then2Name != null && then2Sec != null) {
-                    drawLine(dc, w / 2, lowerY, fitText(dc, _thenWord + " " + then2Name, " +" + WpUtil.etaHm(then2Sec as Number), botW),
-                        fg, dotColor(then2Sec as Number, bg));
-                    lowerFree = false;
-                }
-            }
-            // while learning, the word takes a free line (the grey digits say it anyway)
-            if (learning && (lowFree || lowerFree)) {
-                drawLine(dc, w / 2, lowFree ? lowY : lowerY, _learningWord, grey, null);
-            }
-            dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
+
+        // the list only on a field of its own (a data screen with one field); smaller fields get the countdown
+        var fullScreen = h >= System.getDeviceSettings().screenHeight * 0.75;
+        if (eta != null && fullScreen && h >= MIN_HEIGHT_WITH_THEN && (thenName != null || minorCount > 0)
+                && drawList(dc, w, h, f, main, unit, arriveSide, sideW, dotW, dot, timeColor, fg, bg, grey, lineH, label,
+                    learning, sidesObscured)) {
             return;
         }
-        drawTime(dc, w / 2, h * 0.5, f[withExtras], main, unit, timeColor, fg, dot);
-        if (eta != null) {
-            dc.drawText(w / 2, bottomY, Graphics.FONT_XTINY, arrive, center);
+
+        // label and arrival only when the time can still be big; otherwise the time alone
+        var withExtras = fitFont(dc, main, maxW - sideW - dotW, h * 0.6);
+        if (h < 90 || withExtras > MIN_FONT_WITH_EXTRAS) {
+            drawTime(dc, w / 2, h / 2, f[fitFont(dc, main, digitsW, h * 0.95)], main, unit, timeColor, fg, dot);
+            return;
         }
+        // the countdown: the main checkpoint, the time with its arrival, and the word while learning
+        var topY = h * ((obs & WatchUi.DataField.OBSCURE_TOP) != 0 ? 0.24 : 0.15);
+        var bottomY = h * ((obs & WatchUi.DataField.OBSCURE_BOTTOM) != 0 ? 0.76 : 0.85);
+        dc.drawText(w / 2, topY, Graphics.FONT_XTINY, label, center);
+        if (eta == null) {
+            drawTime(dc, w / 2, h * 0.55, f[withExtras], main, unit, timeColor, fg, null);
+            return;
+        }
+        drawTimeWithArrival(dc, w / 2, h * 0.55, f[withExtras], main, unit, arriveSide, timeColor, fg, dot);
+        if (learning) {
+            drawLine(dc, w / 2, bottomY, _learningWord, grey, null);
+        }
+    }
+
+    const MAX_MINOR_LINES = 3;
+
+    // A full-screen field, top to bottom in the order you meet them: the minor points on the way
+    // (grey, each with its time from now; the last line shown counts the others), the main
+    // checkpoint with the time to it and the arrival, then the next main checkpoints with their
+    // leg's moving time (+h:mm). Small screens get two of these lines, big ones four; minor points
+    // come first. Returns false when even the main checkpoint alone doesn't fit.
+    hidden function drawList(dc as Graphics.Dc, w as Number, h as Number, f as Array<Graphics.FontDefinition>,
+            main as String, unit as String, arriveSide as String, sideW as Number or Float, dotW as Float,
+            dot as Graphics.ColorType?, timeColor as Graphics.ColorType, fg as Graphics.ColorType,
+            bg as Graphics.ColorType, grey as Graphics.ColorType, lineH as Number, label as String,
+            learning as Boolean, round as Boolean) as Boolean {
+        var center = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
+        var budget = h >= 400 ? 4 : 2;
+        var minors = _minorNames.size();
+        var m = minors < budget ? minors : budget;
+        var thens = _thenName != null && _thenSec != null ? (_then2Name != null && _then2Sec != null ? 2 : 1) : 0;
+        var t = budget - m < thens ? budget - m : thens;
+        var note = learning && m + t < budget ? 1 : 0;
+        var maxW = w * (round ? 0.72 : 0.94);
+        while (true) {
+            var small = m + t + note;
+            // the number font's top and bottom padding may overlap the lines around it
+            var avail = (h * 0.86 - (small + 1) * lineH) / 0.75;
+            var fi = fitFont(dc, main, maxW - sideW - dotW, avail);
+            if (fi <= MIN_FONT_WITH_EXTRAS) {
+                var bigH = dc.getFontHeight(f[fi]) * 0.75;
+                var y = (h - (small + 1) * lineH - bigH) / 2.0 + lineH / 2.0;
+                for (var j = 0; j < m; j++) {
+                    var tail = " " + _inWord + " " + WpUtil.etaHm(_minorSecs[j]);
+                    if (j == m - 1 && _minorCount > m) {
+                        tail += " (+" + (_minorCount - m) + ")";
+                    }
+                    drawLine(dc, w / 2, y, fitText(dc, _minorNames[j], tail, chordW(w, h, y, round) - dotW / 2), grey,
+                        dotColor(_minorSecs[j], bg));
+                    y += lineH;
+                }
+                dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(w / 2, y, Graphics.FONT_XTINY, label, center);
+                y += lineH / 2.0 + bigH / 2.0;
+                drawTimeWithArrival(dc, w / 2, y, f[fi], main, unit, arriveSide, timeColor, fg, dot);
+                y += bigH / 2.0 + lineH / 2.0;
+                if (t > 0) {
+                    var ts = _thenSec as Number;
+                    drawLine(dc, w / 2, y, fitText(dc, _thenWord + " " + _thenName, " +" + WpUtil.etaHm(ts), chordW(w, h, y, round) - dotW / 2),
+                        fg, dotColor(ts, bg));
+                    y += lineH;
+                }
+                if (t > 1) {
+                    var ts2 = _then2Sec as Number;
+                    drawLine(dc, w / 2, y, fitText(dc, _thenWord + " " + _then2Name, " +" + WpUtil.etaHm(ts2), chordW(w, h, y, round) - dotW / 2),
+                        fg, dotColor(ts2, bg));
+                    y += lineH;
+                }
+                if (note > 0) {
+                    drawLine(dc, w / 2, y, _learningWord, grey, null);
+                }
+                dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
+                return true;
+            }
+            // not enough room: drop the learning word, then the "then" lines, then minor lines
+            if (note > 0) {
+                note = 0;
+            } else if (t > 0) {
+                t--;
+            } else if (m > 1) {
+                m--;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    // Width for a line centred at y: the chord of a round screen there, with a little margin
+    hidden function chordW(w as Number, h as Number, y as Number or Float, round as Boolean) as Float {
+        if (!round) {
+            return w * 0.94;
+        }
+        var r = w / 2.0;
+        var d = y - h / 2.0;
+        var c = r * r - d * d;
+        return c > 0 ? Math.sqrt(c).toFloat() * 2 * 0.9 : 0.0;
     }
 
     // Green, yellow or red for a time this far away (WpUtil.reliability), darker on white

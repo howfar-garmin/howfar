@@ -169,6 +169,7 @@ class ProfileMatcher:
         self.target_index: int | None = None  # its entry, None for a watch point the profile lacks
         self.target_dist = 0.0  # watch course metres to it
         self.via: int | None = None  # entry of the next minor point before it
+        self.vias: list[int] = []  # every minor point before it, in order
 
     # --- walking the profile: stretches of constant grade --------------------------------
 
@@ -286,13 +287,15 @@ class ProfileMatcher:
         assert self.loc is not None
         self.target_end, self.target_index = self.loc, self.current
         self.via = None
+        self.vias = []
         if self.own_points:
             main = next((i for i in range(len(self.entries)) if not self.minor[i] and self._end(i) > here + self.PASSED), None)
             # the watch's next point, when the profile doesn't know it, counts as main
             if main is not None and not (self.current is None and self.loc < self._end(main) - self.PASSED):
                 self.target_end, self.target_index = self._end(main), main
-            self.via = next((i for i in range(len(self.entries)) if self.minor[i]
-                             and here + self.PASSED < self._end(i) < self.target_end - self.PASSED), None)
+            self.vias = [i for i in range(len(self.entries)) if self.minor[i]
+                         and here + self.PASSED < self._end(i) < self.target_end - self.PASSED]
+            self.via = self.vias[0] if self.vias else None
         self.target_dist = max(0.0, (self.target_end - here) / r)
 
     def target_name(self, watch_name: str | None) -> str | None:
@@ -348,8 +351,13 @@ class ProfileMatcher:
 
     def via_time(self, estimator, scale: float) -> float:
         """Time from where you are to the next minor point (`via`)."""
-        assert self._here is not None and self.via is not None
-        return max(self._time_between(self._here, self._end(self.via), estimator, scale), 1.0)
+        assert self.via is not None
+        return self.minor_time(self.via, estimator, scale)
+
+    def minor_time(self, i: int, estimator, scale: float) -> float:
+        """Time from where you are to profile point i (a minor point on the way)."""
+        assert self._here is not None
+        return max(self._time_between(self._here, self._end(i), estimator, scale), 1.0)
 
     def following_name(self, i: int) -> str:
         name = self.entries[i][0]

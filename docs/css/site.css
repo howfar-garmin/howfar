@@ -224,7 +224,8 @@ section + section { border-top: 1px solid var(--line-soft); }
 /* full-screen field: the lines top to bottom in the order you meet the points */
 .screen.with-then { display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .screen.with-then > * { align-self: center; }
-.screen .w-minor { font: 500 7cqi/1.2 var(--font-body); color: var(--screen-ink-2); margin-bottom: 2.5cqi; max-width: 80%; font-variant-numeric: tabular-nums; }
+.screen .w-minor { font: 500 7cqi/1.2 var(--font-body); color: var(--screen-ink-2); margin-bottom: 1.2cqi; max-width: 80%; font-variant-numeric: tabular-nums; }
+.screen .w-minor:has(+ .w-label) { margin-bottom: 2.5cqi; }
 /* a line: dot, name (shortened when long), time (always shown) */
 .screen .w-minor, .screen .w-then { display: flex; align-items: center; justify-content: center; white-space: nowrap; }
 .screen .w-minor .nm, .screen .w-then .nm { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
@@ -242,6 +243,7 @@ section + section { border-top: 1px solid var(--line-soft); }
 .screen .dot.y { background: #f2b630; }
 .screen .dot.r { background: #ef5a4f; }
 .screen .w-then.note { color: var(--screen-ink-2); }
+.screen .w-then:empty { display: none; }
 .screen .w-then { min-height: 1.2em; margin-top: 2cqi; font: 500 7cqi/1.2 var(--font-body); color: var(--screen-ink); max-width: 100%; font-variant-numeric: tabular-nums; }
 .watch-caption { font-size: var(--step--1); color: var(--ink-3); text-align: center; max-width: 32ch; }
 

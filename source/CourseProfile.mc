@@ -30,6 +30,7 @@ class CourseProfile {
     var targetIndex as Number?;  // its entry, null for a watch point the profile lacks
     var targetDist as Float = 0.0;  // watch course metres to it
     var via as Number?;       // entry of the next minor point before it
+    var vias as Array<Number> = [] as Array<Number>;  // every minor point before it, in order
     var mismatched as Boolean = false;
     var ratio as Float?;
     var total as Float = 0.0;
@@ -120,6 +121,7 @@ class CourseProfile {
         targetIndex = null;
         targetDist = 0.0;
         via = null;
+        vias = [] as Array<Number>;
     }
 
     // --- walking the profile: stretches of constant grade
@@ -274,13 +276,17 @@ class CourseProfile {
                 break;
             }
         }
+        vias = [] as Array<Number>;
         for (var i = 0; i < _names.size(); i++) {
             var end = _starts[i] + _lengths[i];
-            if (_minor[i] && end > here + PASSED && end < (targetEnd as Float) - PASSED) {
-                via = i;
+            if (end >= (targetEnd as Float) - PASSED) {
                 break;
             }
+            if (_minor[i] && end > here + PASSED) {
+                vias.add(i);
+            }
         }
+        via = vias.size() > 0 ? vias[0] : null;
         var d = (targetEnd as Float - here) / r;
         targetDist = d > 0.0 ? d : 0.0;
     }
@@ -356,7 +362,11 @@ class CourseProfile {
 
     // Time from where you are to the next minor point (via)
     function viaTime(estimator as EtaEstimator, scale as Float) as Float {
-        var i = via as Number;
+        return minorTime(via as Number, estimator, scale);
+    }
+
+    // Time from where you are to profile point i (a minor point on the way)
+    function minorTime(i as Number, estimator as EtaEstimator, scale as Float) as Float {
         var t = timeBetween(_here as Float, _starts[i] + _lengths[i], estimator, scale);
         return t > 1.0 ? t : 1.0;
     }

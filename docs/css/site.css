@@ -345,6 +345,17 @@ table.results { border-collapse: collapse; width: 100%; min-width: 640px; font-s
 .watch.watch-small { width: min(240px, 66vw); }
 .callouts { margin: 0; padding-left: 1.3em; display: grid; gap: 14px; max-width: 62ch; }
 .callouts li::marker { font-family: var(--font-display); font-weight: 700; color: var(--accent); }
+/* "More": details folded in place, so the page reads in short lines */
+details.more { margin-top: 6px; }
+details.more > summary { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; list-style: none; font-size: var(--step--1); font-weight: 600; color: var(--accent); }
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::after { content: "▾"; font-size: 0.85em; transition: transform 0.15s; }
+details.more[open] > summary::after { transform: rotate(180deg); }
+details.more > :not(summary) { margin-top: 8px; }
+.callouts details.more p { color: var(--ink-2); font-size: var(--step--1); }
+.demo-howto { margin: 0; }
+.demo-howto + details.more { margin-bottom: 18px; }
+.callouts .co { margin: 0; }
 .pill { display: inline-block; min-width: 1.6em; text-align: center; font: 700 1em/1.35 var(--font-body); background: var(--screen); color: var(--screen-ink); border-radius: 6px; padding: 0 6px; margin: 0 2px; }
 
 .howto { margin: 0 0 28px; padding: 0; list-style: none; counter-reset: howto; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }

@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=56">
+<link rel="stylesheet" href="css/site.css?v=57">
 </head>
 <body>
 
@@ -64,10 +64,13 @@
           </div>
         </div>
         <ol class="callouts">
-          <li><b>The name: the next main checkpoint.</b> The name comes from your course, or from a point you added on the <a href="prepare.html">race prep page</a>, such as the top of a climb or a hut. The letter in front tells you how much the watch knows about the trail ahead: <span class="pill">P</span> it knows every climb and descent to the checkpoint (you gave it the course profile, see <a href="#prepare">Prepare a race</a>); <span class="pill">~</span> it only knows how far away and how much higher or lower the checkpoint is.</li>
-          <li><b>Big number: time to get there</b> while you keep moving, only as precisely as it can be known: hours and minutes in 30-minute steps from four hours out, 15-minute steps from two and 5-minute steps from one (<i>2:15 h</i>), whole minutes closer in (<i>42 min</i>), minutes and seconds in the last 5 minutes. A small dot before it says how far off it may be: <b>green</b> under 45 minutes to go, usually within 5 minutes; <b>yellow</b> up to 2 hours, usually within 15; <b>red</b> beyond, often half an hour or more. The other times on a field of its own have one too. For the first 4 km or so the number is grey and <i>(learning)</i> appears under it: it's only a rough guess, because HowFar is still learning how you're moving today. When it turns white, it has seen enough of your running. Time spent stopped at an aid station is not included, because nobody can guess how long you'll stay.</li>
-          <li><b>Arrival time.</b> The time of day you'll get there, small beside the number, in your watch's 12 or 24 hour format.</li>
-          <li><b>On a field of its own, only with the course profile: the points around it, top to bottom in the order you meet them.</b> Above the name, in grey, the minor points on the way, such as a climb top or a hut you added, each with its time from now (<i>Col de la Crosatie in 0:45</i>). When more come before the checkpoint than fit, the last line counts the others (<i>Lac du Fond in 1:05 (+2)</i>), and each one you pass makes room for the next. Below the number, the next main checkpoints, as many as fit (<i>then Valgrisenche +1:25</i>). A main checkpoint's time is its leg's moving time, from when you leave the checkpoint before it: how long you'll stop there can't be known, so add it yourself. You choose which points are main and which minor on the <a href="prepare.html">race prep page</a>. On a smaller field, such as half the screen, HowFar shows just the countdown: the main checkpoint, the time and the arrival. Put it on two data screens to have both. Your watch tells a data field only about the next checkpoint, so without the profile these extra lines stay empty.</li>
+          <li><p class="co"><b>The name of the next main checkpoint</b>, with <span class="pill">P</span> when HowFar knows every climb and descent to it, <span class="pill">~</span> when it only knows the height difference.</p>
+            <details class="more"><summary>More</summary><p>The name comes from your course, or from a point you added on the <a href="prepare.html">race prep page</a>, such as the top of a climb or a hut. You get <span class="pill">P</span> by giving HowFar the course profile (see <a href="#prepare">Prepare a race</a>).</p></details></li>
+          <li><p class="co"><b>The time to get there</b> while you keep moving, with a dot for how far off it may be.</p>
+            <details class="more"><summary>More</summary><p>Shown only as precisely as it can be known: hours and minutes in 30-minute steps from four hours out, 15-minute steps from two and 5-minute steps from one (<i>2:15 h</i>), whole minutes closer in (<i>42 min</i>), minutes and seconds in the last 5 minutes. The dot: <b>green</b> under 45 minutes to go, usually within 5 minutes; <b>yellow</b> up to 2 hours, usually within 15; <b>red</b> beyond, often half an hour or more. The other times on a field of its own have one too. For the first 4 km or so the number is grey and <i>(learning)</i> appears under it: it's only a rough guess, because HowFar is still learning how you're moving today. When it turns white, it has seen enough of your running. Time spent stopped at an aid station is not included, because nobody can guess how long you'll stay.</p></details></li>
+          <li><b>The arrival time</b>, small beside the number, in your watch's 12 or 24 hour format.</li>
+          <li><p class="co"><b>On a field of its own, with the course profile, the points around it</b> in the order you meet them: minor points on the way above the name, the next main checkpoints below the number.</p>
+            <details class="more"><summary>More</summary><p>Minor points, such as a climb top or a hut you added, show in grey with their time from now (<i>Col de la Crosatie in 0:45</i>). When more come before the checkpoint than fit, the last line counts the others (<i>Lac du Fond in 1:05 (+2)</i>), and each one you pass makes room for the next. A main checkpoint's time is its leg's moving time, from when you leave the checkpoint before it (<i>then Valgrisenche +1:25</i>): how long you'll stop there can't be known, so add it yourself. You choose which points are main and which minor on the <a href="prepare.html">race prep page</a>. On a smaller field, such as half the screen, HowFar shows just the countdown: the main checkpoint, the time and the arrival. Put it on two data screens to have both. Your watch tells a data field only about the next checkpoint, so without the profile these extra lines stay empty.</p></details></li>
         </ol>
       </div>
       <p class="small muted explain-note">Without a course, or between courses, the field shows <b>--</b>. On a screen with many fields it shows just the big number.</p>
@@ -82,11 +85,14 @@
         <p class="muted">Tor des Géants 2026 (TORX), section 1: Courmayeur to Valgrisenche, 48.5 km and 3,800 m of climbing, run in 13½ hours. The watch below shows what HowFar would have shown at every moment of that race, worked out from the recorded run.</p>
       </div>
 
+      <p class="muted demo-howto"><b>Press Play</b>, drag the slider to jump to any moment, and compare the lines on the “how far off” chart.</p>
+      <details class="more"><summary>How to use the demo</summary>
       <ol class="howto" aria-label="How to use the demo">
         <li><b>Press Play.</b> The race replays 300 times faster than real life: the whole 13½ hours in under 3 minutes. Use <b>60×</b> for a closer look or <b>900×</b> to rush through.</li>
         <li><b>Drag the slider</b> to jump to any moment, or click anywhere on the elevation chart.</li>
         <li><b>Compare</b> on the “how far off” chart below: HowFar with the course profile, HowFar without it, and the usual estimate, the distance left at your average pace so far.</li>
       </ol>
+      </details>
 
       <p class="muted demo-caption">Your first race with HowFar, with the course profile pasted in its settings: it knows every climb and descent to the checkpoint (P). It learns your pace on every slope from today's run as you go. Here Col d'Arp, Col Passo Alto, Col de la Crosatie and Lac du Fond are minor points, shown on the way.</p>
 
@@ -143,7 +149,9 @@
           <div class="legend" id="errLegend"></div>
         </div>
         <div class="chart-box" id="errBox"><svg id="err" class="wide" viewBox="0 0 1000 236" role="img" aria-label="How far off each prediction was during the race"></svg></div>
+        <details class="more"><summary>How to read this chart</summary>
         <p class="small muted">For every moment of the race: the time HowFar predicted (before the watch rounds it for display), minus the time it really took to reach the next checkpoint (stops left out). Above zero, you arrived earlier than the watch said; below zero, later. The green band is ±5 minutes. Notice how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead.</p>
+        </details>
       </div>
       <div class="demo-notes">
         <div class="learned" aria-live="off">
@@ -165,7 +173,8 @@
       <div class="cols-3">
         <div>
           <h3>Your pace on every slope</h3>
-          <p class="muted">Every 25 m it notes how steep the trail is and how fast you're going, from steep descents to steep climbs. Slopes you haven't met yet today it fills in from the nearest ones you have, the way pace usually changes with steepness. It needs no practice run: on your first race it adapts within the first few kilometres. What it remembers from earlier runs helps a little later in the race, and counts less and less as today's kilometres add up.</p>
+          <p class="muted">Every 25 m it notes how steep the trail is and how fast you're going, from steep descents to steep climbs.</p>
+          <details class="more"><summary>More</summary><p class="muted">Slopes you haven't met yet today it fills in from the nearest ones you have, the way pace usually changes with steepness. It needs no practice run: on your first race it adapts within the first few kilometres. What it remembers from earlier runs helps a little later in the race, and counts less and less as today's kilometres add up.</p></details>
         </div>
         <div>
           <h3>The trail ahead</h3>
@@ -173,7 +182,8 @@
         </div>
         <div>
           <h3>How your day is going</h3>
-          <p class="muted">It watches your last couple of kilometres: if you're slowing down, or picking up again, the time ahead follows. It also corrects for your watch measuring more distance than the course map: switchbacks and GPS wobble add about 15% on the Tor.</p>
+          <p class="muted">It watches your last couple of kilometres: if you're slowing down, or picking up again, the time ahead follows.</p>
+          <details class="more"><summary>More</summary><p class="muted">It also corrects for your watch measuring more distance than the course map: switchbacks and GPS wobble add about 15% on the Tor.</p></details>
         </div>
       </div>
     </div>
@@ -193,15 +203,17 @@
           <tbody></tbody>
         </table>
       </div>
+      <details class="more"><summary>About these numbers</summary>
       <ul class="small muted caveat column-notes">
-        <li><b>Race columns and Average:</b> how many minutes off the watch was, on average, whenever the next checkpoint was less than an hour away.</li>
+        <li><b>Race columns and Average:</b> how many minutes off HowFar was, on average, whenever the next checkpoint was less than an hour away.</li>
         <li><b>Less than 5 or 15 min off:</b> out of every 100 times the watch showed a time, how many were less than 5 (or 15) minutes off.</li>
-        <li><b>Off by, 2 km before:</b> how far off the watch was when you were 2 km from each checkpoint, the moment you often check whether to eat or drink now.</li>
+        <li><b>Off by, 2 km before:</b> how far off HowFar was when you were 2 km from each checkpoint, the moment you often check whether to eat or drink now.</li>
         <li>STL25's route had no checkpoints, so it was split into two stretches of 13 km.</li>
         <li>Abbots Way: the race's file has no checkpoints, so they were put where the runner stopped (mostly aid stations), with one more every 20 km where stops were far apart.</li>
         <li>Tor des Géants: the 2023 race replayed on the official 2026 course; the few legs where the route has changed since are left out of the score.</li>
         <li>TORX100: the 2025 race replayed on the official 2026 course, which it matches all the way. Almost every checkpoint is a col or a hut, so each leg is one climb or one descent: knowing the height difference is nearly enough, and the course profile adds little.</li>
       </ul>
+      </details>
       <details class="sources">
         <summary>What else was tried</summary>
         <p class="muted">The same races were used to test other ways of predicting: classic hiking rules (Naismith, Tobler), ITRA's km-effort, an energy-cost model of running uphill and downhill, a machine-learning model, a correction for slowing down with distance, carrying today's trend forward, a correction every few kilometres based on the last stretch, and a pace made from your past races and pasted before the start. None did better, so HowFar doesn't use them. The pasted pace helped in the first hours of races like the ones it was made from, and hurt when they were different; learning on the run catches up within a few kilometres anyway.</p>
@@ -283,6 +295,7 @@
         <article class="tool">
           <h3>The course profile</h3>
           <p class="muted small">So HowFar knows every climb and descent between checkpoints (the <span class="pill">P</span> on the watch). You make it from the race's course file, the same GPX you load on the watch. For a race in stages, like the Tor, make one per stage and paste the right one at each life base.</p>
+          <details class="more"><summary>See the course profile text</summary>
           <div class="string-box">
             <div class="chart-head"><span class="small muted" id="profileMeta">Course profile</span><button type="button" class="btn" data-copy="profileString">Copy</button></div>
             <pre id="profileString"></pre>
@@ -291,6 +304,7 @@
             <span class="small muted" id="decodeTitle">How to read it</span>
             <div class="decode" id="decode"></div>
           </div>
+          </details>
           <p class="muted small">Where to paste: Garmin Connect app → your watch → <b>Connect IQ apps</b> → <b>HowFar</b> → <b>Settings</b>. The watch picks it up at the next sync.</p>
         </article>
       </div>

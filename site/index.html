@@ -201,7 +201,7 @@
       </ul>
       <details class="sources">
         <summary>What else was tried</summary>
-        <p class="muted">The same races were used to test other ways of predicting: classic hiking rules (Naismith, Tobler), ITRA's km-effort, an energy-cost model of running uphill and downhill, a machine-learning model, a correction for slowing down with distance, and a correction every few kilometres based on the last stretch. None did better, so HowFar doesn't use them.</p>
+        <p class="muted">The same races were used to test other ways of predicting: classic hiking rules (Naismith, Tobler), ITRA's km-effort, an energy-cost model of running uphill and downhill, a machine-learning model, a correction for slowing down with distance, carrying today's trend forward, and a correction every few kilometres based on the last stretch. None did better, so HowFar doesn't use them.</p>
         <ul>
           <li>Minetti A.E. et al. (2002), <a href="https://iris.unibs.it/retrieve/ddc633e4-3c03-4e2e-e053-3705fe0a4c80/Minetti%20JAP%202002.pdf">Energy cost of walking and running at extreme uphill and downhill slopes</a>.</li>
           <li><a href="https://en.wikipedia.org/wiki/Naismith%27s_rule">Naismith's rule</a>, and Tobler's hiking function in <a href="https://www.biorxiv.org/content/10.1101/188417.full.pdf">a crowd-sourced revalidation</a>.</li>
@@ -275,6 +275,7 @@
         <article class="tool">
           <h3>Your pace from past races</h3>
           <p class="muted small">So HowFar knows how you climb and descend before the race starts. You make it from one or more of your past races: in Garmin Connect, open the activity, press the gear icon and choose <b>Export Original</b> (or <b>Export GPX</b>). Below: what it learned from the two Tor sections. Hover the chart to see your pace at each slope.</p>
+          <p class="muted small">It doesn't learn from past races how you slow down: in tests, neither a fixed slowdown curve nor carrying today's trend forward made predictions better. Instead, during the race HowFar watches your last couple of kilometres and adjusts the time if you're getting tired.</p>
           <div class="chart-box" id="modelBox"><svg id="model" viewBox="0 0 640 300" role="img" aria-label="Speed by slope learned from section 1 and section 2"></svg></div>
           <div class="string-box">
             <div class="chart-head"><span class="small muted">What you paste into the setting "Your pace from past races"</span><button type="button" class="btn" data-copy="modelString">Copy</button></div>

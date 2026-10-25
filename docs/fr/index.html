@@ -191,7 +191,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </ul>
 <details class="sources">
 <summary>Ce qui a été essayé d'autre</summary>
-<p class="muted">Les mêmes courses ont servi à tester d'autres façons de prévoir : les règles classiques de randonnée (Naismith, Tobler), le km-effort de l'ITRA, un modèle du coût énergétique de la course en montée et en descente, un modèle d'apprentissage automatique, une correction du ralentissement avec la distance et une correction tous les quelques kilomètres d'après le dernier tronçon. Aucune n'a fait mieux, donc HowFar ne les utilise pas.</p>
+<p class="muted">Les mêmes courses ont servi à tester d'autres façons de prévoir : les règles classiques de randonnée (Naismith, Tobler), le km-effort de l'ITRA, un modèle du coût énergétique de la course en montée et en descente, un modèle d'apprentissage automatique, une correction du ralentissement avec la distance, le prolongement de la tendance du jour et une correction tous les quelques kilomètres d'après le dernier tronçon. Aucune n'a fait mieux, donc HowFar ne les utilise pas.</p>
 <ul>
 <li>Minetti A.E. et al. (2002), <a href="https://iris.unibs.it/retrieve/ddc633e4-3c03-4e2e-e053-3705fe0a4c80/Minetti%20JAP%202002.pdf">Energy cost of walking and running at extreme uphill and downhill slopes</a>.</li>
 <li>La <a href="https://en.wikipedia.org/wiki/Naismith%27s_rule">règle de Naismith</a>, et la fonction de Tobler dans <a href="https://www.biorxiv.org/content/10.1101/188417.full.pdf">une nouvelle validation participative</a>.</li>
@@ -263,6 +263,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <article class="tool">
 <h3>Ton allure tirée de tes courses passées</h3>
 <p class="muted small">Pour que HowFar sache comment tu montes et tu descends avant même le départ. Tu la crées à partir d'une ou plusieurs de tes courses passées : dans Garmin Connect, ouvre l'activité, appuie sur l'icône d'engrenage et choisis <b>Exporter l'original</b> (ou <b>Exporter au format GPX</b>). Ci-dessous : ce qu'il a appris des deux sections du Tor. Survole le graphique pour voir ton allure sur chaque pente.</p>
+<p class="muted small">Il n'apprend pas de tes courses passées comment tu ralentis : lors des tests, ni une courbe de ralentissement fixe ni le prolongement de la tendance du jour n'ont amélioré les prévisions. À la place, pendant la course, HowFar surveille tes deux derniers kilomètres et corrige le temps si tu fatigues.</p>
 <div class="chart-box" id="modelBox"><svg aria-label="Speed by slope learned from section 1 and section 2" id="model" role="img" viewbox="0 0 640 300"></svg></div>
 <div class="string-box">
 <div class="chart-head"><span class="small muted">Ce que tu colles dans le réglage « Ton allure tirée de tes courses passées »</span><button class="btn" data-copy="modelString" type="button">Copier</button></div>

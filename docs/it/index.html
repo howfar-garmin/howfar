@@ -191,7 +191,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </ul>
 <details class="sources">
 <summary>Cos'altro è stato provato</summary>
-<p class="muted">Le stesse gare sono servite a provare altri modi di prevedere: le classiche regole escursionistiche (Naismith, Tobler), il km-sforzo ITRA, un modello del costo energetico della corsa in salita e in discesa, un modello di machine learning, una correzione per il rallentamento con la distanza e una correzione ogni pochi chilometri basata sull'ultimo tratto. Nessuno ha fatto meglio, quindi HowFar non li usa.</p>
+<p class="muted">Le stesse gare sono servite a provare altri modi di prevedere: le classiche regole escursionistiche (Naismith, Tobler), il km-sforzo ITRA, un modello del costo energetico della corsa in salita e in discesa, un modello di machine learning, una correzione per il rallentamento con la distanza, il prolungamento della tendenza della giornata e una correzione ogni pochi chilometri basata sull'ultimo tratto. Nessuno ha fatto meglio, quindi HowFar non li usa.</p>
 <ul>
 <li>Minetti A.E. et al. (2002), <a href="https://iris.unibs.it/retrieve/ddc633e4-3c03-4e2e-e053-3705fe0a4c80/Minetti%20JAP%202002.pdf">Energy cost of walking and running at extreme uphill and downhill slopes</a>.</li>
 <li>La <a href="https://en.wikipedia.org/wiki/Naismith%27s_rule">regola di Naismith</a>, e la funzione di Tobler in <a href="https://www.biorxiv.org/content/10.1101/188417.full.pdf">una nuova verifica su dati raccolti in massa</a>.</li>
@@ -263,6 +263,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <article class="tool">
 <h3>Il tuo passo dalle gare passate</h3>
 <p class="muted small">Così HowFar sa come sali e scendi già prima della partenza. Lo ricavi da una o più delle tue gare passate: in Garmin Connect apri l'attività, premi l'icona a ingranaggio e scegli <b>Esporta originale</b> (o <b>Esporta in GPX</b>). Qui sotto: cosa ha imparato dalle due sezioni del Tor. Passa sul grafico per vedere il tuo passo a ogni pendenza.</p>
+<p class="muted small">Dalle gare passate non impara come rallenti: nei test, né una curva fissa di rallentamento né il prolungare la tendenza della giornata hanno migliorato le previsioni. Invece, durante la gara HowFar osserva i tuoi ultimi due chilometri e corregge il tempo se ti stai stancando.</p>
 <div class="chart-box" id="modelBox"><svg aria-label="Speed by slope learned from section 1 and section 2" id="model" role="img" viewbox="0 0 640 300"></svg></div>
 <div class="string-box">
 <div class="chart-head"><span class="small muted">Cosa incolli nell'impostazione «Il tuo passo dalle gare passate»</span><button class="btn" data-copy="modelString" type="button">Copia</button></div>

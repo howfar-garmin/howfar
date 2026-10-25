@@ -191,7 +191,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </ul>
 <details class="sources">
 <summary>Was sonst noch ausprobiert wurde</summary>
-<p class="muted">Dieselben Rennen dienten dazu, andere Vorhersagemethoden zu testen: klassische Wanderregeln (Naismith, Tobler), die km-effort der ITRA, ein Modell der Energiekosten beim Laufen bergauf und bergab, ein Machine-Learning-Modell, eine Korrektur für das Langsamerwerden mit der Distanz und eine Korrektur alle paar Kilometer anhand des letzten Abschnitts. Keine war besser, deshalb verwendet HowFar sie nicht.</p>
+<p class="muted">Dieselben Rennen dienten dazu, andere Vorhersagemethoden zu testen: klassische Wanderregeln (Naismith, Tobler), die km-effort der ITRA, ein Modell der Energiekosten beim Laufen bergauf und bergab, ein Machine-Learning-Modell, eine Korrektur für das Langsamerwerden mit der Distanz, das Fortschreiben des heutigen Trends und eine Korrektur alle paar Kilometer anhand des letzten Abschnitts. Keine war besser, deshalb verwendet HowFar sie nicht.</p>
 <ul>
 <li>Minetti A.E. et al. (2002), <a href="https://iris.unibs.it/retrieve/ddc633e4-3c03-4e2e-e053-3705fe0a4c80/Minetti%20JAP%202002.pdf">Energy cost of walking and running at extreme uphill and downhill slopes</a>.</li>
 <li>Die <a href="https://en.wikipedia.org/wiki/Naismith%27s_rule">Naismith-Regel</a> und Toblers Wanderfunktion in <a href="https://www.biorxiv.org/content/10.1101/188417.full.pdf">einer Neubewertung mit Crowdsourcing-Daten</a>.</li>
@@ -263,6 +263,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <article class="tool">
 <h3>Dein Tempo aus früheren Rennen</h3>
 <p class="muted small">Damit HowFar schon vor dem Start weiß, wie du bergauf und bergab läufst. Du erstellst es aus einem oder mehreren deiner früheren Rennen: Öffne in Garmin Connect die Aktivität, klick auf das Zahnrad-Symbol und wähle <b>Original exportieren</b> (oder <b>In GPX exportieren</b>). Unten: was es aus den beiden Tor-Abschnitten gelernt hat. Fahr mit der Maus über das Diagramm, um dein Tempo auf jeder Steigung zu sehen.</p>
+<p class="muted small">Aus früheren Rennen lernt es nicht, wie du langsamer wirst: In Tests haben weder eine feste Verlangsamungskurve noch das Fortschreiben des heutigen Trends die Vorhersagen verbessert. Stattdessen beobachtet HowFar im Rennen deine letzten zwei Kilometer und passt die Zeit an, wenn du müde wirst.</p>
 <div class="chart-box" id="modelBox"><svg aria-label="Speed by slope learned from section 1 and section 2" id="model" role="img" viewbox="0 0 640 300"></svg></div>
 <div class="string-box">
 <div class="chart-head"><span class="small muted">Was du in die Einstellung „Dein Tempo aus früheren Rennen“ einfügst</span><button class="btn" data-copy="modelString" type="button">Kopieren</button></div>

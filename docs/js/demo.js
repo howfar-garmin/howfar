@@ -119,15 +119,26 @@
   // the dot before each time on the watch: green under 45 minutes to go, yellow to 2 hours,
   // red beyond (WpUtil.reliability)
   function dotClass(s) { return s < 2700 ? "g" : s < 7200 ? "y" : "r"; }
+  // line: [name part, time part, seconds for the dot]; like the watch, a long name is shortened
+  // and the time always shows
   function setLine(node, line) {
     node.replaceChildren();
     if (!line) return;
-    if (line[1] != null) {
+    if (line[2] != null) {
       var d = document.createElement("span");
-      d.className = "dot " + dotClass(line[1]);
+      d.className = "dot " + dotClass(line[2]);
       node.appendChild(d);
     }
-    node.appendChild(document.createTextNode(line[0]));
+    var nm = document.createElement("span");
+    nm.className = "nm";
+    nm.textContent = line[0];
+    node.appendChild(nm);
+    if (line[1]) {
+      var tl = document.createElement("span");
+      tl.className = "tl";
+      tl.textContent = line[1];
+      node.appendChild(tl);
+    }
   }
 
   // ---------- watch + readout
@@ -146,11 +157,11 @@
     // (grey, its time from now), the main checkpoint, then the next main ones with their leg's
     // moving time from leaving the checkpoint before (+h:mm: stops there can't be known);
     // "(learning)" in a free line
-    var leg = function (j, from) { var s = timeTo(f, j) - timeTo(f, from); return [_t("then") + " " + WP[j].name + " +" + etaHm(s), s]; };
-    setLine($("wMinor"), pts.via != null ? [WP[pts.via].name + " " + _t("in") + " " + etaHm(timeTo(f, pts.via)), timeTo(f, pts.via)] : null);
+    var leg = function (j, from) { var s = timeTo(f, j) - timeTo(f, from); return [_t("then") + " " + WP[j].name, "+" + etaHm(s), s]; };
+    setLine($("wMinor"), pts.via != null ? [WP[pts.via].name, _t("in") + " " + etaHm(timeTo(f, pts.via)), timeTo(f, pts.via)] : null);
     var one = pts.then != null ? leg(pts.then, pts.main) : null;
     var two = pts.via == null && pts.then2 != null ? leg(pts.then2, pts.then) : null;
-    var note = learning ? [_t("(learning)"), null] : null;
+    var note = learning ? [_t("(learning)"), "", null] : null;
     setLine($("wThen1"), one || note);
     $("wThen1").classList.toggle("note", !one);
     setLine($("wThen2"), one && pts.via == null ? (two || note) : null);

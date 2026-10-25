@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=14">
+<link rel="stylesheet" href="css/site.css?v=15">
 </head>
 <body>
 
@@ -60,6 +60,7 @@
           <p class="status" id="paceStatus" role="status" aria-live="polite"></p>
 
           <div id="paceResult" hidden>
+            <p class="small muted" id="coursePickNote" hidden>Untick a checkpoint that isn't part of this race: the text below updates.</p>
             <div class="table-wrap">
               <table class="results prep-table">
                 <thead><tr><th scope="col">Activity</th><th scope="col" class="num">Date</th><th scope="col" class="num">Distance</th><th scope="col" class="num">Climb</th><th scope="col" class="num">Moving time</th><th scope="col"><span class="sr-only">Remove</span></th></tr></thead>
@@ -174,6 +175,7 @@
             <ol class="steps">
               <li>From the <b>race website</b>: most races publish the official GPX, often per stage.</li>
               <li>From <b>Garmin Connect</b>: open the course, then <b>Export</b> as GPX or FIT.</li>
+              <li>Even better: once the course is in Garmin Connect, <b>export it again as FIT</b>. That file has exactly the checkpoints your watch will show, so nothing has to be guessed.</li>
               <li>Best is the <b>same file</b> you load on the watch. If the two list different checkpoints, or one is a slightly different version of the course, HowFar? still works out where each checkpoint is on the profile.</li>
             </ol>
           </details>
@@ -235,6 +237,6 @@
   </div>
 </footer>
 
-<script type="module" src="js/prepare.js?v=2"></script>
+<script type="module" src="js/prepare.js?v=3"></script>
 </body>
 </html>

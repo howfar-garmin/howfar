@@ -167,6 +167,7 @@ export function readFitMessages(messages) {
 export function courseFrom(parsed, maxOffset = MAX_WAYPOINT_OFFSET) {
   const cps = parsed.coursePoints.slice();
   const skipped = [];
+  const otherFinishes = []; // also in skipped; with their place, for the race prep page
   const pts = parsed.points;
   const length = pts.length ? pts[pts.length - 1].dist : 0;
   for (const w of parsed.waypoints) {
@@ -174,13 +175,16 @@ export function courseFrom(parsed, maxOffset = MAX_WAYPOINT_OFFSET) {
     if (offset <= maxOffset && FINISH_WORDS.test(w.name) && dist < length - 1000) {
       const end = pts[pts.length - 1];
       if (end.lat != null && haversine(w.lat, w.lon, end.lat, end.lon) <= maxOffset) dist = length;
-      else offset = Infinity;
+      else {
+        otherFinishes.push({ name: w.name, dist });
+        offset = Infinity;
+      }
     }
     if (offset <= maxOffset) cps.push({ name: w.name, dist });
     else skipped.push(w.name);
   }
   cps.sort((a, b) => a.dist - b.dist); // stable, like Python's sort
-  return { points: parsed.points, coursePoints: cps, skipped };
+  return { points: parsed.points, coursePoints: cps, skipped, otherFinishes };
 }
 
 // ---------------------------------------------------------------- pace model

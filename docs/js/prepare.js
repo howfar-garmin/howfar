@@ -1,6 +1,6 @@
 // HowFar? race prep page: pace from past activities, course profile, library. Everything runs
 // in the browser; files are never uploaded. The calculations are in howfar-core.js.
-import * as core from "./howfar-core.js?v=3";
+import * as core from "./howfar-core.js?v=4";
 
 const FIT_SDK = "https://cdn.jsdelivr.net/npm/@garmin/fitsdk@21.217.0/+esm";
 const JSZIP = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
@@ -279,7 +279,8 @@ dropZone($("paceDrop"), $("paceFiles"), addPaceFiles);
 
 // ---------------------------------------------------------------- step 2: course
 
-const course = { id: null, name: "", file: "", parsed: null, view: null };
+// candidates: every checkpoint found on the course, { name, dist, on }; unticked ones are left out
+const course = { id: null, name: "", file: "", parsed: null, view: null, candidates: null, offTrack: 0 };
 
 function courseView(points, coursePoints, maxLen) {
   const { step, text, entries } = core.bestProfile(points, coursePoints, maxLen);
@@ -306,10 +307,26 @@ function renderCourse() {
   const real = v.checkpoints.filter((c) => !c.finish);
   $("courseSummary").innerHTML = `<b>${esc(course.file)}</b>: ${km(v.length)}, ${num(v.up)} m of climbing, ${real.length} checkpoint${real.length === 1 ? "" : "s"}.`;
   drawCourse(v.profile, v.checkpoints);
-  $("courseRows").innerHTML = v.checkpoints.map((c) => `<tr><td>${esc(c.name)}</td><td class="num">${(c.d / 1000).toFixed(1)}</td><td class="num">${km(c.seg)}</td><td class="num">${num(c.climb)} m</td></tr>`).join("");
+  const row = (c, pick) => `<tr><td>${pick}${esc(c.name)}${pick ? "</label>" : ""}</td><td class="num">${(c.d / 1000).toFixed(1)}</td><td class="num">${km(c.seg)}</td><td class="num">${num(c.climb)} m</td></tr>`;
+  const cands = course.parsed && course.candidates;
+  $("coursePickNote").hidden = !cands || !cands.length;
+  if (cands) {
+    // kept candidates and the profile's checkpoints are in the same order
+    let k = 0;
+    $("courseRows").innerHTML = cands.map((c, i) => {
+      const box = `<label class="cp-pick"><input type="checkbox" data-cp="${i}"${c.on ? " checked" : ""}>`;
+      if (c.on) return row(real[k++], box);
+      return `<tr class="off"><td>${box}${esc(c.name)}</label></td><td class="num">${(c.dist / 1000).toFixed(1)}</td><td class="num">–</td><td class="num">–</td></tr>`;
+    }).join("") + v.checkpoints.filter((c) => c.finish).map((c) => row(c, "")).join("");
+  } else {
+    $("courseRows").innerHTML = v.checkpoints.map((c) => row(c, "")).join("");
+  }
   const warn = [];
   if (!real.length) warn.push("This course has no checkpoints, so HowFar? will only count down to the finish. If the race publishes a file with checkpoints, use that one.");
-  if (course.skipped && course.skipped.length) warn.push(`${course.skipped.length} checkpoint${course.skipped.length === 1 ? " was" : "s were"} left out because ${course.skipped.length === 1 ? "it isn't" : "they aren't"} on this course (race files often list the whole race's, and another race's finish the course passes by).`);
+  const offTrack = course.parsed ? course.offTrack : (course.skipped || []).length;
+  if (offTrack) warn.push(`${offTrack} checkpoint${offTrack === 1 ? " was" : "s were"} left out because ${offTrack === 1 ? "it isn't" : "they aren't"} on this course's track (race files often list the whole race's).`);
+  const finishes = (cands || []).filter((c) => c.finish && !c.on);
+  if (finishes.length) warn.push(`Unticked: ${finishes.map((c) => "“" + c.name + "”").join(", ")}, a finish line the course passes by but doesn't end at, probably another race's. Tick it if it's a checkpoint of this race.`);
   $("courseWarn").hidden = !warn.length;
   $("courseWarn").textContent = warn.join(" ");
   $("courseMeta").innerHTML = `The text for the setting <b>“Course profile”</b> · one slope every ${v.step} m · ${num(v.text.length)} characters`;
@@ -320,10 +337,25 @@ function renderCourse() {
 function recomputeCourse() {
   if (!course.parsed) return;
   const c = core.courseFrom(course.parsed);
-  course.skipped = c.skipped;
-  course.view = courseView(c.points, c.coursePoints, Number($("courseMax").value));
+  if (!course.candidates) {
+    course.candidates = c.coursePoints.map((p) => ({ name: p.name, dist: p.dist, on: true }))
+      .concat(c.otherFinishes.map((p) => ({ name: p.name, dist: p.dist, on: false, finish: true })))
+      .sort((a, b) => a.dist - b.dist);
+  }
+  course.offTrack = c.skipped.length - c.otherFinishes.length;
+  course.skipped = c.skipped.filter((n) => !course.candidates.some((p) => p.name === n && p.on));
+  const picked = course.candidates.filter((p) => p.on).map((p) => ({ name: p.name, dist: p.dist }));
+  course.view = courseView(c.points, picked, Number($("courseMax").value));
   renderCourse();
 }
+
+$("courseRows").addEventListener("change", (e) => {
+  const i = e.target.dataset && e.target.dataset.cp;
+  if (i == null || !course.candidates) return;
+  course.candidates[Number(i)].on = e.target.checked;
+  $("courseSaved").textContent = "";
+  recomputeCourse();
+});
 
 async function addCourseFile(fileList) {
   const st = $("courseStatus");
@@ -335,7 +367,7 @@ async function addCourseFile(fileList) {
     await new Promise((r) => setTimeout(r, 0));
     const parsed = await parse(f);
     if (!parsed.points.some((p) => p.alt != null)) throw new Error(`${f.name} has no elevation data, so no profile can be made from it.`);
-    Object.assign(course, { id: null, name: baseName(f.name), file: f.name, parsed });
+    Object.assign(course, { id: null, name: baseName(f.name), file: f.name, parsed, candidates: null });
     $("courseSaved").textContent = "";
     recomputeCourse();
     status(st, "");
@@ -409,7 +441,7 @@ $("library").addEventListener("click", (e) => {
   } else {
     Object.assign(course, { id: item.id, name: item.name, file: item.file, parsed: null, skipped: item.skipped,
       view: { step: item.step, text: item.text, profile: item.profile, checkpoints: item.checkpoints, length: item.length, up: item.up } });
-    $("courseSaved").textContent = "Opened from your library. To change the detail level, add the course file again.";
+    $("courseSaved").textContent = "Opened from your library. To change the checkpoints or the detail level, add the course file again.";
     renderCourse();
     $("course").scrollIntoView({ behavior: "smooth" });
   }

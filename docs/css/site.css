@@ -372,3 +372,9 @@ table.results { border-collapse: collapse; width: 100%; min-width: 640px; font-s
 .backup { margin-top: 24px; }
 label.btn { cursor: pointer; }
 .prep-cta { margin-top: 18px; }
+
+/* race prep: choosing checkpoints */
+.cp-pick { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.cp-pick input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+.prep-table tr.off td { color: var(--ink-3); }
+.prep-table tr.off .cp-pick { text-decoration: line-through; }

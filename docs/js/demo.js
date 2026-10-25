@@ -159,11 +159,11 @@
       ? _t("<b>Distance:</b> your watch measures <b>{pct} more</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.", { pct: pct(sc) })
       : _t("<b>Distance:</b> your watch measures <b>{pct} less</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.", { pct: pct(sc) });
     var perKm = function (v) { var p = Math.round(1000 / v); return Math.floor(p / 60) + ":" + pad(p % 60); };
-    $("lForm").innerHTML = _t("<b>Your pace today:</b> {flat}/km on the flat, {up}/km up a 20% slope, {down}/km down one.",
+    $("lForm").innerHTML = _t("{flat}/km on the flat, {up}/km up a 20% slope, {down}/km down one.",
       { flat: perKm(f[FLAT]), up: perKm(f[UP]), down: perKm(f[DOWN]) });
-    $("lFatigue").innerHTML = Math.abs(fa - 1) < 0.01 ? _t("<b>Last couple of km:</b> on the pace it expected.")
-      : fa > 1 ? _t("<b>Last couple of km:</b> <b>{pct} faster</b> than it expected.", { pct: pct(fa) })
-      : _t("<b>Last couple of km:</b> <b>{pct} slower</b> than it expected.", { pct: pct(fa) });
+    $("lFatigue").innerHTML = Math.abs(fa - 1) < 0.01 ? _t("On the pace it expected.")
+      : fa > 1 ? _t("<b>{pct} faster</b> than it expected.", { pct: pct(fa) })
+      : _t("<b>{pct} slower</b> than it expected.", { pct: pct(fa) });
 
     $("scrub").value = Math.round(((f[T] - tStart) / (tEnd - tStart)) * 1000);
     moveCursors(f);

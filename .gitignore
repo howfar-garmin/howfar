@@ -12,4 +12,5 @@ tools/research/results*.json
 .DS_Store
 .claude/
 web-tests/*.fit
-web-tests/
+web-tests/private-expected.json
+docs/_test/

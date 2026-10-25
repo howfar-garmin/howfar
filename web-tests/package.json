@@ -1,0 +1,13 @@
+{
+  "name": "howfar-web-tests",
+  "private": true,
+  "type": "module",
+  "description": "Tests for docs/js/howfar.js (the in-browser version of tools/wpeta). Run: npm test",
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@garmin/fitsdk": "21.217.0",
+    "@xmldom/xmldom": "0.8.10"
+  }
+}

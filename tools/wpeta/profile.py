@@ -115,48 +115,169 @@ def names_match(a: str, b: str) -> bool:
 
 
 class ProfileMatcher:
-    """Follows the watch's next course point through the profile entries (mirror of CourseProfile.mc)."""
+    """Puts the watch's next course point on the profile (mirror of CourseProfile.mc).
+
+    Every next point gets a place on the profile, `loc` (metres from the profile's start), and
+    the time to it is the profile's stretch that ends there and is distanceToNextPoint long:
+    - a point the profile knows by name: the end of its entry;
+    - a point it doesn't know: where you are plus distanceToNextPoint, where you are being the
+      profile's length minus distanceToDestination.
+    The watch's course may be another version of the course, a bit longer or shorter, so the
+    watch's distances are converted with `ratio` (profile metres per watch course metre),
+    learned at each point the profile knows from how far both say the finish is.
+    """
+
+    SLACK = 100.0  # m: a stretch may start this far before the profile's start
+    MIN_RATIO_DIST = 2000.0  # m to the finish below which the ratio isn't updated any more
+    RATIO_LO = 0.8
+    RATIO_HI = 1.25
 
     def __init__(self, step: int, entries: list[tuple[str, int, list[int]]]) -> None:
         self.step = step
-        self.entries = entries
+        self.entries = [(n, length, g or [0]) for n, length, g in entries]
+        self.starts: list[float] = []
+        d = 0.0
+        for _, length, _ in self.entries:
+            self.starts.append(d)
+            d += length
+        self.total = d
         self.reset()
 
     def reset(self) -> None:
         self._pointer = 0
-        self.current: int | None = None
+        self.current: int | None = None  # entry of a point known by name
+        self.loc: float | None = None
         self.mismatched = False
+        self.ratio: float | None = None
         self._last_name: str | None = None
         self._last_dist = 0.0
+        self._here: float | None = None  # where you were at the last update with a located point
+        self._here_watch: float | None = None  # and the watch's distance then
 
-    def _find(self, name: str | None, dist_next: float, dist_dest: float | None) -> int | None:
+    # --- walking the profile: stretches of constant grade --------------------------------
+
+    def _seek(self, a: float) -> None:
+        i = 0
+        while i + 1 < len(self.starts) and self.starts[i + 1] <= a:
+            i += 1
+        self._ci = i
+        self._ck = max(0, min(int((a - self.starts[i]) // self.step), len(self.entries[i][2]) - 1))
+        self._ca = a
+
+    def _next(self, b: float) -> tuple[float, float]:
+        """Length and grade (%) of the next stretch of constant grade, ending at b at most."""
+        while self._ci < len(self.entries) and self._ca < b:
+            _, length, grades = self.entries[self._ci]
+            last = len(grades) - 1
+            start = self.starts[self._ci]
+            end = start + length if self._ck >= last else start + (self._ck + 1) * self.step
+            grade = grades[self._ck] / 10.0
+            hi = min(end, b)
+            if hi >= end:
+                if self._ck >= last:
+                    self._ci += 1
+                    self._ck = 0
+                else:
+                    self._ck += 1
+            if hi > self._ca:
+                use = hi - self._ca
+                self._ca = hi
+                return use, grade
+        return 0.0, 0.0
+
+    # --- following the next point ----------------------------------------------------------
+
+    def _position(self, dist_dest: float | None, watch_dist: float | None, scale: float) -> float | None:
+        r = self.ratio if self.ratio is not None else 1.0
+        if dist_dest is not None:
+            return max(0.0, self.total - dist_dest * r)
+        if self._here is None:
+            return None
+        p = self._here
+        if watch_dist is not None and self._here_watch is not None:
+            p += (watch_dist - self._here_watch) / scale * r
+        return p
+
+    def _find(self, name: str | None, dist_next: float, dist_dest: float | None, here: float | None) -> int | None:
+        """The entry of the next point: the first one ahead with this name whose stretch fits
+        where you are; or the finish."""
+        r = self.ratio if self.ratio is not None else 1.0
         if name is not None:
             for i in range(self._pointer, len(self.entries)):
-                if self.entries[i][0] != FINISH_NAME and names_match(self.entries[i][0], name):
-                    return i
+                n = self.entries[i][0]
+                if n != FINISH_NAME and names_match(n, name):
+                    start = self.starts[i] + self.entries[i][1] - dist_next * r
+                    if start < -self.SLACK:
+                        self.mismatched = True
+                    elif here is None or abs(start - here) <= 500 + 0.2 * dist_next:
+                        return i
         if dist_dest is not None and abs(dist_dest - dist_next) < 30:
             last = len(self.entries) - 1
             if last >= self._pointer and self.entries[last][0] == FINISH_NAME:
                 return last
         return None
 
-    def update(self, name: str | None, dist_next: float, dist_dest: float | None) -> bool:
-        """Returns True when a profile segment is active for the current next point."""
+    def update(
+        self,
+        name: str | None,
+        dist_next: float,
+        dist_dest: float | None,
+        watch_dist: float | None = None,
+        scale: float = 1.0,
+    ) -> bool:
+        """Returns True when the next point has a place on the profile."""
+        if self.ratio is None and dist_dest is not None and dist_dest > 0:
+            # first guess: you start at the start of both courses
+            r = self.total / (dist_dest + (watch_dist or 0.0) / scale)
+            self.ratio = r if 0.85 <= r <= 1.15 else 1.0
         changed = name != self._last_name or dist_next > self._last_dist + 50
         self._last_name = name
         self._last_dist = dist_next
         if changed:
             self.current = None
+            self.loc = None
             self.mismatched = False
-            idx = self._find(name, dist_next, dist_dest)
+            here = self._position(dist_dest, watch_dist, scale)
+            idx = self._find(name, dist_next, dist_dest, here if self._here is not None else None)
             if idx is not None:
-                if dist_next > self.entries[idx][1] * 1.1 + 50:
+                self.mismatched = False
+                self.current = idx
+                self.loc = self.starts[idx] + self.entries[idx][1]
+                self._pointer = idx + 1
+            elif here is not None:
+                x = here + dist_next * (self.ratio or 1.0)
+                if x > self.total + self.SLACK:
                     self.mismatched = True
                 else:
-                    self.current = idx
-                    self._pointer = idx + 1
-        return self.current is not None
+                    self.loc = min(x, self.total)
+        if self.loc is None:
+            return False
+        r = self.ratio or 1.0
+        if self.current is not None and dist_dest is not None:
+            left = self.total - self.loc  # profile metres from the point to the finish
+            if left > self.MIN_RATIO_DIST and dist_dest - dist_next > self.MIN_RATIO_DIST:
+                r = clamp(left / (dist_dest - dist_next), self.RATIO_LO, self.RATIO_HI)
+                self.ratio = r
+        self._here = self.loc - dist_next * r
+        self._here_watch = watch_dist
+        return True
 
-    def entry(self) -> tuple[str, int, list[int]]:
-        assert self.current is not None
-        return self.entries[self.current]
+    def remaining_time(self, dist_next: float, estimator, scale: float) -> float:
+        """Time over the profile's stretch ending at loc, dist_next watch course metres long."""
+        assert self.loc is not None
+        r = self.ratio or 1.0
+        a, b = self.loc - dist_next * r, self.loc
+        before = max(0.0, -a)
+        t = 0.0
+        self._seek(max(0.0, a))
+        first = None
+        while True:
+            use, g = self._next(b)
+            if use <= 0:
+                break
+            if first is None:
+                first = g
+            t += estimator.time_for_grade(use / r, g * r, scale)
+        if before > 0:
+            t += estimator.time_for_grade(before / r, (first or 0.0) * r, scale)
+        return max(t, 1.0)

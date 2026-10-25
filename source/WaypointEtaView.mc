@@ -91,7 +91,7 @@ class WaypointEtaView extends WatchUi.DataField {
 
         var raw;
         var profile = _profile;
-        if (profile != null && profile.update(name, distNext, distDest)) {
+        if (profile != null && profile.update(name, distNext, distDest, dist, scale)) {
             raw = profile.remainingTime(distNext, _estimator, scale);
             _usingProfile = true;
         } else {

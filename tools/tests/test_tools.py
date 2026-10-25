@@ -156,16 +156,19 @@ def test_commit_run_decays_stored():
     assert m.run.total_weight() == 0
 
 
-def test_time_for_tail():
+def test_profile_time_to_point():
     m = SpeedGradeModel()
     m.imported.add(bin_index(0), 3.0, 30)
     m.imported.add(bin_index(10), 2.0, 30)
     est = EtaEstimator(m)
     # segment 230 m: chunks 100, 100, 30 (the 30 m chunk is next to the waypoint)
-    grades = [100, 100, 0]
-    assert est.time_for_tail(grades, 230, 100, 230) == pytest.approx(200 / 2.0 + 30 / 3.0)
-    assert est.time_for_tail(grades, 230, 100, 80) == pytest.approx(50 / 2.0 + 30 / 3.0)
-    assert est.time_for_tail(grades, 230, 100, 300) == pytest.approx(270 / 2.0 + 30 / 3.0)
+    p = ProfileMatcher(100, [("X", 230, [100, 100, 0])])
+    assert p.update("X", 230, 230, 0.0)
+    assert p.remaining_time(230, est, 1.0) == pytest.approx(200 / 2.0 + 30 / 3.0)
+    assert p.update("X", 80, 80, 150.0)
+    assert p.remaining_time(80, est, 1.0) == pytest.approx(50 / 2.0 + 30 / 3.0)
+    # longer than the profile: the extra metres at the first grade
+    assert p.remaining_time(300, est, 1.0) == pytest.approx(270 / 2.0 + 30 / 3.0)
 
 
 # --- course profile ------------------------------------------------------------------
@@ -237,10 +240,44 @@ def test_matcher_rejects_too_long_distance():
     assert m.mismatched
 
 
-def test_matcher_unknown_name_falls_back():
+def test_matcher_places_unknown_point():
     m = ProfileMatcher(100, [("Climb", 1000, [0])])
-    assert not m.update("Left turn", 300, 900)
+    assert m.update("Left turn", 300, 900, 100.0)  # 100 m in, from the distance to the finish
+    assert m.current is None and m.loc == 400
     assert not m.mismatched
+
+
+def test_matcher_skips_points_the_watch_lacks():
+    m = ProfileMatcher(100, [("A", 1000, [0]), ("B", 1000, [0]), ("C", 1000, [0])])
+    assert m.update("C", 3000, 3000) and m.current == 2
+
+
+def test_matcher_picks_the_repeated_name_that_fits():
+    m = ProfileMatcher(100, [("Water", 1000, [0]), ("Hut", 3000, [0]), ("Water", 3000, [0])])
+    assert m.update("Bridge", 4000, 7000, 0.0) and m.loc == 4000
+    # the first Water is behind you: the second one fits where you are
+    assert m.update("Water", 3000, 3000, 4000.0) and m.current == 2
+    assert not m.mismatched
+
+
+def test_matcher_learns_a_longer_watch_course():
+    # the watch's course is 10% longer than the profile's
+    m = ProfileMatcher(100, [("A", 5000, [0]), ("B", 5000, [0]), ("C", 5000, [0])])
+    # 4 km in on the profile, 4.4 km on the watch's course
+    assert m.update("A", 1100, 12100, 4400.0) and m.current == 0
+    assert abs(m.ratio - 1 / 1.1) < 1e-9
+    # at A, a point the profile lacks is 2.2 watch km ahead: 2 km after A on the profile
+    assert m.update("Hut", 2200, 11000, 5500.0) and m.current is None
+    assert abs(m.loc - 7000) < 1e-6
+
+
+def test_matcher_time_crosses_entries():
+    from wpeta.model import EtaEstimator, SpeedGradeModel
+
+    est = EtaEstimator(SpeedGradeModel())
+    m = ProfileMatcher(100, [("A", 1000, [0] * 10), ("B", 1000, [0] * 10)])
+    assert m.update("B", 2000, 2000)
+    assert abs(m.remaining_time(2000, est, 1.0) - est.time_for_grade(2000, 0.0)) < 1e-6
 
 
 # --- the field as a whole ------------------------------------------------------------
@@ -360,7 +397,9 @@ def test_time_scales_distance_and_grade():
     est = EtaEstimator(m)
     # 1000 course metres at 11.5% course grade = 1150 of your metres at 10%
     assert est.time_for_grade(1000, 11.5, 1.15) == pytest.approx(1150 / 2.0)
-    assert est.time_for_tail([115], 1000, 1000, 1000, 1.15) == pytest.approx(1150 / 2.0)
+    p = ProfileMatcher(1000, [("X", 1000, [115])])
+    assert p.update("X", 1000, 1000)
+    assert p.remaining_time(1000, est, 1.15) == pytest.approx(1150 / 2.0)
 
 
 def test_older_run_observations_fade():

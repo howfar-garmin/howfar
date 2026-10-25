@@ -74,33 +74,6 @@ class EtaEstimator {
     function timeForGrade(dist as Float, gradePct as Float, scale as Float) as Float {
         return dist * scale / speedAt(gradePct, scale);
     }
-
-    // Time over the last `dist` course metres of a segment split into `step` chunks
-    // (grades in tenths of a percent; the last chunk, next to the waypoint, may be shorter).
-    function timeForTail(grades as Array<Number>, segLen as Float, step as Float, dist as Float, scale as Float) as Float {
-        var n = grades.size();
-        if (n == 0) {
-            return dist * scale / speedAt(0.0, scale);
-        }
-        var lastLen = segLen - (n - 1) * step;
-        if (lastLen <= 0.0) {
-            lastLen = step;
-        }
-        var t = 0.0;
-        var remaining = dist;
-        var i = n - 1;
-        while (i >= 0 && remaining > 0.0) {
-            var len = i == n - 1 ? lastLen : step;
-            var use = len < remaining ? len : remaining;
-            t += use * scale / speedAt(grades[i] / 10.0, scale);
-            remaining -= use;
-            i--;
-        }
-        if (remaining > 0.0) {
-            t += remaining * scale / speedAt(grades[0] / 10.0, scale);
-        }
-        return t;
-    }
 }
 
 // Your distance per metre of course, learned while navigating.

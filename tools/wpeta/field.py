@@ -55,9 +55,8 @@ class FieldLogic:
             self.scale.update(dist, dist_dest)
         scale = self.scale.ratio
 
-        if self.profile is not None and self.profile.update(name, dist_next, dist_dest):
-            _, length, grades = self.profile.entry()
-            raw = self.estimator.time_for_tail(grades, length, self.profile.step, dist_next, scale)
+        if self.profile is not None and self.profile.update(name, dist_next, dist_dest, dist, scale):
+            raw = self.profile.remaining_time(dist_next, self.estimator, scale)
             self.using_profile = True
         else:
             grade = 0.0

@@ -341,30 +341,6 @@ class EtaEstimator:
         """dist is in course metres; scale is your metres per course metre (see CourseScale)."""
         return dist * scale / (self.model.predict(grade_pct / scale) * self.fatigue)
 
-    def time_for_tail(
-        self, grades_tenths: list[int], seg_len: float, step: float, dist: float, scale: float = 1.0
-    ) -> float:
-        """Time over the last `dist` course metres of a segment split into `step` chunks
-        (the last chunk, next to the waypoint, may be shorter)."""
-        n = len(grades_tenths)
-        if n == 0:
-            return dist * scale / (self.model.predict(0.0) * self.fatigue)
-        last_len = seg_len - (n - 1) * step
-        if last_len <= 0:
-            last_len = step
-        t = 0.0
-        remaining = dist
-        i = n - 1
-        while i >= 0 and remaining > 0:
-            length = last_len if i == n - 1 else step
-            use = min(length, remaining)
-            t += use * scale / (self.model.predict(grades_tenths[i] / 10.0 / scale) * self.fatigue)
-            remaining -= use
-            i -= 1
-        if remaining > 0:
-            t += remaining * scale / (self.model.predict(grades_tenths[0] / 10.0 / scale) * self.fatigue)
-        return t
-
 
 class CourseScale:
     """Your distance per metre of course, learned while navigating.

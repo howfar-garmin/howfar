@@ -16,6 +16,13 @@ The field predicts the time to the next course point from your **speed at each s
 
 For the slope ahead it uses a **course profile** when one is set and matches the course ("P" on the watch): the grade of every 25–400 m between course points. The watch gives a data field only the next point's name, distance and elevation, not the course's track, so the profile is made off the watch and pasted into the settings. Without it the field uses the average grade to the next point ("~").
 
+The watch's next point is put **on the profile**, and the time is the profile's stretch that ends there and is `distanceToNextPoint` long:
+
+- a point the profile has (by name, the first one ahead whose stretch fits where you are): the end of its entry;
+- a point it doesn't have: where you are plus `distanceToNextPoint`, where you are being the profile's length minus `distanceToDestination` (or, without it, the last located point plus the distance run since).
+
+The watch's course may be another version of the course, a bit longer or shorter than the profile's. At each point the profile has, the field compares how far both say the finish is and converts the watch's distances by that ratio. Profile points the watch's course lacks are simply crossed.
+
 Course GPX files often carry every waypoint of the whole race; only those within 200 m of the course's track are kept.
 
 ## Code layout
@@ -82,10 +89,20 @@ On four races (two TORX 2026 sections, La via di Annibale, STL25):
 | + trail ahead | 4.7 min |
 | + race-day corrections (the field) | 3.5 min |
 
+When the profile and the watch's course don't list the same checkpoints (`tools/research/benchmark_missing.py`, the four races and 129 activities with checkpoints every 5 km), placing points on the profile beats the old name-only matching, which fell back to "~" for any point the profile lacked:
+
+| Case | Name only | On the profile |
+|---|---|---|
+| Profile lacks every other checkpoint: error at those checkpoints, races / activities | 4.1 / 5.1 min | 2.7 / 3.8 min |
+| Watch's course lacks every other checkpoint: all checkpoints, races / activities | 4.9 / 6.1 min | 3.8 / 5.3 min |
+| As the first, with the watch's course 3% longer: those checkpoints, races / activities | 4.1 / 5.1 min | 2.7 / 3.8 min |
+
+With the same checkpoints on both, nothing changes. Placing an unknown point by its altitude was tried as well and dropped: it didn't help.
+
 Tested and dropped, because none did better: a projection of the slowdown with effort; a self-check every 1–3 km correcting by the last stretch's ratio (3.8–4.3 min); personal Naismith-Langmuir; Tobler's hiking function; ITRA km-effort; Minetti's energy cost; gradient-boosted trees.
 
 ## Still to check on a real watch
 
-- **`distanceToNextPoint`:** the profile logic assumes it is the distance along the course, not a straight line.
+- **`distanceToNextPoint` and `distanceToDestination`:** the profile logic assumes both are distances along the course, not straight lines.
 - **Settings text length:** how long a text Garmin Connect accepts; the profile tools default to 4,000 characters.
 - **`onTimerReset`:** runs for saved and discarded activities alike; the field learns from any activity with at least about 500 m of moving data.

@@ -3,9 +3,8 @@
     <string id="AppNameBeta">HowFar beta</string>
     <string id="CourseProfileTitle">Course profile</string>
     <string id="ResetModelTitle">Forget what was learned from past runs</string>
-    <!-- on the field: "then <checkpoint> +1:35", "via <minor point> in 0:45" and "@ 14:45 (learning)" -->
+    <!-- on the field: "then <checkpoint> +1:35", "<minor point> in 0:45" and "@ 14:45 (learning)" -->
     <string id="Then">then</string>
-    <string id="Via">via</string>
     <string id="In">in</string>
     <string id="Learning">(learning)</string>
 </strings>

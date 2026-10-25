@@ -142,19 +142,19 @@
     var shown = etaText(e), learning = f[CD] < 4000; // the watch greys the time for its first ~4 km
     $("wTime").innerHTML = '<span class="dot ' + dotClass(e) + '"></span>' + shown[0] + '<span class="w-side"><span class="w-unit">' + shown[1] + '</span><span class="w-arr">@' + arrival(f[T], e) + "</span></span>";
     $("wTime").classList.toggle("learning", learning);
-    // the lines under the time, as on a full-screen field: the minor point on the way (grey) or
-    // else the next main point, with the time to go; then the main point after that, with its
-    // arrival; "(learning)" in a free line
-    // the minor point: its time from now; the main points: their leg's moving time from leaving
-    // the checkpoint before (+h:mm), since stops at the checkpoints in between can't be known
-    var inn = function (j) { return [_t("via") + " " + WP[j].name + " " + _t("in") + " " + etaHm(timeTo(f, j)), timeTo(f, j)]; };
+    // a full-screen field, top to bottom in the order you meet them: the minor point on the way
+    // (grey, its time from now), the main checkpoint, then the next main ones with their leg's
+    // moving time from leaving the checkpoint before (+h:mm: stops there can't be known);
+    // "(learning)" in a free line
     var leg = function (j, from) { var s = timeTo(f, j) - timeTo(f, from); return [_t("then") + " " + WP[j].name + " +" + etaHm(s), s]; };
-    var mid = pts.via != null ? inn(pts.via) : pts.then != null ? leg(pts.then, pts.main) : null;
-    var low = pts.via != null ? (pts.then != null ? leg(pts.then, pts.main) : null) : (pts.then2 != null ? leg(pts.then2, pts.then) : null);
-    setLine($("wVia"), mid);
-    $("wVia").classList.toggle("main", pts.via == null);
-    setLine($("wThen"), low || (learning ? [_t("(learning)"), null] : null));
-    $("wThen").classList.toggle("note", !low);
+    setLine($("wMinor"), pts.via != null ? [WP[pts.via].name + " " + _t("in") + " " + etaHm(timeTo(f, pts.via)), timeTo(f, pts.via)] : null);
+    var one = pts.then != null ? leg(pts.then, pts.main) : null;
+    var two = pts.via == null && pts.then2 != null ? leg(pts.then2, pts.then) : null;
+    var note = learning ? [_t("(learning)"), null] : null;
+    setLine($("wThen1"), one || note);
+    $("wThen1").classList.toggle("note", !one);
+    setLine($("wThen2"), one && pts.via == null ? (two || note) : null);
+    $("wThen2").classList.toggle("note", !two);
 
     $("raceClock").textContent = dur(f[T]);
     $("rTime").innerHTML = _t("<b>{time}</b> · {clock} local time", { time: hm(f[T]), clock: clock(f[T]) }) +

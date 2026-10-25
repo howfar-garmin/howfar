@@ -20,8 +20,7 @@ class WaypointEtaView extends WatchUi.DataField {
     hidden var _name as String?;
     hidden var _usingProfile as Boolean = false;
     hidden var _thenWord as String;   // "then", in the watch's language
-    hidden var _viaWord as String;    // "via": a line names the minor point on the way
-    hidden var _inWord as String;     // "in": ... and the time to it
+    hidden var _inWord as String;     // "in": the minor point on the way and the time to it
     hidden var _learningWord as String;
     hidden var _thenName as String?;  // the main profile point after the next one
     hidden var _thenSec as Number?;   // its leg's moving time, from leaving the point before it
@@ -40,7 +39,6 @@ class WaypointEtaView extends WatchUi.DataField {
         _estimator = new EtaEstimator(_model);
         _scale = new CourseScale();
         _thenWord = WatchUi.loadResource(Rez.Strings.Then) as String;
-        _viaWord = WatchUi.loadResource(Rez.Strings.Via) as String;
         _inWord = WatchUi.loadResource(Rez.Strings.In) as String;
         _learningWord = WatchUi.loadResource(Rez.Strings.Learning) as String;
         var stored = Application.Storage.getValue(STORAGE_KEY);
@@ -284,53 +282,44 @@ class WaypointEtaView extends WatchUi.DataField {
             label = (_usingProfile ? "P " : "~ ") + (name != null ? name : "WPT");
             label = fitText(dc, label, "", maxW);
         }
-        dc.drawText(w / 2, topY, Graphics.FONT_XTINY, label, center);
         var arrive = eta == null ? "" : "@ " + WpUtil.formatClock(eta) + (learning ? " " + _learningWord : "");
-        if (withThen) {
+        if (!withThen) {
+            dc.drawText(w / 2, topY, Graphics.FONT_XTINY, label, center);
+        } else {
+            // top to bottom in the order you meet them: the minor point on the way (grey, its time
+            // from now), the main checkpoint and the time to it, then the next main checkpoints with
+            // their leg's moving time (+h:mm). The arrival is the big number's only.
             var grey = bg == Graphics.COLOR_BLACK ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_DK_GRAY;
-            drawTimeWithArrival(dc, w / 2, h * 0.42, f[withExtras], main, unit, arriveSide, timeColor, fg, dot);
-            // middle line: the minor point on the way (grey) with its time to go, or else the next
-            // main point; bottom line: the main point after that. Main points get their leg's moving
-            // time (+h:mm), the dot by that time; the arrival is the big number's only
-            var botW = bottomObscured ? w * 0.8 : maxW;  // a round screen is still 0.8 wide this low
-            var middle = "";
-            var middleGrey = false;
-            var middleSec = null;
-            var bottom = "";
-            var bottomGrey = false;
-            var bottomSec = null;
-            var lineW = maxW - dotW;
-            botW -= dotW;
+            var hasVia = viaName != null && viaSec != null;
+            var botW = (bottomObscured ? w * 0.8 : maxW) - dotW;  // a round screen is still 0.8 wide this low
             var then2Name = _then2Name;
             var then2Sec = _then2Sec;
-            if (viaName != null && viaSec != null) {
-                middle = fitText(dc, _viaWord + " " + viaName, " " + _inWord + " " + WpUtil.etaHm(viaSec as Number), lineW);
-                middleGrey = true;
-                middleSec = viaSec;
-                if (thenName != null && thenSec != null) {
-                    bottom = fitText(dc, _thenWord + " " + thenName, " +" + WpUtil.etaHm(thenSec as Number), botW);
-                    bottomSec = thenSec;
-                }
-            } else if (thenName != null && thenSec != null) {
-                middle = fitText(dc, _thenWord + " " + thenName, " +" + WpUtil.etaHm(thenSec as Number), lineW);
-                middleSec = thenSec;
-                if (then2Name != null && then2Sec != null) {
-                    bottom = fitText(dc, _thenWord + " " + then2Name, " +" + WpUtil.etaHm(then2Sec as Number), botW);
-                    bottomSec = then2Sec;
+            var lowY = h * (hasVia ? 0.74 : 0.67);
+            var lowW = (sidesObscured ? w * 0.84 : maxW) - dotW;  // a round screen is about 0.85 wide there
+            var lowerY = h * (bottomObscured ? 0.80 : 0.84);
+            if (hasVia) {
+                // near the top a round screen is only about 0.6 wide
+                drawLine(dc, w / 2, h * 0.13, fitText(dc, viaName as String, " " + _inWord + " " + WpUtil.etaHm(viaSec as Number), w * 0.6 - dotW),
+                    grey, dotColor(viaSec as Number, bg));
+                dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
+            }
+            dc.drawText(w / 2, hasVia ? h * 0.26 : topY, Graphics.FONT_XTINY, label, center);
+            drawTimeWithArrival(dc, w / 2, h * (hasVia ? 0.49 : 0.42), f[withExtras], main, unit, arriveSide, timeColor, fg, dot);
+            var lowFree = true;
+            var lowerFree = !hasVia;
+            if (thenName != null && thenSec != null) {
+                drawLine(dc, w / 2, lowY, fitText(dc, _thenWord + " " + thenName, " +" + WpUtil.etaHm(thenSec as Number), lowW),
+                    fg, dotColor(thenSec as Number, bg));
+                lowFree = false;
+                if (!hasVia && then2Name != null && then2Sec != null) {
+                    drawLine(dc, w / 2, lowerY, fitText(dc, _thenWord + " " + then2Name, " +" + WpUtil.etaHm(then2Sec as Number), botW),
+                        fg, dotColor(then2Sec as Number, bg));
+                    lowerFree = false;
                 }
             }
             // while learning, the word takes a free line (the grey digits say it anyway)
-            if (learning && bottom.length() == 0) {
-                bottom = _learningWord;
-                bottomGrey = true;
-            }
-            if (middle.length() > 0) {
-                drawLine(dc, w / 2, h * 0.67, middle, middleGrey ? grey : fg,
-                    middleSec != null ? dotColor(middleSec as Number, bg) : null);
-            }
-            if (bottom.length() > 0) {
-                drawLine(dc, w / 2, h * (bottomObscured ? 0.80 : 0.84), bottom, bottomGrey ? grey : fg,
-                    bottomSec != null ? dotColor(bottomSec as Number, bg) : null);
+            if (learning && (lowFree || lowerFree)) {
+                drawLine(dc, w / 2, lowFree ? lowY : lowerY, _learningWord, grey, null);
             }
             dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
             return;

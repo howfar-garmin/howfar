@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&amp;family=Public+Sans:wght@400;500;600&amp;family=Saira+Semi+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="css/site.css?v=51" rel="stylesheet"/>
+<link href="css/site.css?v=52" rel="stylesheet"/>
 <link href="https://howfar-garmin.github.io/howfar/" hreflang="en" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/it/" hreflang="it" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/fr/" hreflang="fr" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/de/" hreflang="de" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/" hreflang="x-default" rel="alternate"/><script>window.HOWFAR_LANG="en";window.HOWFAR_T={};
 window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\}/g,function(m,k){return k in v?v[k]:m}):x};
 (function(){try{var k="howfar.lang";document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-lang]");if(a)localStorage.setItem(k,a.getAttribute("data-lang"))});if(!localStorage.getItem(k)){var l=((navigator.languages&&navigator.languages[0])||navigator.language||"").slice(0,2).toLowerCase();if(["it", "fr", "de"].indexOf(l)>=0){localStorage.setItem(k,l);location.replace(l+"/"+location.pathname.split("/").pop()+location.hash)}}}catch(e){}})();</script></head>
@@ -55,19 +55,19 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <p class="muted">Add HowFar to one of your activity's data screens, load a course with checkpoints, and run. It shows three lines; a full-screen field shows four, with the arrival time beside the number.</p>
 </div>
 <div class="explain-grid">
-<div aria-label="Example on a full-screen field: P Planaval, 1:55 h, @ 16:40, via Col de la Crosatie in 0:45, then Valgrisenche +1:25" class="watch watch-small" role="img">
+<div aria-label="Example on a full-screen field: Col de la Crosatie in 0:45, P Planaval, 1:55 h, @ 16:40, then Valgrisenche +1:25" class="watch watch-small" role="img">
 <div class="screen with-then">
+<div class="w-minor"><span class="dot g"></span>Col de la Crosatie in 0:45</div>
 <div class="w-label" translate="no">P Planaval</div>
 <div class="w-time" translate="no"><span class="dot y"></span>1:55<span class="w-side"><span class="w-unit">h</span><span class="w-arr">@16:40</span></span></div>
-<div class="w-via"><span class="dot g"></span>via Col de la Crosatie in 0:45</div>
 <div class="w-then"><span class="dot y"></span>then Valgrisenche +1:25</div>
 </div>
 </div>
 <ol class="callouts">
 <li><b>Top line: the next main checkpoint.</b> The name comes from your course, or from a point you added on the <a href="prepare.html">race prep page</a>, such as the top of a climb or a hut. The letter in front tells you how much the watch knows about the trail ahead: <span class="pill">P</span> it knows every climb and descent to the checkpoint (you gave it the course profile, see <a href="#prepare">Prepare a race</a>); <span class="pill">~</span> it only knows how far away and how much higher or lower the checkpoint is.</li>
-<li><b>Big number: time to get there</b> while you keep moving, only as precisely as it can be known: hours and minutes in 30-minute steps from four hours out, 15-minute steps from two and 5-minute steps from one (<i>2:15 h</i>), whole minutes closer in (<i>42 min</i>), minutes and seconds in the last 5 minutes. A small dot before it says how far off it may be: <b>green</b> under 45 minutes to go, usually within 5 minutes; <b>yellow</b> up to 2 hours, usually within 15; <b>red</b> beyond, often half an hour or more. The times on a full-screen field's lower lines have one too. For the first 4 km or so the number is grey and <i>(learning)</i> appears after the arrival time, or under the number on a full-screen field: it's only a rough guess, because HowFar is still learning how you're moving today. When it turns white, it has seen enough of your running. Time spent stopped at an aid station is not included, because nobody can guess how long you'll stay.</li>
+<li><b>Big number: time to get there</b> while you keep moving, only as precisely as it can be known: hours and minutes in 30-minute steps from four hours out, 15-minute steps from two and 5-minute steps from one (<i>2:15 h</i>), whole minutes closer in (<i>42 min</i>), minutes and seconds in the last 5 minutes. A small dot before it says how far off it may be: <b>green</b> under 45 minutes to go, usually within 5 minutes; <b>yellow</b> up to 2 hours, usually within 15; <b>red</b> beyond, often half an hour or more. The other times on a full-screen field have one too. For the first 4 km or so the number is grey and <i>(learning)</i> appears after the arrival time, or under the number on a full-screen field: it's only a rough guess, because HowFar is still learning how you're moving today. When it turns white, it has seen enough of your running. Time spent stopped at an aid station is not included, because nobody can guess how long you'll stay.</li>
 <li><b>Arrival time.</b> The time of day you'll get there, in your watch's 12 or 24 hour format: on the line below the number, or beside it on a full-screen field.</li>
-<li><b>On a full-screen field, only with the course profile: two more lines.</b> In grey, the next minor point on the way, such as a climb top or a hut you added (<i>via Col de la Crosatie in 0:45</i>); below it, the main checkpoint after the next one (<i>then Valgrisenche +1:25</i>). With no minor point ahead, the two lines show the next two main checkpoints instead (<i>then La Thuile +1:35</i>). A main checkpoint's time is its leg's moving time, from when you leave the checkpoint before it: how long you'll stop there can't be known, so add it yourself. The minor point's time counts from now. You choose which points are main and which minor on the <a href="prepare.html">race prep page</a>. Your watch tells a data field only about the next checkpoint, so without the profile these lines stay empty.</li>
+<li><b>On a full-screen field, only with the course profile: the points around it, top to bottom in the order you meet them.</b> Above the name, in grey, the next minor point on the way, such as a climb top or a hut you added (<i>Col de la Crosatie in 0:45</i>); with several in a row, each takes the place of the one you've passed, and the main checkpoint stays in the middle. Below the number, the main checkpoint after it (<i>then Valgrisenche +1:25</i>), or the next two when no minor point is ahead (<i>then La Thuile +1:35</i>). A main checkpoint's time is its leg's moving time, from when you leave the checkpoint before it: how long you'll stop there can't be known, so add it yourself. The minor point's time counts from now. You choose which points are main and which minor on the <a href="prepare.html">race prep page</a>. Your watch tells a data field only about the next checkpoint, so without the profile these lines stay empty.</li>
 </ol>
 </div>
 <p class="small muted explain-note">Without a course, or between courses, the field shows <b>--</b>. On a screen with many fields it shows just the big number.</p>
@@ -90,10 +90,11 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="watch-col">
 <div aria-label="Watch showing the HowFar field during the race" class="watch" role="img">
 <div class="screen with-then" translate="no">
+<div class="w-minor" id="wMinor"></div>
 <div class="w-label" id="wLabel">P Col d'Arp</div>
 <div class="w-time" id="wTime">1:10<span class="w-side"><span class="w-unit">h</span><span class="w-arr">@14:05</span></span></div>
-<div class="w-via" id="wVia"></div>
-<div class="w-then" id="wThen"></div>
+<div class="w-then" id="wThen1"></div>
+<div class="w-then" id="wThen2"></div>
 </div>
 </div>
 </div>
@@ -312,6 +313,6 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 </footer>
 <script src="demo/torx-s1.js?v=21"></script>
-<script src="js/demo.js?v=39"></script>
+<script src="js/demo.js?v=40"></script>
 </body>
 </html>

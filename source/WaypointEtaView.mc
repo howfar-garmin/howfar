@@ -50,11 +50,6 @@ class WaypointEtaView extends WatchUi.DataField {
             Application.Properties.setValue("resetModel", false);
         }
 
-        _model.imported = new ModelLayer();
-        var s = Application.Properties.getValue("importedSpeedModel");
-        if (s instanceof String && (s as String).length() > 0) {
-            _model.imported.loadString(s as String);
-        }
         _model.invalidate();
 
         _profile = null;
@@ -75,6 +70,7 @@ class WaypointEtaView extends WatchUi.DataField {
             if (_tracker.update(timer / 1000.0, dist, alt)) {
                 var g = _tracker.lastGrade;
                 var v = _tracker.lastSpeed;
+                _model.setRunDistance(dist);
                 _estimator.observe(g, v, _tracker.lastDist);
                 _model.observe(g, v);
             }

@@ -1,6 +1,6 @@
-// HowFar race prep page: pace from past activities, course profile, library. Everything runs
+// HowFar race prep page: course profile and checkpoints, library. Everything runs
 // in the browser; files are never uploaded. The calculations are in howfar-core.js.
-import * as core from "./howfar-core.js?v=5";
+import * as core from "./howfar-core.js?v=6";
 import * as extra from "./extra-points.js?v=5";
 
 const FIT_SDK = "https://cdn.jsdelivr.net/npm/@garmin/fitsdk@21.217.0/+esm";
@@ -19,7 +19,6 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&
 const km = (m) => dec(m / 1000, 1) + " km";
 const num = (n) => Math.round(n).toLocaleString(LANG);
 const pad = (n) => (n < 10 ? "0" : "") + n;
-const hm = (h) => Math.floor(h) + ":" + pad(Math.round((h % 1) * 60) % 60) + " h";
 const newId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
 const dateLabel = (iso) => (iso ? new Date(iso).toLocaleDateString(LANG, { year: "numeric", month: "short", day: "numeric" }) : "–");
 const baseName = (f) => f.replace(/\.(gpx|fit)$/i, "");
@@ -100,9 +99,10 @@ function dropZone(label, input, onFiles) {
 function loadLibrary() {
   try {
     const lib = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
-    if (lib && Array.isArray(lib.paces) && Array.isArray(lib.courses)) return lib;
+    // libraries from before HowFar learned only on the run also hold paces, now unused
+    if (lib && Array.isArray(lib.courses)) return lib;
   } catch (e) { /* private window or blocked storage: start empty */ }
-  return { version: 1, paces: [], courses: [] };
+  return { version: 1, courses: [] };
 }
 let library = loadLibrary();
 function saveLibrary() {
@@ -135,41 +135,6 @@ function tip(box, html, evt) {
   const x = evt.clientX - r.left, y = evt.clientY - r.top;
   t.style.left = Math.min(Math.max(8, x + 14), box.clientWidth - t.offsetWidth - 8) + "px";
   t.style.top = Math.max(4, y - 10) + "px";
-}
-
-function drawPace(layer) {
-  const svg = $("paceChart"), box = $("paceChartBox");
-  svg.replaceChildren();
-  const M = { W: 640, H: 300, l: 44, r: 16, t: 16, b: 34 };
-  const bins = [];
-  for (let i = 0; i < core.NUM_BINS; i++) if (layer.weights[i] >= 3) bins.push([core.binCenter(i), layer.speed(i), layer.weights[i]]);
-  const vmax = Math.max(1.2, Math.ceil((Math.max(...bins.map((b) => b[1]), 0) + 0.2) / 0.6) * 0.6);
-  const mx = (g) => M.l + ((g + 40) / 80) * (M.W - M.l - M.r);
-  const my = (v) => M.t + ((vmax - v) / vmax) * (M.H - M.t - M.b);
-  for (let v = 0; v <= vmax + 1e-9; v += 0.6) {
-    el("line", { x1: M.l, x2: M.W - M.r, y1: my(v), y2: my(v), stroke: "var(--line-soft)" }, svg);
-    txt(svg, M.l - 6, my(v) + 4, dec(v, 1), { "text-anchor": "end" });
-  }
-  [-40, -20, 0, 20, 40].forEach((g) => txt(svg, mx(g), M.H - 12, (g > 0 ? "+" : "") + g + "%", { "text-anchor": "middle" }));
-  txt(svg, M.l + 4, M.t + 8, "m/s");
-  if (bins.length) {
-    el("polyline", { points: bins.map((b) => mx(b[0]).toFixed(1) + "," + my(b[1]).toFixed(1)).join(" "), fill: "none", stroke: "var(--accent)", "stroke-width": 2.5, "stroke-linejoin": "round" }, svg);
-    bins.forEach((b) => el("circle", { cx: mx(b[0]), cy: my(b[1]), r: 3, fill: "var(--accent)" }, svg));
-  }
-  const cross = el("line", { y1: M.t, y2: M.H - M.b, stroke: "var(--ink-3)", visibility: "hidden" }, svg);
-  svg.onmousemove = (e) => {
-    const r = svg.getBoundingClientRect();
-    const g = (((e.clientX - r.left) / r.width) * M.W - M.l) / (M.W - M.l - M.r) * 80 - 40;
-    const i = core.binIndex(g);
-    cross.setAttribute("x1", mx(core.binCenter(i))); cross.setAttribute("x2", mx(core.binCenter(i))); cross.setAttribute("visibility", "visible");
-    const c = core.binCenter(i);
-    const slope = _t("<b>{grade}% slope</b>", { grade: (c > 0 ? "+" : "") + c });
-    if (layer.weights[i] < 3) return tip(box, slope + "<br>" + _t("not enough data here"), e);
-    const v = layer.speed(i), pace = 1000 / v;
-    tip(box, slope + "<br>" + _t("{speed} m/s · {pace} per km", { speed: dec(v, 2), pace: Math.floor(pace / 60) + ":" + pad(Math.round(pace % 60)) }) +
-      "<br>" + _t("{n} samples", { n: num(layer.weights[i]) }), e);
-  };
-  svg.onmouseleave = () => { tip(box, null); cross.setAttribute("visibility", "hidden"); };
 }
 
 function drawCourse(profile, checkpoints) {
@@ -209,22 +174,19 @@ function drawCourse(profile, checkpoints) {
   svg.onmouseleave = () => tip(box, null);
 }
 
-// ---------------------------------------------------------------- step 1: pace
-
-// dirty: changed since it was last saved or opened from the library
-const pace = { id: null, name: "", activities: [], dirty: false };
+// ---------------------------------------------------------------- what's open
 
 /** The name of what's open, and whether it's in the library, at the top of its section. */
 function showLoaded(kind, item, fallback) {
   $(kind + "Title").textContent = item.name.trim() || fallback;
   const state = $(kind + "State");
-  const saved = item.id && library[kind === "pace" ? "paces" : "courses"].some((x) => x.id === item.id);
+  const saved = item.id && library.courses.some((x) => x.id === item.id);
   state.textContent = !saved ? _t("Not saved yet") : item.dirty ? _t("Changed since you saved it") : _t("Saved in your library");
   state.className = "loaded-state" + (saved && !item.dirty ? " saved" : "");
   $(kind + "SaveTop").hidden = saved && !item.dirty;
 }
 
-for (const kind of ["pace", "course"]) $(kind + "SaveTop").addEventListener("click", () => $(kind + "Save").click());
+$("courseSaveTop").addEventListener("click", () => $("courseSave").click());
 
 /** The pencil next to the name: edit it in place; Enter or leaving the box keeps it, Esc doesn't. */
 function renamer(kind, item, fallback) {
@@ -258,84 +220,9 @@ function renamer(kind, item, fallback) {
   input.addEventListener("blur", () => finish(true));
 }
 
-function paceLayer() {
-  const layer = new core.Layer();
-  for (const a of pace.activities) layer.merge(new core.Layer(a.paces, a.weights));
-  return layer;
-}
+// ---------------------------------------------------------------- step 1: course
 
-function renderPace() {
-  $("paceResult").hidden = pace.activities.length === 0;
-  if (!pace.activities.length) return;
-  $("paceRows").innerHTML = pace.activities.map((a) => `
-    <tr><td>${esc(a.file)}</td><td class="num">${dateLabel(a.date)}</td><td class="num">${km(a.km * 1000)}</td>
-    <td class="num">${num(a.up)} m</td><td class="num">${hm(a.movingHours)}</td>
-    <td class="num"><button type="button" class="btn small-btn" data-remove="${a.id}" aria-label="${esc(_t("Remove {file}", { file: a.file }))}">${_t("Remove")}</button></td></tr>`).join("");
-  const layer = paceLayer();
-  drawPace(layer);
-  const samples = layer.totalWeight();
-  $("paceNote").textContent = samples < 300
-    ? _t("Only {n} samples so far (about {km} km). Add more activities for a steadier curve.", { n: num(samples), km: num(samples * 25 / 1000) })
-    : _t("{n} samples, about {km} km of moving data.", { n: num(samples), km: num(samples * 25 / 1000) });
-  $("paceText").textContent = layer.toString();
-  showLoaded("pace", pace, _t("Untitled pace"));
-}
-
-async function addPaceFiles(fileList) {
-  const st = $("paceStatus");
-  try {
-    status(st, _t("Opening files…"));
-    const files = await expand(fileList);
-    const problems = [];
-    for (const f of files) {
-      status(st, _t("Reading {file}…", { file: f.name }));
-      await new Promise((r) => setTimeout(r, 0)); // let the message show before the work
-      const parsed = await parse(f);
-      const learned = core.learnActivity(parsed.points);
-      if (learned.observations < 5) { problems.push(_t("{file} has no times or altitude, so no pace can be learned from it.", { file: f.name })); continue; }
-      pace.activities.push({
-        id: newId(), file: f.name, date: parsed.startTime, km: learned.km, up: learned.up, hours: learned.hours,
-        movingHours: learned.movingHours, obs: learned.observations, paces: learned.layer.paces, weights: learned.layer.weights,
-      });
-      pace.dirty = true;
-    }
-    if (!pace.name && pace.activities.length) pace.name = _t("My pace, {date}", { date: new Date().toLocaleDateString(LANG, { month: "short", year: "numeric" }) });
-    status(st, problems.join(" "), problems.length > 0);
-    renderPace();
-  } catch (e) {
-    status(st, e.message, true);
-  }
-}
-
-$("paceRows").addEventListener("click", (e) => {
-  const id = e.target.getAttribute("data-remove");
-  if (!id) return;
-  pace.activities = pace.activities.filter((a) => a.id !== id);
-  pace.dirty = true;
-  renderPace();
-});
-renamer("pace", pace, _t("Untitled pace"));
-$("paceCopy").addEventListener("click", (e) => copyText($("paceText").textContent, e.currentTarget));
-$("paceSave").addEventListener("click", () => {
-  pace.id = pace.id || newId();
-  pace.name = pace.name.trim() || _t("My pace");
-  upsert(library.paces, { id: pace.id, name: pace.name, saved: new Date().toISOString(), activities: pace.activities, text: paceLayer().toString() });
-  const ok = saveLibrary();
-  $("paceSaved").textContent = ok ? _t("Saved in your library.") : _t("Couldn't save: this browser blocks storage. Use a backup file.");
-  pace.dirty = !ok;
-  showLoaded("pace", pace, _t("Untitled pace"));
-  renderLibrary();
-});
-$("paceNew").addEventListener("click", () => {
-  Object.assign(pace, { id: null, name: "", activities: [], dirty: false });
-  $("paceSaved").textContent = "";
-  status($("paceStatus"), "");
-  renderPace();
-});
-dropZone($("paceDrop"), $("paceFiles"), addPaceFiles);
-
-// ---------------------------------------------------------------- step 2: course
-
+// dirty: changed since it was last saved or opened from the library
 // candidates: every checkpoint found on the course, { name, dist, on }; unticked ones are left out
 const course = { id: null, name: "", file: "", parsed: null, view: null, candidates: null, offTrack: 0, dirty: false };
 
@@ -420,7 +307,7 @@ function recomputeCourse() {
   renderCourse();
 }
 
-// ---------------------------------------------------------------- step 2: adding points
+// ---------------------------------------------------------------- step 1: adding points
 
 function addPoints(kind, found) {
   // a new run replaces the points the same button added before
@@ -585,19 +472,16 @@ function libItem(kind, item, meta) {
 }
 
 function renderLibrary() {
-  $("libPaces").innerHTML = library.paces.length
-    ? library.paces.map((p) => libItem("pace", p, (p.activities.length === 1 ? _t("1 activity · saved {date}", { date: dateLabel(p.saved) }) : _t("{n} activities · saved {date}", { n: p.activities.length, date: dateLabel(p.saved) })))).join("")
-    : `<li class="lib-empty small muted">${_t("Nothing saved yet. Make one in step 1 and press “Save in my library”.")}</li>`;
   $("libCourses").innerHTML = library.courses.length
     ? library.courses.map((c) => libItem("course", c, _t("{len} · {n} checkpoints · saved {date}", { len: km(c.length), n: c.checkpoints.filter((x) => !x.finish).length, date: dateLabel(c.saved) }))).join("")
-    : `<li class="lib-empty small muted">${_t("Nothing saved yet. Make one in step 2 and press “Save in my library”.")}</li>`;
+    : `<li class="lib-empty small muted">${_t("Nothing saved yet. Make one in step 1 and press “Save in my library”.")}</li>`;
 }
 
 $("library").addEventListener("click", (e) => {
   const b = e.target.closest("button");
   if (!b) return;
-  const [kind, id] = (b.dataset.open || b.dataset.copy || b.dataset.delete || ":").split(":");
-  const list = kind === "pace" ? library.paces : library.courses;
+  const id = (b.dataset.open || b.dataset.copy || b.dataset.delete || ":").split(":")[1];
+  const list = library.courses;
   const item = list.find((x) => x.id === id);
   if (!item) return;
   if (b.dataset.copy) {
@@ -613,11 +497,6 @@ $("library").addEventListener("click", (e) => {
       b.textContent = _t("Sure? Delete");
       setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = _t("Delete"); } }, 3000);
     }
-  } else if (kind === "pace") {
-    Object.assign(pace, { id: item.id, name: item.name, activities: item.activities.map((a) => ({ ...a })), dirty: false });
-    $("paceSaved").textContent = "";
-    renderPace();
-    $("pace").scrollIntoView({ behavior: "smooth" });
   } else {
     const editable = !!(item.track && item.candidates);
     Object.assign(course, {
@@ -647,9 +526,8 @@ $("backupLoad").addEventListener("change", async (e) => {
   if (!f) return;
   try {
     const data = JSON.parse(await f.text());
-    if (!Array.isArray(data.paces) || !Array.isArray(data.courses)) throw new Error();
+    if (!Array.isArray(data.courses)) throw new Error();
     let added = 0;
-    for (const p of data.paces) if (!library.paces.some((x) => x.id === p.id)) { library.paces.push(p); added++; }
     for (const c of data.courses) if (!library.courses.some((x) => x.id === c.id)) { library.courses.push(c); added++; }
     saveLibrary();
     renderLibrary();

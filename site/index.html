@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=36">
+<link rel="stylesheet" href="css/site.css?v=38">
 </head>
 <body>
 
@@ -36,7 +36,7 @@
     <div class="wrap">
       <p class="eyebrow">A free data field for Garmin watches</p>
       <h1>How many times have you wanted to know how long to the next checkpoint?</h1>
-      <p class="lede">You asked a volunteer, then got angry at how far off they were. HowFar puts the answer on your wrist: the time to the next checkpoint of your course. It learns how <em>you</em> climb and descend, race after race and kilometre after kilometre, and updates the answer every second.</p>
+      <p class="lede">You asked a volunteer, then got angry at how far off they were. HowFar puts the answer on your wrist: the time to the next checkpoint of your course. It learns how <em>you</em> climb and descend while you run, with nothing to set up, and updates the answer every second.</p>
       <div class="hero-actions">
         <a class="btn primary" href="#demo">▶ See it on a real race</a>
         <a class="btn" href="#install">Put it on my watch</a>
@@ -84,8 +84,8 @@
       <ol class="howto" aria-label="How to use the demo">
         <li><b>Press Play.</b> The race replays 300 times faster than real life: the whole 13½ hours in under 3 minutes. Use <b>60×</b> for a closer look or <b>900×</b> to rush through.</li>
         <li><b>Drag the slider</b> to jump to any moment, or click anywhere on the elevation chart.</li>
-        <li><b>Choose what you prepared</b>, under the watch: nothing, your pace from past races, the course profile, or both. The watch shows what HowFar would have said in that case. Whatever you choose, it also notices during the race how your day is going.</li>
-        <li><b>Compare</b> two of these on the “how far off” chart below, with “Compare with”.</li>
+        <li><b>Choose what you pasted</b>, under the watch: nothing, or the course profile. The watch shows what HowFar would have said in that case. Either way it learns your pace on every slope from the run itself, starting from nothing, as on your first race with HowFar.</li>
+        <li><b>Compare</b> it on the “how far off” chart below with the usual estimate, the distance left at your average pace so far, or with the other choice, using “Compare with”.</li>
       </ol>
 
       <div class="demo-grid">
@@ -151,7 +151,7 @@
             </label>
           </div>
         </div>
-        <p class="small muted">For every moment of the race: the time HowFar predicted (before the watch rounds it for display), minus the time it really took to reach the next checkpoint (stops left out). Above zero, you arrived earlier than the watch said; below zero, later. The green band is ±5 minutes. Notice how the error shrinks as each checkpoint gets closer, and how much better the full HowFar line is.</p>
+        <p class="small muted">For every moment of the race: the time HowFar predicted (before the watch rounds it for display), minus the time it really took to reach the next checkpoint (stops left out). Above zero, you arrived earlier than the watch said; below zero, later. The green band is ±5 minutes. Notice how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead.</p>
         <div class="chart-box" id="errBox"><svg id="err" class="wide" viewBox="0 0 1000 270" role="img" aria-label="How far off the two chosen predictions were during the race"></svg></div>
       </div>
     </div>
@@ -162,11 +162,12 @@
       <div class="section-head">
         <p class="eyebrow">How it works</p>
         <h2>It learns how you move in the mountains</h2>
+        <p class="muted">Nothing to set up, nothing to paste: HowFar learns your pace while you run, and keeps learning all race long.</p>
       </div>
       <div class="cols-3">
         <div>
           <h3>Your pace on every slope</h3>
-          <p class="muted">Every 25 m it notes how steep the trail is and how fast you're going, from steep descents to steep climbs. Your past races give it a head start; today's kilometres count more and more as the race goes on.</p>
+          <p class="muted">Every 25 m it notes how steep the trail is and how fast you're going, from steep descents to steep climbs. Slopes you haven't met yet today it fills in from the nearest ones you have, the way pace usually changes with steepness. What it remembers from earlier runs gives it a start, and counts less and less as today's kilometres add up.</p>
         </div>
         <div>
           <h3>The trail ahead</h3>
@@ -174,7 +175,7 @@
         </div>
         <div>
           <h3>How your day is going</h3>
-          <p class="muted">It notices if you're faster or slower than in past races, and if you've slowed down in the last few kilometres. It also corrects for your watch measuring more distance than the course map: switchbacks and GPS wobble add about 15% on the Tor.</p>
+          <p class="muted">It watches your last couple of kilometres: if you're slowing down, or picking up again, the time ahead follows. It also corrects for your watch measuring more distance than the course map: switchbacks and GPS wobble add about 15% on the Tor.</p>
         </div>
       </div>
     </div>
@@ -185,7 +186,7 @@
       <div class="section-head">
         <p class="eyebrow">Does it work?</p>
         <h2>Tested on five real races</h2>
-        <p class="muted">Each race was replayed and the watch's prediction checked against reality at every moment. For “Pace only” and “Full race prep”, the pace was made from the other four races, so no race was used to test itself. Lower minutes and a higher "less than 5 min off" are better. Click a row to show it on the demo watch.</p>
+        <p class="muted">Each race was replayed and the prediction checked against reality at every moment, as if it were the runner's first race with HowFar: nothing remembered from earlier runs. “Average pace so far” is the usual estimate, the distance left at your average moving speed since the start. Lower minutes and a higher “less than 5 min off” are better. Click a HowFar row to show it on the demo watch.</p>
       </div>
       <div class="table-wrap">
         <table class="results" id="results">
@@ -203,7 +204,7 @@
       </ul>
       <details class="sources">
         <summary>What else was tried</summary>
-        <p class="muted">The same races were used to test other ways of predicting: classic hiking rules (Naismith, Tobler), ITRA's km-effort, an energy-cost model of running uphill and downhill, a machine-learning model, a correction for slowing down with distance, carrying today's trend forward, and a correction every few kilometres based on the last stretch. None did better, so HowFar doesn't use them.</p>
+        <p class="muted">The same races were used to test other ways of predicting: classic hiking rules (Naismith, Tobler), ITRA's km-effort, an energy-cost model of running uphill and downhill, a machine-learning model, a correction for slowing down with distance, carrying today's trend forward, a correction every few kilometres based on the last stretch, and a pace made from your past races and pasted before the start. None did better, so HowFar doesn't use them. The pasted pace helped in the first hours of races like the ones it was made from, and hurt when they were different; learning on the run catches up within a few kilometres anyway.</p>
         <ul>
           <li>Minetti A.E. et al. (2002), <a href="https://iris.unibs.it/retrieve/ddc633e4-3c03-4e2e-e053-3705fe0a4c80/Minetti%20JAP%202002.pdf">Energy cost of walking and running at extreme uphill and downhill slopes</a>.</li>
           <li><a href="https://en.wikipedia.org/wiki/Naismith%27s_rule">Naismith's rule</a>, and Tobler's hiking function in <a href="https://www.biorxiv.org/content/10.1101/188417.full.pdf">a crowd-sourced revalidation</a>.</li>
@@ -259,7 +260,7 @@
           <li><b>Windows:</b> open File Explorer; the watch appears like a phone. <b>Mac:</b> install the free app <a href="https://openmtp.ganeshrvel.com/">OpenMTP</a> and open it (close Garmin Express first if it's running).</li>
           <li>Open the folder <b>GARMIN</b>, then <b>Apps</b>, and drag the downloaded file into it. Unplug the watch: after a few seconds HowFar is installed.</li>
         </ol>
-        <p class="step-note"><b>Good to know:</b> copied this way, HowFar works fully, but it has no settings, so you can't paste your pace from past races or the course profile. To switch to the store version later, delete the file from <b>GARMIN → Apps</b> first, so you don't end up with two copies.</p>
+        <p class="step-note"><b>Good to know:</b> copied this way, HowFar works fully, but it has no settings, so you can't paste the course profile. To switch to the store version later, delete the file from <b>GARMIN → Apps</b> first, so you don't end up with two copies.</p>
       </details>
     </div>
   </section>
@@ -268,22 +269,12 @@
     <div class="wrap">
       <div class="section-head">
         <p class="eyebrow">Prepare a race (optional)</p>
-        <h2>Make it accurate from the first kilometre</h2>
-        <p class="muted">HowFar works without any preparation. Two optional extras, pasted into the field's settings in the Garmin Connect app on your phone, make it better. This needs HowFar installed from the Connect IQ Store: if you copied the file onto the watch with a cable instead, Garmin Connect shows no settings for it.</p>
+        <h2>Show it the trail ahead</h2>
+        <p class="muted">HowFar works without any preparation: it learns your pace as you run. One optional extra makes it better: the course profile, pasted into the field's settings in the Garmin Connect app on your phone. This needs HowFar installed from the Connect IQ Store: if you copied the file onto the watch with a cable instead, Garmin Connect shows no settings for it.</p>
         <p class="muted">On the <a href="prepare.html">race prep page</a> you can also add points of your own to count down to: the top and bottom of every big climb, huts and villages along the way. Your watch's course stays as it is.</p>
-        <p class="prep-cta"><a class="btn primary" href="prepare.html">Open race prep</a> <span class="small muted">Make both texts from your own files, right in your browser.</span></p>
+        <p class="prep-cta"><a class="btn primary" href="prepare.html">Open race prep</a> <span class="small muted">Make it from your race's course file, right in your browser.</span></p>
       </div>
-      <div class="tools-grid">
-        <article class="tool">
-          <h3>Your pace from past races</h3>
-          <p class="muted small">So HowFar knows how you climb and descend before the race starts. You make it from one or more of your past races: in Garmin Connect, open the activity, press the gear icon and choose <b>Export Original</b> (or <b>Export GPX</b>). Below: what it learned from the two Tor sections. Hover the chart to see your pace at each slope.</p>
-          <p class="muted small">It doesn't learn from past races how you slow down: in tests, neither a fixed slowdown curve nor carrying today's trend forward made predictions better. Instead, during the race HowFar watches your last couple of kilometres and adjusts the time if you're getting tired.</p>
-          <div class="chart-box" id="modelBox"><svg id="model" viewBox="0 0 640 300" role="img" aria-label="Speed by slope learned from section 1 and section 2"></svg></div>
-          <div class="string-box">
-            <div class="chart-head"><span class="small muted">What you paste into the setting "Your pace from past races"</span><button type="button" class="btn" data-copy="modelString">Copy</button></div>
-            <pre id="modelString"></pre>
-          </div>
-        </article>
+      <div class="tools-grid single">
         <article class="tool">
           <h3>The course profile</h3>
           <p class="muted small">So HowFar knows every climb and descent between checkpoints (the <span class="pill">P</span> on the watch). You make it from the race's course file, the same GPX you load on the watch. For a race in stages, like the Tor, make one per stage and paste the right one at each life base.</p>
@@ -298,7 +289,7 @@
           <p class="muted small">Where to paste: Garmin Connect app → your watch → <b>Connect IQ apps</b> → <b>HowFar</b> → <b>Settings</b>. The watch picks it up at the next sync.</p>
         </article>
       </div>
-      <p class="prep-cta"><a class="btn primary" href="prepare.html">Make yours in race prep</a> <span class="small muted">It also keeps a library of your paces and race profiles. Your files never leave your device.</span></p>
+      <p class="prep-cta"><a class="btn primary" href="prepare.html">Make yours in race prep</a> <span class="small muted">It also keeps a library of your race profiles. Your files never leave your device.</span></p>
     </div>
   </section>
 
@@ -309,14 +300,15 @@
         <h2>Good to know</h2>
       </div>
       <div class="faq">
-        <details><summary>Does it need a phone or a signal during the race?</summary><p>No. Everything happens on the watch. Your phone is only needed before the race, to paste the optional settings.</p></details>
+        <details><summary>Does it need a phone or a signal during the race?</summary><p>No. Everything happens on the watch. Your phone is only needed before the race, to paste the optional course profile.</p></details>
         <details><summary>Does it use more battery?</summary><p>It uses no sensors of its own: it reads the distance, altitude and course information your watch already records, and does a little arithmetic once a second. The watch's GPS and screen use far more.</p></details>
         <details><summary>What about time at aid stations?</summary><p>HowFar only counts the time you'll spend moving. It can't know whether you'll stop for two minutes or twenty, so stops are never included: not in the countdown, and not in the arrival time. If you plan to stop on the way, add that time in your head: with 1:10 h on the watch and a 15-minute break at an aid station before the checkpoint, expect to get there in about 1:25 h. While you're stopped the countdown waits, and when you set off again it carries on from where it was.</p></details>
         <details><summary>What if I go off course?</summary><p>HowFar uses the distance to the next checkpoint that your watch's navigation gives it. While you're off the course line the estimate is rougher; once you're back on it, it settles again.</p></details>
         <details><summary>What if my watch's course has checkpoints the course profile doesn't?</summary><p>No problem. HowFar works out where each checkpoint is on the profile from how far the finish is, so it still knows every climb and descent to it. It also copes with checkpoints the profile has and the watch doesn't, and with a course file that is a slightly different version of the race.</p></details>
         <details><summary>What if I slow down, or speed up, during the race?</summary><p>It follows you. It keeps comparing how you're moving on each slope with what it expected over the last couple of kilometres. If you're, say, 10% slower than that, it assumes you'll keep that pace on everything ahead, and the time to the next checkpoint gets about 10% longer. When you pick up again, it follows you back within a kilometre or two. A single slow minute, like tying a shoe, doesn't change it.</p></details>
-        <details><summary>Does it keep up as my fitness changes?</summary><p>Yes. At the end of every activity with HowFar on a data screen, it adds what it learned to what it remembers, and older activities count a little less each time: after five more activities an old one counts less than half, after ten about a fifth. During a race it also compares today with what it remembers, so a good or a bad day shows within the first kilometres. The one thing that doesn't fade is the pace you paste from past races: make a new one when it gets old.</p></details>
-        <details><summary>Why is it off at the start of a race?</summary><p>It's still learning how you're moving today. Pasting your pace from past races makes the first kilometres much closer.</p></details>
+        <details><summary>Does it keep up as my fitness changes?</summary><p>Yes. At the end of every activity with HowFar on a data screen, it adds what it learned to what it remembers, and older activities count a little less each time: after five more activities an old one counts less than half, after ten about a fifth. During a race, what it remembers counts less and less as today's kilometres add up, so today's running soon takes over.</p></details>
+        <details><summary>Why is it off at the start of a race?</summary><p>It's still learning how you're moving today, which is why the time is grey for the first 4 km or so. What it remembers from earlier runs gives it a start.</p></details>
+        <details><summary>Can I give it my pace from past races?</summary><p>Not any more. Early versions had a setting for it, and in tests it helped only in the first hours of races like the ones it was made from, and made things worse when they were different. Learning on the run catches up within a few kilometres, and HowFar already remembers your runs on its own.</p></details>
         <details><summary>Where does my data go?</summary><p>Nowhere. The watch keeps what it learns, and the race files you use to prepare stay on your own computer or phone. The one exception is optional: on the <a href="prepare.html">race prep page</a>, “Add huts and villages” asks OpenStreetMap what's around your course, sending only the corners of a rectangle around it.</p></details>
         <details><summary>Which watches does it work on?</summary><p>Garmin Enduro 3, fēnix 8 (43 and 47 mm, Solar 47 and 51 mm) and epix Pro (Gen 2) 42, 47 and 51 mm. More models can be added.</p></details>
       </div>
@@ -331,7 +323,7 @@
   </div>
 </footer>
 
-<script src="demo/torx-s1.js?v=16"></script>
-<script src="js/demo.js?v=24"></script>
+<script src="demo/torx-s1.js?v=18"></script>
+<script src="js/demo.js?v=26"></script>
 </body>
 </html>

@@ -79,15 +79,6 @@ def test_model_string_round_trip():
         Layer.from_string("p1;50")
 
 
-def test_cli_prints_model(hilly_fit):
-    out = subprocess.run(
-        [sys.executable, str(TOOLS / "fit_to_speed_model.py"), "-q", str(hilly_fit)],
-        capture_output=True, text=True, check=True,
-    ).stdout.strip()
-    assert out.startswith("v1;")
-    assert "10:2.00:" in out
-
-
 # --- model ---------------------------------------------------------------------------
 
 def test_default_curve_without_data():
@@ -98,11 +89,12 @@ def test_default_curve_without_data():
 
 def test_interpolates_and_extrapolates():
     m = SpeedGradeModel()
-    m.imported.add(bin_index(0), 3.0, 30)
-    m.imported.add(bin_index(10), 2.0, 30)
-    # interpolation is in pace: 1/3 s/m at 0%, 1/2 s/m at 10%
-    assert m.predict(4) == pytest.approx(1 / 0.4)
-    assert m.predict(5) == pytest.approx(1 / (1 / 3 + 0.5 * (1 / 6)))  # between bins
+    m.stored.add(bin_index(0), 3.0, 30)
+    m.stored.add(bin_index(10), 2.0, 30)
+    # unseen slopes follow Tobler's shape from both sides, the closer side counting more
+    t = tobler_factor
+    pace4 = ((1 / 3) * t(0) / t(4) / 2 + 0.5 * t(10) / t(4) / 3) / (1 / 2 + 1 / 3)
+    assert m.predict(4) == pytest.approx(1 / pace4)
     assert m.predict(20) == pytest.approx(2.0 * tobler_factor(20) / tobler_factor(10))
     assert m.predict(-10) == pytest.approx(3.0 * tobler_factor(-10) / tobler_factor(0))
 
@@ -113,13 +105,20 @@ def test_run_data_blends_with_capped_prior(monkeypatch):
     m.stored.add(bin_index(0), 3.0, 200)
     for _ in range(20):
         m.observe(0, 2.0)
-    # prior counts as 20 observations at most, so 20 run observations weigh the same
-    assert m.predict(0) == pytest.approx(1 / ((1 / 3 + 1 / 2) / 2))
+    # past runs count as 10 observations at most at the start
+    assert m.predict(0) == pytest.approx(1 / ((20 / 2 + 10 / 3) / 30))
+    # and half that after 10 km of this run, a quarter after 20 km
+    m.set_run_distance(10000)
+    assert m.predict(0) == pytest.approx(1 / ((20 / 2 + 5 / 3) / 25))
+    m.set_run_distance(20000)
+    assert m.predict(0) == pytest.approx(1 / ((20 / 2 + 2.5 / 3) / 22.5))
+    # the past alone (what today's form is measured against) keeps all its weight
+    assert m.predict_prior(0) == pytest.approx(3.0)
 
 
 def test_form_factor_scales_prior_only():
     m = SpeedGradeModel()
-    m.imported.add(bin_index(0), 3.0, 30)
+    m.stored.add(bin_index(0), 3.0, 30)
     est = EtaEstimator(m)
     for _ in range(40):
         est.observe(0, 2.7, 60)  # 10% slower than past runs
@@ -129,7 +128,7 @@ def test_form_factor_scales_prior_only():
 
 def test_form_factor_clamped_with_prior():
     m = SpeedGradeModel()
-    m.imported.add(bin_index(0), 3.0, 30)
+    m.stored.add(bin_index(0), 3.0, 30)
     est = EtaEstimator(m)
     for _ in range(40):
         est.observe(0, 1.2, 60)  # 60% slower than past runs: beyond the 0.6 floor
@@ -158,8 +157,8 @@ def test_commit_run_decays_stored():
 
 def test_profile_time_to_point():
     m = SpeedGradeModel()
-    m.imported.add(bin_index(0), 3.0, 30)
-    m.imported.add(bin_index(10), 2.0, 30)
+    m.stored.add(bin_index(0), 3.0, 30)
+    m.stored.add(bin_index(10), 2.0, 30)
     est = EtaEstimator(m)
     # segment 230 m: chunks 100, 100, 30 (the 30 m chunk is next to the waypoint)
     p = ProfileMatcher(100, [("X", 230, [100, 100, 0])])
@@ -453,8 +452,8 @@ def test_course_scale():
 
 def test_time_scales_distance_and_grade():
     m = SpeedGradeModel()
-    m.imported.add(bin_index(0), 3.0, 30)
-    m.imported.add(bin_index(10), 2.0, 30)
+    m.stored.add(bin_index(0), 3.0, 30)
+    m.stored.add(bin_index(10), 2.0, 30)
     est = EtaEstimator(m)
     # 1000 course metres at 11.5% course grade = 1150 of your metres at 10%
     assert est.time_for_grade(1000, 11.5, 1.15) == pytest.approx(1150 / 2.0)
@@ -480,7 +479,7 @@ def test_older_run_observations_fade():
 def test_fatigue_factor_tracks_recent_slowdown(monkeypatch):
     monkeypatch.setattr("wpeta.model.RUN_DECAY", 1.0)
     m = SpeedGradeModel()
-    m.imported.add(bin_index(0), 3.0, 30)
+    m.stored.add(bin_index(0), 3.0, 30)
     est = EtaEstimator(m)
     for _ in range(100):
         est.observe(0, 3.0, 60)

@@ -16,7 +16,7 @@ While you follow a course, three lines:
 
 On a full-screen field, with a course profile, a fourth line shows the checkpoint after that and when you'll get there.
 
-It learns your pace on every slope and keeps learning during the race, correcting for how your day is going.
+Nothing to set up: it learns your pace on every slope while you run and keeps learning all race long, following you as your day goes. It remembers your past runs, and they count less and less as today's kilometres add up.
 
 ## Install
 
@@ -26,7 +26,7 @@ Works on the **Enduro 3**, **fēnix 8** and **epix Pro (Gen 2)**. Without the st
 
 ## Prepare a race (optional)
 
-The [race prep page](https://howfar-garmin.github.io/howfar/prepare.html) turns your past activities and the race's course file into two texts you paste into HowFar's settings in Garmin Connect. You can also add points to count down to: the top and bottom of every big climb, huts and villages. It runs in your browser; your files never leave your device.
+The [race prep page](https://howfar-garmin.github.io/howfar/prepare.html) turns the race's course file into a text you paste into HowFar's settings in Garmin Connect, so it knows every climb and descent ahead. You can also add points to count down to: the top and bottom of every big climb, huts and villages. It runs in your browser; your files never leave your device.
 
 ## Privacy
 

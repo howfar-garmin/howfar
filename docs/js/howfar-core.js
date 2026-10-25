@@ -3,11 +3,8 @@
 // learn.py, profile.py) so the texts it makes are the same as the Python tools'.
 // web-tests/ checks that they match.
 
-export const NUM_BINS = 41;
 export const MIN_GRADE = -40;
 export const MAX_GRADE = 40;
-export const BIN_STEP = 2;
-export const MODEL_PREFIX = "v1";
 export const PROFILE_PREFIX = "p1";
 export const FINISH_NAME = "*";
 export const STEPS = [25, 50, 100, 200, 400];
@@ -185,131 +182,6 @@ export function courseFrom(parsed, maxOffset = MAX_WAYPOINT_OFFSET) {
   }
   cps.sort((a, b) => a.dist - b.dist); // stable, like Python's sort
   return { points: parsed.points, coursePoints: cps, skipped, otherFinishes };
-}
-
-// ---------------------------------------------------------------- pace model
-
-export function binIndex(gradePct) {
-  const g = clamp(gradePct, MIN_GRADE, MAX_GRADE);
-  return Math.min(NUM_BINS - 1, Math.trunc((g - MIN_GRADE) / BIN_STEP + 0.5));
-}
-
-export function binCenter(i) {
-  return MIN_GRADE + i * BIN_STEP;
-}
-
-/** Per-bin mean pace (s/m) and weight; strings and speed() use m/s. */
-export class Layer {
-  constructor(paces, weights) {
-    this.paces = paces ? paces.slice() : new Array(NUM_BINS).fill(0);
-    this.weights = weights ? weights.slice() : new Array(NUM_BINS).fill(0);
-  }
-  addPace(i, pace, weight = 1) {
-    if (weight <= 0) return;
-    const w = this.weights[i] + weight;
-    this.paces[i] += ((pace - this.paces[i]) * weight) / w;
-    this.weights[i] = w;
-  }
-  add(i, speed, weight = 1) {
-    if (speed > 0) this.addPace(i, 1 / speed, weight);
-  }
-  speed(i) {
-    return this.paces[i] > 0 ? 1 / this.paces[i] : 0;
-  }
-  totalWeight() {
-    return this.weights.reduce((a, b) => a + b, 0);
-  }
-  /** Adds another layer's observations, as if they had been added one by one. */
-  merge(other) {
-    for (let i = 0; i < NUM_BINS; i++) this.addPace(i, other.paces[i], other.weights[i]);
-  }
-  toString() {
-    const parts = [MODEL_PREFIX];
-    for (let i = 0; i < NUM_BINS; i++) {
-      const w = pyRound(this.weights[i]);
-      if (w > 0) parts.push(`${binCenter(i)}:${fmt2(this.speed(i))}:${w}`);
-    }
-    return parts.join(";");
-  }
-}
-
-/** Turns 1 Hz (time, distance, altitude) samples into (grade, speed) observations. */
-export class GradeTracker {
-  constructor() {
-    this.WINDOW = 60; this.EMIT_EVERY = 25; this.SIZE = 300;
-    this.STOP_WINDOW = 60; this.STOP_DIST = 15; this.STOP_SIZE = 90;
-    this.MIN_SPEED = 0.2; this.MAX_SPEED = 10;
-    this.reset();
-  }
-  reset() {
-    this.d = new Array(this.SIZE).fill(0); this.a = new Array(this.SIZE).fill(0); this.tt = new Array(this.SIZE).fill(0);
-    this.head = 0; this.count = 0;
-    this.sd = new Array(this.STOP_SIZE).fill(0); this.st = new Array(this.STOP_SIZE).fill(0);
-    this.shead = 0; this.scount = 0;
-    this.lastEmit = null; this.lastTime = null;
-    this.movingTime = 0; this.observations = 0;
-    this.lastGrade = 0; this.lastSpeed = 0; this.lastDist = 0;
-  }
-  isMoving(t, dist) {
-    this.sd[this.shead] = dist; this.st[this.shead] = t;
-    this.shead = (this.shead + 1) % this.STOP_SIZE;
-    if (this.scount < this.STOP_SIZE) this.scount++;
-    for (let k = 1; k < this.scount; k++) {
-      const idx = (this.shead - 1 - k + this.STOP_SIZE) % this.STOP_SIZE;
-      if (this.st[idx] <= t - this.STOP_WINDOW) return dist - this.sd[idx] >= this.STOP_DIST;
-    }
-    return true;
-  }
-  update(t, dist, alt) {
-    const moving = this.isMoving(t, dist);
-    if (this.lastTime !== null) {
-      const dt = t - this.lastTime;
-      if (dt > 0 && dt < 30 && moving) this.movingTime += dt;
-    }
-    this.lastTime = t;
-    if (!moving) return false;
-    this.d[this.head] = dist; this.a[this.head] = alt; this.tt[this.head] = this.movingTime;
-    this.head = (this.head + 1) % this.SIZE;
-    if (this.count < this.SIZE) this.count++;
-    if (this.lastEmit === null) { this.lastEmit = dist; return false; }
-    if (dist - this.lastEmit < this.EMIT_EVERY) return false;
-    for (let k = 1; k < this.count; k++) {
-      const idx = (this.head - 1 - k + this.SIZE) % this.SIZE;
-      if (this.d[idx] <= dist - this.WINDOW) {
-        const dd = dist - this.d[idx];
-        const dt = this.movingTime - this.tt[idx];
-        this.lastEmit = dist;
-        if (dt <= 0) return false;
-        const v = dd / dt;
-        if (v < this.MIN_SPEED || v > this.MAX_SPEED) return false;
-        this.lastGrade = clamp(((alt - this.a[idx]) / dd) * 100, MIN_GRADE, MAX_GRADE);
-        this.lastSpeed = v; this.lastDist = dd;
-        this.observations++;
-        return true;
-      }
-    }
-    return false;
-  }
-}
-
-/** An activity's pace layer and a summary for the library. */
-export function learnActivity(points) {
-  const tracker = new GradeTracker();
-  const layer = new Layer();
-  for (const p of points) {
-    if (p.t == null || p.alt == null) continue;
-    if (tracker.update(p.t, p.dist, p.alt)) layer.add(binIndex(tracker.lastGrade), tracker.lastSpeed, 1);
-  }
-  const up = climb(points);
-  const timed = points.filter((p) => p.t != null);
-  return {
-    layer,
-    observations: tracker.observations,
-    km: points.length ? points[points.length - 1].dist / 1000 : 0,
-    up,
-    hours: timed.length ? timed[timed.length - 1].t / 3600 : 0,
-    movingHours: tracker.movingTime / 3600,
-  };
 }
 
 /** Total climb in metres, ignoring wobbles under 3 m (barometer and GPS noise). For display. */

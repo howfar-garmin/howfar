@@ -1,7 +1,4 @@
 <settings>
-    <setting propertyKey="@Properties.importedSpeedModel" title="@Strings.ImportedSpeedModelTitle">
-        <settingConfig type="alphaNumeric"/>
-    </setting>
     <setting propertyKey="@Properties.courseProfile" title="@Strings.CourseProfileTitle">
         <settingConfig type="alphaNumeric"/>
     </setting>

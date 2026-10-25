@@ -1,4 +1,4 @@
-// Checks docs/js/howfar-core.js against the Python tools: same speed-model and course-profile texts.
+// Checks docs/js/howfar-core.js against the Python tools: same course-profile texts.
 // Fixtures and expected texts come from tools/tests/make_web_fixtures.py. Run: npm test
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -22,12 +22,6 @@ function read(file) {
   return core.readGpx(fs.readFileSync(file, "utf8"), parseXml);
 }
 
-function model(files) {
-  const layer = new core.Layer();
-  for (const f of files) layer.merge(core.learnActivity(read(f).points).layer);
-  return layer.toString();
-}
-
 function profile(file) {
   const course = core.courseFrom(read(file));
   const { step, text } = core.bestProfile(course.points, course.coursePoints, 4000);
@@ -35,11 +29,6 @@ function profile(file) {
 }
 
 function check(expected, findFile) {
-  for (const [name, want] of Object.entries(expected.models)) {
-    test(`speed model: ${name}`, () => {
-      assert.equal(model(name.split("+").map(findFile)), want);
-    });
-  }
   for (const [name, want] of Object.entries(expected.profiles)) {
     test(`course profile: ${name}`, () => {
       assert.deepEqual(profile(findFile(name)), want);

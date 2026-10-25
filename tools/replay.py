@@ -3,7 +3,7 @@
 
     python tools/replay.py run.gpx --course race_course.fit
     python tools/replay.py run.fit --every 2000
-    python tools/replay.py run.fit --model "$(python tools/fit_to_speed_model.py -q old*.fit)"
+    python tools/replay.py run.fit --past old1.fit old2.gpx
 
 With --course, the course's waypoints (FIT course points or GPX <wpt>) are placed on the
 recorded track by position. The course can be the whole race; waypoints the activity
@@ -25,6 +25,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from wpeta.field import FieldLogic  # noqa: E402
+from wpeta.learn import layer_from_files  # noqa: E402
 from wpeta.model import Layer  # noqa: E402
 from wpeta.profile import Elevation, build_entries  # noqa: E402
 from wpeta.readers import CoursePoint, Point, haversine, read_course, read_track  # noqa: E402
@@ -97,9 +98,9 @@ def place_course_points(points: list[Point], course_pts: list[Point], cps: list[
     return wps
 
 
-def replay(points, waypoints: list[Waypoint], imported: Layer | None, profile, elev_next) -> dict:
+def replay(points, waypoints: list[Waypoint], past: Layer | None, profile, elev_next) -> dict:
     """Returns {check distance: [(waypoint name, error s, error excluding stops s), ...]}."""
-    field = FieldLogic(imported=imported, profile=profile)
+    field = FieldLogic(stored=past, profile=profile)
     stops = stop_time_index(points)
     total_course = waypoints[-1].course_dist
 
@@ -144,11 +145,11 @@ def main() -> int:
     ap.add_argument("activity", help="activity .fit or .gpx")
     ap.add_argument("--course", help="course .fit or .gpx with waypoints, to use real waypoints")
     ap.add_argument("--every", type=float, default=2000, help="virtual waypoint spacing in metres (default 2000)")
-    ap.add_argument("--model", help="imported speed model string (from fit_to_speed_model.py)")
+    ap.add_argument("--past", nargs="+", help="earlier activities, as if the watch remembered them")
     ap.add_argument("-v", "--verbose", action="store_true", help="print the error at every waypoint")
     args = ap.parse_args()
 
-    imported = Layer.from_string(args.model) if args.model else None
+    past = layer_from_files(args.past) if args.past else None
     points = [p for p in read_track(args.activity) if p.t is not None and p.alt is not None]
 
     if args.course:
@@ -173,7 +174,7 @@ def main() -> int:
         entries = build_entries(points, [CoursePoint(w.name, w.act_dist) for w in waypoints], STEP)
 
     for label, profile in (("course profile", (STEP, entries)), ("average grade ", None)):
-        errors = replay(points, waypoints, imported, profile, lambda wp: elev.at(wp.course_dist))
+        errors = replay(points, waypoints, past, profile, lambda wp: elev.at(wp.course_dist))
         print(f"{label}:")
         for c in CHECKS:
             e = errors[c]

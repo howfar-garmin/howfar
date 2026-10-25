@@ -1,6 +1,6 @@
 """The field's ETA algorithm (tools/wpeta) with each of its parts switchable, for the benchmark.
 
-  past      speed-by-grade learned from other races (the "imported model")
+  past      speed-by-grade learned from other runs (what the watch remembers)
   ahead     handled by the harness: the course profile ahead, or one average grade
   raceday   form factor, fatigue factor, fading of older run data, course-distance ratio
 
@@ -49,7 +49,7 @@ class HowFar:
         self.tracker = GradeTracker()
         self.model = SpeedGradeModel()
         if past is not None:
-            self.model.imported = past
+            self.model.stored = past
         self.raceday = raceday
         self.est = M.EtaEstimator(self.model)
         self.scale = CourseScale()
@@ -62,6 +62,7 @@ class HowFar:
         if not self.tracker.update(t, dist, alt):
             return
         g, v, w = self.tracker.last_grade, self.tracker.last_speed, self.tracker.last_dist
+        self.model.set_run_distance(dist)
         if self.raceday:
             self.est.observe(g, v, w)
         M.RUN_DECAY = self._decay if self.raceday else 1.0
@@ -81,3 +82,28 @@ class HowFar:
         v = ctx.dist_next / raw
         self._smooth = v if self._smooth is None else self._smooth + (v - self._smooth) * SMOOTHING
         return ctx.dist_next / self._smooth
+
+
+class AveragePace:
+    """The usual watch estimate, for comparison: the distance left at your average moving speed
+    so far (stops left out, as for HowFar). No slopes, no course profile, nothing remembered."""
+
+    def __init__(self) -> None:
+        self.tracker = GradeTracker()
+        self._start: float | None = None
+        self._dist = 0.0
+
+    def observe(self, t, dist, alt):
+        if self._start is None:
+            self._start = dist
+        self.tracker.update(t, dist, alt)
+        self._dist = dist
+
+    def speed(self) -> float:
+        moved = self._dist - (self._start or 0.0)
+        if self.tracker.moving_time < 60 or moved < 100:
+            return M.DEFAULT_FLAT_SPEED
+        return moved / self.tracker.moving_time
+
+    def predict(self, ctx):
+        return max(1.0, ctx.dist_next / self.speed())

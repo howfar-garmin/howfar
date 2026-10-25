@@ -35,7 +35,7 @@ RACES = {
     "TOR": ("Tor des Géants 2023", ROOT / "samples/TOR330_2023.gpx", ROOT / "courses/TOR330-CERT-2026.gpx", True),
     "AW": ("Abbots Way 2018", ROOT / "samples/Abbots_Way_2018.gpx", None, False),
     "S1": ("TORX 2026 section 1", ROOT / "samples/TORX26_Sezione_1.gpx", ROOT / "courses/TOR330-CERT-2026-T1.gpx", False),
-    "AN": ("La via di Annibale skyrace", ROOT / "samples/La_via_di_Annibale_Skyrace.gpx", ROOT / "courses/La via di annibale - 42 km - 2024.gpx", False),
+    "AN": ("La Via di Annibale skyrace", ROOT / "samples/La_via_di_Annibale_Skyrace.gpx", ROOT / "courses/La via di annibale - 42 km - 2024.gpx", False),
     "STL": ("STL25", ROOT / "samples/STL25.gpx", ROOT / "courses/STL25 def 2026 2.gpx", False),
 }
 # each race learns its "past races" from all the others, so nothing is tested on what it learned from
@@ -66,16 +66,23 @@ def past_layer(key):
 
 
 def make(opts, key):
+    if opts.get("average"):
+        return P.AveragePace()
     return P.HowFar(past=past_layer(key) if opts["past"] else None, raceday=opts["raceday"])
 
 
+AVERAGE = dict(average=True, past=False, ahead=False, raceday=False)
+
+
 def label(o):
+    if o.get("average"):
+        return "average pace so far"
     parts = [n for n, f in (("past", o["past"]), ("ahead", o["ahead"]), ("raceday", o["raceday"])) if f]
     return "HowFar[" + ("+".join(parts) or "current race only") + "]"
 
 
 def specs():
-    return [dict(past=p, ahead=a, raceday=r) for p, a, r in itertools.product((False, True), repeat=3)]
+    return [dict(past=p, ahead=a, raceday=r) for p, a, r in itertools.product((False, True), repeat=3)] + [AVERAGE]
 
 
 def job(args):

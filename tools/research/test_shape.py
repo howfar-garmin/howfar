@@ -63,9 +63,8 @@ def shaped_build_curve(factor):
         valid = [False] * M.NUM_BINS
         for i in range(M.NUM_BINS):
             wr = self.run.weights[i] if use_run else 0.0
-            ws, wi = self.stored.weights[i], self.imported.weights[i]
-            pw = ws + wi
-            pp = (self.stored.paces[i] * ws + self.imported.paces[i] * wi) / pw if pw > 0 else 0.0
+            pw = self.stored.weights[i]
+            pp = self.stored.paces[i]
             pw_eff = min(pw, M.PRIOR_CAP)
             tot = wr + pw_eff
             if tot >= M.MIN_WEIGHT:

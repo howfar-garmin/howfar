@@ -8,7 +8,9 @@ module Wp {
     const MAX_GRADE = 40.0;
     const BIN_STEP = 2.0;
 
-    const PRIOR_CAP = 20.0;          // most weight past runs get in a bin vs. this run's observations
+    const PRIOR_CAP = 10.0;          // most weight past runs get in a bin vs. this run's observations, at the start
+    const PRIOR_HALF = 10000.0;      // metres of this run after which past runs count half as much
+    const PRIOR_MIN = 0.5;
     const MIN_WEIGHT = 3.0;          // bins with less total weight are filled from their neighbours
     const DEFAULT_FLAT_SPEED = 2.8;  // m/s, used only when there is no data at all
     const STORED_DECAY = 0.85;       // weight kept by the stored model each time a run is merged in
@@ -105,35 +107,14 @@ class ModelLayer {
         }
         return true;
     }
-
-    // "v1;<grade>:<speed>:<weight>;..." as printed by tools/fit_to_speed_model.py
-    function loadString(s as String) as Boolean {
-        var parts = WpUtil.split(s, ';');
-        if (parts.size() < 1 || !parts[0].equals("v1")) {
-            return false;
-        }
-        for (var p = 1; p < parts.size(); p++) {
-            var f = WpUtil.split(parts[p], ':');
-            if (f.size() != 3) {
-                continue;
-            }
-            var g = f[0].toFloat();
-            var v = f[1].toFloat();
-            var w = f[2].toFloat();
-            if (g != null && v != null && w != null) {
-                add(Wp.binIndex(g), v, w);
-            }
-        }
-        return true;
-    }
 }
 
 class SpeedGradeModel {
     var run as ModelLayer;        // this run, older observations fading (for predicting)
     var runTotal as ModelLayer;   // this run, all observations equal (what gets saved)
     var stored as ModelLayer;
-    var imported as ModelLayer;
     var form as Float = 1.0;
+    var priorCap as Float = Wp.PRIOR_CAP;
     hidden var _curve as Array<Float>?;
     hidden var _priorCurve as Array<Float>?;
 
@@ -141,7 +122,6 @@ class SpeedGradeModel {
         run = new ModelLayer();
         runTotal = new ModelLayer();
         stored = new ModelLayer();
-        imported = new ModelLayer();
     }
 
     function invalidate() as Void {
@@ -150,7 +130,19 @@ class SpeedGradeModel {
     }
 
     function hasPrior() as Boolean {
-        return stored.totalWeight() + imported.totalWeight() > 0.0;
+        return stored.totalWeight() > 0.0;
+    }
+
+    // Past runs fade as this one goes on: their cap halves every PRIOR_HALF metres
+    function setRunDistance(metres as Float) as Void {
+        var cap = Wp.PRIOR_CAP * Math.pow(0.5, metres / Wp.PRIOR_HALF).toFloat();
+        if (cap < Wp.PRIOR_MIN) {
+            cap = Wp.PRIOR_MIN;
+        }
+        if ((cap - priorCap).abs() > 0.01 * priorCap) {
+            priorCap = cap;
+            _curve = null;
+        }
     }
 
     function observe(gradePct as Float, speed as Float) as Void {
@@ -177,25 +169,26 @@ class SpeedGradeModel {
     function discardRun() as Void {
         run = new ModelLayer();
         runTotal = new ModelLayer();
+        priorCap = Wp.PRIOR_CAP;
         invalidate();
     }
 
     // Pace (s/m) per bin. f is a speed ratio, so prior paces are divided by it.
+    // Without this run the curve is the past alone, so its cap doesn't apply. Slopes with
+    // too little data follow Tobler's shape from the nearest known slope on each side,
+    // the closer one counting more.
     function buildCurve(useRun as Boolean, f as Float) as Array<Float> {
         var values = new Array<Float>[Wp.NUM_BINS];
         var valid = new Array<Boolean>[Wp.NUM_BINS];
         for (var i = 0; i < Wp.NUM_BINS; i++) {
             var wr = useRun ? run.weights[i] : 0.0;
-            var ws = stored.weights[i];
-            var wi = imported.weights[i];
-            var pw = ws + wi;
-            var pp = pw > 0.0 ? (stored.paces[i] * ws + imported.paces[i] * wi) / pw : 0.0;
-            var pwEff = pw < Wp.PRIOR_CAP ? pw : Wp.PRIOR_CAP;
+            var pw = stored.weights[i];
+            var pwEff = (useRun && pw > priorCap) ? priorCap : pw;
             var tot = wr + pwEff;
             values[i] = 0.0;
             valid[i] = false;
             if (tot >= Wp.MIN_WEIGHT) {
-                values[i] = (run.paces[i] * wr + pp / f * pwEff) / tot;
+                values[i] = (run.paces[i] * wr + stored.paces[i] / f * pwEff) / tot;
                 valid[i] = true;
             }
         }
@@ -211,16 +204,20 @@ class SpeedGradeModel {
             while (hi < Wp.NUM_BINS && !valid[hi]) {
                 hi++;
             }
-            var c = Wp.binCenter(i);
-            if (lo >= 0 && hi < Wp.NUM_BINS) {
-                values[i] = values[lo] + (values[hi] - values[lo]) * (i - lo).toFloat() / (hi - lo);
-            } else if (lo >= 0) {
-                values[i] = values[lo] * Wp.toblerFactor(Wp.binCenter(lo)) / Wp.toblerFactor(c);
-            } else if (hi < Wp.NUM_BINS) {
-                values[i] = values[hi] * Wp.toblerFactor(Wp.binCenter(hi)) / Wp.toblerFactor(c);
-            } else {
-                values[i] = 1.0 / (Wp.DEFAULT_FLAT_SPEED * f * Wp.toblerFactor(c));
+            var c = Wp.toblerFactor(Wp.binCenter(i));
+            var total = 0.0;
+            var weight = 0.0;
+            if (lo >= 0) {  // pace scales as 1 / speed factor
+                var w = 1.0 / (i - lo);
+                total += values[lo] * Wp.toblerFactor(Wp.binCenter(lo)) / c * w;
+                weight += w;
             }
+            if (hi < Wp.NUM_BINS) {
+                var w = 1.0 / (hi - i);
+                total += values[hi] * Wp.toblerFactor(Wp.binCenter(hi)) / c * w;
+                weight += w;
+            }
+            values[i] = weight > 0.0 ? total / weight : 1.0 / (Wp.DEFAULT_FLAT_SPEED * f * c);
         }
         return values;
     }

@@ -253,6 +253,7 @@ section + section { border-top: 1px solid var(--line-soft); }
 /* tools */
 .tools-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 @media (max-width: 860px) { .tools-grid { grid-template-columns: minmax(0, 1fr); } }
+.tools-grid.single { grid-template-columns: minmax(0, 1fr); max-width: 760px; }
 .tool { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 14px; align-content: start; min-width: 0; }
 .string-box { display: grid; gap: 8px; }
 .string-box pre {
@@ -292,6 +293,8 @@ table.results { border-collapse: collapse; width: 100%; min-width: 640px; font-s
 .results tr.current td:first-child::after { content: "recommended"; margin-left: 8px; font-size: 0.72rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 8px; }
 .results tr:hover td { background: var(--accent-soft); cursor: pointer; }
 .results tr.group:hover td { background: var(--bg); cursor: default; }
+.results tr.baseline td { color: var(--ink-2); }
+.results tr.baseline:hover td { background: transparent; cursor: default; }
 .bar-col { width: 30%; }
 .bar { height: 8px; border-radius: 4px; background: var(--ink-3); opacity: 0.55; }
 .bar.best { background: var(--accent); opacity: 1; }
@@ -438,5 +441,5 @@ label.btn { cursor: pointer; }
 /* results table: headings may wrap, so the columns fit the page */
 #results thead th { white-space: normal; vertical-align: bottom; line-height: 1.25; }
 #results .bar-col { width: 14%; }
-#results thead th .race-name, #results thead th .race-km { white-space: nowrap; }
+#results thead th .race-km { white-space: nowrap; }
 #results thead th:nth-last-child(-n+3) { min-width: 5.5em; }

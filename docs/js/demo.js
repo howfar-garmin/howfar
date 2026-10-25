@@ -6,7 +6,7 @@
   if (!D) return;
 
   // frame columns
-  var T = 0, CD = 1, ALT = 2, K = 3, DN = 4, ACT = 5, STOPA = 6, STOPNOW = 7, SCALE = 8, FORM = 9, FAT = 10, ETA0 = 11;
+  var T = 0, CD = 1, ALT = 2, K = 3, DN = 4, ACT = 5, STOPA = 6, STOPNOW = 7, SCALE = 8, FLAT = 9, UP = 10, DOWN = 11, FAT = 12, ETA0 = 13;
   var F = D.frames, WP = D.waypoints, PROF = D.profile, C = D.configs;
   var tStart = F[0][T], tEnd = F[F.length - 1][T];
   var startMs = Date.parse(D.start);
@@ -19,13 +19,11 @@
   var _t = window._t || function (s, v) { return v ? s.replace(/\{(\w+)\}/g, function (m, k) { return k in v ? v[k] : m; }) : s; };
 
   var NOTES = {
-    none: _t("Your first race with HowFar, with nothing pasted in its settings. It learns your pace from today's run as you go, and knows only how far away the checkpoint is and how much higher or lower (~). After a few runs with HowFar it also remembers your past runs."),
-    pace: _t("You pasted your pace from past races (here: the other races in the test), so it knows how you climb and descend from the first kilometre. It still knows only how far away the checkpoint is and how much higher or lower (~)."),
-    profile: _t("You pasted the course profile, so it knows every climb and descent to the checkpoint (P). Your pace it learns from today's run as you go."),
-    both: _t("You pasted both: it knows your pace from the first kilometre and every climb and descent ahead (P). This is HowFar with full race prep.")
+    none: _t("Your first race with HowFar, nothing pasted in its settings. It learns your pace on every slope from today's run as you go, and knows only how far away the checkpoint is and how much higher or lower (~)."),
+    profile: _t("Your first race with HowFar, with the course profile pasted in its settings: it knows every climb and descent to the checkpoint (P). It learns your pace on every slope from today's run as you go.")
   };
 
-  var state = { t: tStart + 2.17 * 3600, main: "both", cmp: "none", speed: 300, playing: false, last: 0 };
+  var state = { t: tStart + 2.17 * 3600, main: "profile", cmp: "average", speed: 300, playing: false, last: 0 };
   var $ = function (id) { return document.getElementById(id); };
   var SVGNS = "http://www.w3.org/2000/svg";
 
@@ -77,10 +75,9 @@
   function cfg(id) { return C[idx[id]]; }
   // the cases' names, short (chart, table) and next to the choice
   var LABELS = {
-    none: [_t("No race prep"), _t("Nothing: no race prep")],
-    pace: [_t("Pace only"), _t("Only my pace from past races")],
-    profile: [_t("Course profile only"), _t("Only the course profile")],
-    both: [_t("Full race prep"), _t("Both: full race prep")]
+    average: [_t("Average pace so far"), ""],
+    none: [_t("HowFar, no course profile"), _t("Nothing")],
+    profile: [_t("HowFar with the course profile"), _t("The course profile")]
   };
   function label(id) { return LABELS[id] ? LABELS[id][0] : cfg(id).label; }
 
@@ -124,14 +121,14 @@
       (ok ? '<span class="chip good">✓ ' + _t("Within 5 min") + "</span>"
           : '<span class="chip warn">! ' + (x < 0 ? _t("You got there later") : _t("You got there sooner")) + "</span>");
 
-    var sc = f[SCALE], fo = f[FORM], fa = f[FAT];
+    var sc = f[SCALE], fa = f[FAT];
     var pct = function (r) { return Math.round(Math.abs(r - 1) * 100) + "%"; };
     $("lScale").innerHTML = sc >= 1
       ? _t("<b>Distance:</b> your watch measures <b>{pct} more</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.", { pct: pct(sc) })
       : _t("<b>Distance:</b> your watch measures <b>{pct} less</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.", { pct: pct(sc) });
-    $("lForm").innerHTML = Math.abs(fo - 1) < 0.01 ? _t("<b>Today vs. past races:</b> about the same as usual.")
-      : fo > 1 ? _t("<b>Today vs. past races:</b> <b>{pct} faster</b> than usual.", { pct: pct(fo) })
-      : _t("<b>Today vs. past races:</b> <b>{pct} slower</b> than usual.", { pct: pct(fo) });
+    var perKm = function (v) { var p = Math.round(1000 / v); return Math.floor(p / 60) + ":" + pad(p % 60); };
+    $("lForm").innerHTML = _t("<b>Your pace today:</b> {flat}/km on the flat, {up}/km up a 20% slope, {down}/km down one.",
+      { flat: perKm(f[FLAT]), up: perKm(f[UP]), down: perKm(f[DOWN]) });
     $("lFatigue").innerHTML = Math.abs(fa - 1) < 0.01 ? _t("<b>Last couple of km:</b> on the pace it expected.")
       : fa > 1 ? _t("<b>Last couple of km:</b> <b>{pct} faster</b> than it expected.", { pct: pct(fa) })
       : _t("<b>Last couple of km:</b> <b>{pct} slower</b> than it expected.", { pct: pct(fa) });
@@ -289,7 +286,7 @@
   }
 
   // ---------- method pickers and results table
-  var STEPS = ["none", "pace", "profile", "both"];
+  var STEPS = ["average", "none", "profile"], CHOICES = ["none", "profile"];
   function fillPicker(sel, value) {
     STEPS.forEach(function (id) {
       var o = document.createElement("option");
@@ -300,7 +297,7 @@
   }
   // the choice under the watch: one radio button per case
   function fillChoice(box, value) {
-    STEPS.forEach(function (id) {
+    CHOICES.forEach(function (id) {
       var l = document.createElement("label");
       var r = document.createElement("input");
       r.type = "radio"; r.name = "prepChoice"; r.value = id; r.checked = id === value;
@@ -317,7 +314,7 @@
     updateSeries(); render();
   }
 
-  var SHORT = { TOR: "Tor 330", AW: "Abbots Way", S1: "TORX S1", AN: "Annibale", STL: "STL25" };
+  var SHORT = { TOR: "Tor 330", AW: "Abbots Way", S1: "TORX S1", AN: "La Via di Annibale", STL: "STL25" };
   function buildTable() {
     var table = $("results");
     var RACES = D.races, S = D.scores;
@@ -327,7 +324,7 @@
       return t / RACES.length;
     };
     var head = table.querySelector("thead tr");
-    head.innerHTML = '<th scope="col">' + _t("What you prepared") + "</th>" +
+    head.innerHTML = '<th scope="col">' + _t("Prediction") + "</th>" +
       RACES.map(function (r) { return '<th scope="col" class="num" title="' + _t("{race}: average minutes off", { race: r.name }) + '"><span class="race-name">' + (SHORT[r.key] || r.name) + "</span>" +
         (r.km ? ' <span class="race-km">(' + r.km.toLocaleString(LANG, { maximumFractionDigits: 1 }) + " km)</span>" : "") + "</th>"; }).join("") +
       '<th scope="col" class="num" title="' + _t("Average of the races") + '">' + _t("Average") + '</th><th scope="col" class="bar-col"><span class="sr-only">' + _t("Average, as a bar") + "</span></th>" +
@@ -343,9 +340,9 @@
     STEPS.forEach(function (id) {
       var v = mean(id, "mae_hour");
       var row = document.createElement("tr");
-      if (id === "both") row.className = "current";
-      row.tabIndex = 0;
-      row.title = _t("Show on the watch");
+      if (id === "profile") row.className = "current";
+      var onWatch = CHOICES.indexOf(id) >= 0;
+      if (onWatch) { row.tabIndex = 0; row.title = _t("Show on the watch"); } else row.className = "baseline";
       row.innerHTML = "<td>" + label(id) + "</td>" +
         RACES.map(function (r) { return '<td class="num">' + dec(S[id][r.key].mae_hour, 1) + " min</td>"; }).join("") +
         '<td class="num"><b>' + dec(v, 1) + " min</b></td>" +
@@ -354,56 +351,15 @@
         '<td class="num">' + Math.round(mean(id, "within15_hour") * 100) + "%</td>" +
         '<td class="num">' + dec(mean(id, "mae_2000"), 1) + " min</td>";
       var pick = function () { setMain(id); $("demo").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); };
-      row.addEventListener("click", pick);
-      row.addEventListener("keydown", function (e) { if (e.key === "Enter") pick(); });
+      if (onWatch) {
+        row.addEventListener("click", pick);
+        row.addEventListener("keydown", function (e) { if (e.key === "Enter") pick(); });
+      }
       body.appendChild(row);
     });
   }
 
-  // ---------- speed-by-grade chart (tools section)
-  function drawModel() {
-    var svg = $("model");
-    var M = { W: 640, H: 300, l: 44, r: 70, t: 14, b: 34 };
-    var mx = function (g) { return M.l + ((g + 40) / 80) * (M.W - M.l - M.r); };
-    var my = function (v) { return M.t + ((2.4 - v) / 2.4) * (M.H - M.t - M.b); };
-    [0, 0.6, 1.2, 1.8, 2.4].forEach(function (v) {
-      el("line", { x1: M.l, x2: M.W - M.r, y1: my(v), y2: my(v), stroke: "var(--line-soft)" }, svg);
-      txt(svg, M.l - 6, my(v) + 4, v.toFixed(1), { "text-anchor": "end" });
-    });
-    [-40, -20, 0, 20, 40].forEach(function (g) { txt(svg, mx(g), M.H - 12, (g > 0 ? "+" : "") + g + "%", { "text-anchor": "middle" }); });
-    txt(svg, M.l + 4, M.t + 8, "m/s", { "text-anchor": "start" });
-    var series = [[1, 2, "var(--series-s1)", _t("Section 1")], [3, 4, "var(--series-s2)", _t("Section 2")]];
-    var labels = [];
-    series.forEach(function (s) {
-      var pts = [], last = null;
-      D.model.forEach(function (b) { if (b[s[1]] >= 3) { pts.push(mx(b[0]).toFixed(1) + "," + my(b[s[0]]).toFixed(1)); last = b; } });
-      el("polyline", { points: pts.join(" "), fill: "none", stroke: s[2], "stroke-width": 2, "stroke-linejoin": "round" }, svg);
-      if (last) labels.push({ y: my(last[s[0]]) + 4, s: s[3] });
-    });
-    labels.sort(function (a, b) { return a.y - b.y; });
-    for (var i = 1; i < labels.length; i++) labels[i].y = Math.max(labels[i].y, labels[i - 1].y + 15);
-    labels.forEach(function (l) { txt(svg, M.W - M.r + 6, l.y, l.s, { fill: "var(--ink-2)" }); });
-
-    var cross = el("line", { y1: M.t, y2: M.H - M.b, stroke: "var(--ink-3)", "stroke-width": 1, visibility: "hidden" }, svg);
-    var box = $("modelBox");
-    svg.addEventListener("mousemove", function (evt) {
-      var p = svgPoint(svg, evt);
-      var g = Math.round(((p.x - M.l) / (M.W - M.l - M.r)) * 80 - 40);
-      var b = D.model[Math.max(0, Math.min(40, Math.round((g + 40) / 2)))];
-      cross.setAttribute("x1", mx(b[0])); cross.setAttribute("x2", mx(b[0])); cross.setAttribute("visibility", "visible");
-      function line(i, w, color, label) {
-        if (b[w] < 3) return '<br><i style="background:' + color + '"></i>' + _t("{name}: too few samples", { name: label });
-        var pace = 1000 / b[i];
-        return '<br><i style="background:' + color + '"></i>' + label + ": " + dec(b[i], 2) + " m/s · " +
-          Math.floor(pace / 60) + ":" + pad(Math.round(pace % 60)) + "/km";
-      }
-      tipShow(box, _t("<b>{grade}% grade</b>", { grade: (b[0] > 0 ? "+" : "") + b[0] }) + line(1, 2, "var(--series-s1)", _t("Section 1")) + line(3, 4, "var(--series-s2)", _t("Section 2")), p.px, p.py);
-    });
-    svg.addEventListener("mouseleave", function () { tipHide(box); cross.setAttribute("visibility", "hidden"); });
-  }
-
   function fillTools() {
-    $("modelString").textContent = D.modelString;
     $("profileString").textContent = D.profileString;
     $("profileMeta").textContent = _t("T1 course profile, one value per {step} m · {n} characters", { step: D.profileStep, n: num(D.profileString.length) });
     var entry = D.profileString.split(";").filter(function (e) { return e.indexOf("Col d'Arp|") === 0; })[0];
@@ -470,7 +426,6 @@
   drawError();
   updateSeries();
   buildTable();
-  drawModel();
   fillTools();
   render();
   if (!reduceMotion) setPlaying(true);

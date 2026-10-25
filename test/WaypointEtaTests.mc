@@ -53,11 +53,12 @@ function testDefaultCurve(logger as Test.Logger) as Boolean {
 (:test)
 function testInterpolation(logger as Test.Logger) as Boolean {
     var m = new SpeedGradeModel();
-    m.imported.add(Wp.binIndex(0.0), 3.0, 30.0);
-    m.imported.add(Wp.binIndex(10.0), 2.0, 30.0);
-    // interpolation is in pace: 1/3 s/m at 0%, 1/2 s/m at 10%
-    Test.assert(near(m.predict(4.0), 2.5, 0.001));
-    Test.assert(near(m.predict(5.0), 1.0 / (1.0 / 3.0 + 0.5 / 6.0), 0.001));
+    m.stored.add(Wp.binIndex(0.0), 3.0, 30.0);
+    m.stored.add(Wp.binIndex(10.0), 2.0, 30.0);
+    // unseen slopes follow Tobler's shape from both sides, the closer side counting more
+    var t4 = Wp.toblerFactor(4.0);
+    var pace4 = ((1.0 / 3.0) * Wp.toblerFactor(0.0) / t4 / 2.0 + 0.5 * Wp.toblerFactor(10.0) / t4 / 3.0) / (1.0 / 2.0 + 1.0 / 3.0);
+    Test.assert(near(m.predict(4.0), 1.0 / pace4, 0.001));
     Test.assert(near(m.predict(20.0), 2.0 * Wp.toblerFactor(20.0) / Wp.toblerFactor(10.0), 0.001));
     return true;
 }
@@ -68,15 +69,20 @@ function testPriorCap(logger as Test.Logger) as Boolean {
     m.stored.add(Wp.binIndex(0.0), 3.0, 200.0);
     m.run.add(Wp.binIndex(0.0), 2.0, 20.0);
     m.invalidate();
-    // prior counts as 20 observations at most, so 20 run observations weigh the same
-    Test.assert(near(m.predict(0.0), 2.4, 0.001));
+    // past runs count as 10 observations at most at the start: paces (20 x 1/2 + 10 x 1/3) / 30
+    Test.assert(near(m.predict(0.0), 2.25, 0.001));
+    // and half that after 10 km of this run
+    m.setRunDistance(10000.0);
+    Test.assert(near(m.predict(0.0), 1.0 / ((10.0 + 5.0 / 3.0) / 25.0), 0.001));
+    // the past alone keeps all its weight
+    Test.assert(near(m.predictPrior(0.0), 3.0, 0.001));
     return true;
 }
 
 (:test)
 function testFormFactor(logger as Test.Logger) as Boolean {
     var m = new SpeedGradeModel();
-    m.imported.add(Wp.binIndex(0.0), 3.0, 30.0);
+    m.stored.add(Wp.binIndex(0.0), 3.0, 30.0);
     var est = new EtaEstimator(m);
     for (var i = 0; i < 40; i++) {
         est.observe(0.0, 2.7, 60.0);
@@ -87,20 +93,10 @@ function testFormFactor(logger as Test.Logger) as Boolean {
 }
 
 (:test)
-function testModelString(logger as Test.Logger) as Boolean {
-    var l = new ModelLayer();
-    Test.assert(l.loadString("v1;-6:3.30:7;0:3.00:40"));
-    Test.assert(near(l.speed(Wp.binIndex(-6.0)), 3.3, 0.001));
-    Test.assert(near(l.weights[Wp.binIndex(0.0)], 40.0, 0.001));
-    Test.assert(!new ModelLayer().loadString("p1;50"));
-    return true;
-}
-
-(:test)
 function testProfileTime(logger as Test.Logger) as Boolean {
     var m = new SpeedGradeModel();
-    m.imported.add(Wp.binIndex(0.0), 3.0, 30.0);
-    m.imported.add(Wp.binIndex(10.0), 2.0, 30.0);
+    m.stored.add(Wp.binIndex(0.0), 3.0, 30.0);
+    m.stored.add(Wp.binIndex(10.0), 2.0, 30.0);
     var est = new EtaEstimator(m);
     // segment 230 m: chunks 100, 100, 30 (the 30 m chunk is next to the waypoint)
     var p = new CourseProfile("p1;100;X|230|100,100,0");
@@ -174,8 +170,8 @@ function testCourseScale(logger as Test.Logger) as Boolean {
 (:test)
 function testTimeScalesDistanceAndGrade(logger as Test.Logger) as Boolean {
     var m = new SpeedGradeModel();
-    m.imported.add(Wp.binIndex(0.0), 3.0, 30.0);
-    m.imported.add(Wp.binIndex(10.0), 2.0, 30.0);
+    m.stored.add(Wp.binIndex(0.0), 3.0, 30.0);
+    m.stored.add(Wp.binIndex(10.0), 2.0, 30.0);
     var est = new EtaEstimator(m);
     // 1000 course metres at 11.5% course grade = 1150 of your metres at 10%
     Test.assert(near(est.timeForGrade(1000.0, 11.5, 1.15), 575.0, 0.01));

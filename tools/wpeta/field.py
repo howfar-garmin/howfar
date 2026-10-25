@@ -20,13 +20,10 @@ SMOOTHING = 0.2
 class FieldLogic:
     def __init__(
         self,
-        imported: Layer | None = None,
         stored: Layer | None = None,
         profile: tuple[int, list[tuple[str, int, list[int]]]] | None = None,
     ) -> None:
         self.model = SpeedGradeModel()
-        if imported is not None:
-            self.model.imported = imported
         if stored is not None:
             self.model.stored = stored
         self.tracker = GradeTracker()
@@ -55,6 +52,7 @@ class FieldLogic:
         if timer_on and None not in (timer_s, dist, alt):
             if self.tracker.update(timer_s, dist, alt):
                 g, v, d = self.tracker.last_grade, self.tracker.last_speed, self.tracker.last_dist
+                self.model.set_run_distance(dist)
                 self.estimator.observe(g, v, d)
                 self.model.observe(g, v)
 

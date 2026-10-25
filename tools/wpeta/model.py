@@ -14,7 +14,9 @@ MIN_GRADE = -40.0
 MAX_GRADE = 40.0
 BIN_STEP = 2.0
 
-PRIOR_CAP = 20.0  # most weight past runs get in a bin vs. this run's observations
+PRIOR_CAP = 10.0  # most weight past runs get in a bin vs. this run's observations, at the start
+PRIOR_HALF = 10000.0  # metres of this run after which past runs count half as much
+PRIOR_MIN = 0.5
 MIN_WEIGHT = 3.0  # bins with less total weight are filled from their neighbours
 DEFAULT_FLAT_SPEED = 2.8  # m/s, used only when there is no data at all
 STORED_DECAY = 0.85  # weight kept by the stored model each time a run is merged in
@@ -107,8 +109,8 @@ class SpeedGradeModel:
         self.run = Layer()  # this run, older observations fading (for predicting)
         self.run_total = Layer()  # this run, all observations equal (what gets saved)
         self.stored = Layer()
-        self.imported = Layer()
         self.form = 1.0
+        self.prior_cap = PRIOR_CAP
         self._curve: list[float] | None = None
         self._prior_curve: list[float] | None = None
 
@@ -117,7 +119,14 @@ class SpeedGradeModel:
         self._prior_curve = None
 
     def has_prior(self) -> bool:
-        return self.stored.total_weight() + self.imported.total_weight() > 0
+        return self.stored.total_weight() > 0
+
+    def set_run_distance(self, metres: float) -> None:
+        """Past runs fade as this one goes on: their cap halves every PRIOR_HALF metres."""
+        cap = max(PRIOR_MIN, PRIOR_CAP * 0.5 ** (metres / PRIOR_HALF))
+        if abs(cap - self.prior_cap) > 0.01 * self.prior_cap:
+            self.prior_cap = cap
+            self._curve = None
 
     def observe(self, grade_pct: float, speed: float) -> None:
         if RUN_DECAY < 1.0:
@@ -139,22 +148,24 @@ class SpeedGradeModel:
     def discard_run(self) -> None:
         self.run = Layer()
         self.run_total = Layer()
+        self.prior_cap = PRIOR_CAP
         self.invalidate()
 
     def build_curve(self, use_run: bool, form: float) -> list[float]:
-        """Pace (s/m) per bin. form is a speed ratio, so prior paces are divided by it."""
+        """Pace (s/m) per bin. form is a speed ratio, so prior paces are divided by it.
+
+        Without this run the curve is the past alone, so its cap doesn't apply. Slopes with
+        too little data follow Tobler's shape from the nearest known slope on each side,
+        the closer one counting more."""
         values = [0.0] * NUM_BINS
         valid = [False] * NUM_BINS
         for i in range(NUM_BINS):
             wr = self.run.weights[i] if use_run else 0.0
-            ws = self.stored.weights[i]
-            wi = self.imported.weights[i]
-            pw = ws + wi
-            pp = (self.stored.paces[i] * ws + self.imported.paces[i] * wi) / pw if pw > 0 else 0.0
-            pw_eff = min(pw, PRIOR_CAP)
+            pw = self.stored.weights[i]
+            pw_eff = min(pw, self.prior_cap) if use_run else pw
             tot = wr + pw_eff
             if tot >= MIN_WEIGHT:
-                values[i] = (self.run.paces[i] * wr + pp / form * pw_eff) / tot
+                values[i] = (self.run.paces[i] * wr + self.stored.paces[i] / form * pw_eff) / tot
                 valid[i] = True
         for i in range(NUM_BINS):
             if valid[i]:
@@ -165,15 +176,14 @@ class SpeedGradeModel:
             hi = i + 1
             while hi < NUM_BINS and not valid[hi]:
                 hi += 1
-            c = bin_center(i)
-            if lo >= 0 and hi < NUM_BINS:
-                values[i] = values[lo] + (values[hi] - values[lo]) * (i - lo) / (hi - lo)
-            elif lo >= 0:
-                values[i] = values[lo] * tobler_factor(bin_center(lo)) / tobler_factor(c)
-            elif hi < NUM_BINS:
-                values[i] = values[hi] * tobler_factor(bin_center(hi)) / tobler_factor(c)
-            else:
-                values[i] = 1.0 / (DEFAULT_FLAT_SPEED * form * tobler_factor(c))
+            c = tobler_factor(bin_center(i))
+            total = weight = 0.0
+            for j in (lo, hi):
+                if 0 <= j < NUM_BINS:  # pace scales as 1 / speed factor
+                    w = 1.0 / abs(i - j)
+                    total += values[j] * tobler_factor(bin_center(j)) / c * w
+                    weight += w
+            values[i] = total / weight if weight > 0 else 1.0 / (DEFAULT_FLAT_SPEED * form * c)
         return values
 
     @staticmethod
@@ -292,7 +302,7 @@ class EtaEstimator:
     """Form factor (today vs. past runs), fatigue factor (the last couple of km vs. the model)
     and time integration over grades."""
 
-    ALPHA = 0.03
+    ALPHA = 0.06
     MIN_OBS = 8
     FATIGUE_ALPHA = 0.01  # ~70 observations, ~1.7 km half-life
     FATIGUE_LO = 0.6

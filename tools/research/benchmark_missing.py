@@ -101,7 +101,7 @@ class OldMatcher:
 
 def replay(points, wps, elev, profile, mode, imported, stretch, unknown):
     """Rows (waypoint index, predicted s, actual s without stops, profile knows the point)."""
-    field = FieldLogic(imported=imported)
+    field = FieldLogic(stored=imported)
     if mode != "none":
         field.profile = (OldMatcher if mode == "old" else ProfileMatcher)(STEP, profile)
         field.profile.own_points = False  # scored against the watch's next point

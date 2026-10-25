@@ -7,10 +7,10 @@ Everything needed to build, test and release HowFar. For what it does and how to
 The field predicts the time to the next course point from your **speed at each slope grade**:
 
 - **This run:** every 25 m it records the grade and speed over the last 60 m. You count as stopped when you cover less than 15 m in a minute; per-second speed isn't used, because on steep climbs it often dips to almost nothing.
-- **Past runs with the field:** when an activity ends, what it learned is merged into a stored model. Older runs fade out gradually.
-- **Imported runs:** a speed model made from any activities (race prep page, or `tools/fit_to_speed_model.py`) and pasted into the settings.
+- **Past runs with the field:** when an activity ends, what it learned is merged into a stored model. Older runs fade out gradually. During a run the past counts as at most 10 observations per grade bin, halving every 10 km of the run, so today's running soon takes over.
 - **Pace, not speed:** each 2% grade bin averages pace (time per metre), because averaging speeds makes predicted times too short.
-- **Form factor:** today's pace against past runs (0.6× to 1.6×).
+- **Grades not seen yet:** a bin with too little data takes the nearest known bin on each side, scaled by Tobler's hiking function, weighted by closeness. With no data at all, Tobler's curve at 2.8 m/s on the flat, scaled by the form factor.
+- **Form factor:** today's pace against the past runs alone (0.6× to 1.6×; 0.25× to 3× with nothing remembered), following today with a weight of 0.06 per observation.
 - **Fatigue:** this run's older observations gradually lose weight (half-life about 3.5 km), and a fatigue factor compares the last couple of km with the model.
 - **Course vs. your distance:** the watch measures more distance than the course file has (about 15% on the Tor des Géants). The field learns that ratio while navigating and scales the remaining distance and grades by it.
 
@@ -35,15 +35,15 @@ On the race prep page, `docs/js/extra-points.js` finds the added points: climbs 
 
 | Watch (Monkey C) | Python | Browser | What |
 |---|---|---|---|
-| `source/SpeedGradeModel.mc` | `tools/wpeta/model.py` | `docs/js/howfar-core.js` | grade bins, blending, interpolation |
-| `source/GradeTracker.mc` | `tools/wpeta/model.py` | `docs/js/howfar-core.js` | samples → (grade, speed) observations |
+| `source/SpeedGradeModel.mc` | `tools/wpeta/model.py` | | grade bins, blending, filling unseen grades |
+| `source/GradeTracker.mc` | `tools/wpeta/model.py` | | samples → (grade, speed) observations |
 | `source/EtaEstimator.mc` | `tools/wpeta/model.py` | | form and fatigue factors, time over a grade list |
 | `source/CourseProfile.mc` | `tools/wpeta/profile.py` | `docs/js/howfar-core.js` | the profile text; following the next course point |
 | `source/WaypointEtaView.mc` | `tools/wpeta/field.py` | | per-second logic, drawing |
 | | `tools/wpeta/readers.py` | `docs/js/howfar-core.js` | reading GPX and FIT |
 | | | `docs/js/extra-points.js` | climb tops and bottoms, huts and villages, FIT course out (page only) |
 
-The three must agree: the watch reads the texts the Python tools and the race prep page make. If you change the logic, change all of them; the tests below check that they match.
+They must agree: the watch reads the profile text the Python tools and the race prep page make, and the Python model is the watch's, line for line. If you change the logic, change all of them; the tests below check that they match.
 
 ## Setup (once)
 
@@ -57,7 +57,7 @@ The three must agree: the watch reads the texts the Python tools and the race pr
 - **Watch code:** *Monkey C: Build for Device* in VS Code, or `monkeyc -f monkey.jungle -o bin/HowFar.prg -y developer_key -d enduro3`.
 - **Watch unit tests:** `monkeyc -t …` then `monkeydo bin/tests.prg enduro3 -t`, or *Monkey C: Run Tests*.
 - **Python:** `.venv/bin/python -m pytest tools/tests`
-- **Browser vs. Python:** `.venv/bin/python tools/tests/make_web_fixtures.py [--private]`, then `cd web-tests && npm test`. With `--private` it also checks the race files in `samples/` and `courses/`, which are not in git.
+- **Browser vs. Python:** `.venv/bin/python tools/tests/make_web_fixtures.py [--private]`, then `cd web-tests && npm test`. With `--private` it also checks the race files in `courses/`, which are not in git.
 - **Simulator:**
   - Next waypoint: *Simulation → Set Navigation Data*.
   - A recorded run: *Simulation → Activity Data*, source *FIT/GPX Playable File*, *Load File*, *Start*, play.
@@ -69,9 +69,9 @@ The three must agree: the watch reads the texts the Python tools and the race pr
 ## Command-line tools
 
 ```bash
-.venv/bin/python tools/fit_to_speed_model.py run1.fit run2.gpx      # speed model text
 .venv/bin/python tools/course_to_profile.py course.gpx               # course profile text
 .venv/bin/python tools/replay.py run.gpx --course course.gpx -v      # how good the ETAs would have been
+.venv/bin/python tools/replay.py run.gpx --past old1.fit old2.gpx    # ... as if the watch remembered those runs
 ```
 
 ## Releasing
@@ -89,14 +89,15 @@ The three must agree: the watch reads the texts the Python tools and the race pr
 .venv/bin/python tools/research/demo_export.py --results results.json      # refreshes the site's demo data
 ```
 
-On five races: Tor des Géants 2023 on the official 2026 course (legs where the route changed since are left out of the score), Abbots Way 2018 (no checkpoints in its file, so they go where the runner stopped), TORX 2026 section 1, La via di Annibale, STL25. Times are scored as the watch rounds them (`benchmark.py --shown`):
+On five races: Tor des Géants 2023 on the official 2026 course (legs where the route changed since are left out of the score), Abbots Way 2018 (no checkpoints in its file, so they go where the runner stopped), TORX 2026 section 1, La Via di Annibale, STL25. Times are scored as the watch rounds them (`benchmark.py --shown`):
 
 | Configuration | Average error | Within 5 min | Within 15 min |
 |---|---|---|---|
+| Distance left at the average moving pace so far (the usual watch estimate) | 9.2 min | 40% | 78% |
 | Current race only | 7.1 min | 48% | 88% |
-| + past races | 6.9 min | 46% | 90% |
-| + trail ahead | 5.5 min | 62% | 91% |
-| + race-day corrections (the field) | 4.3 min | 73% | 94% |
+| + trail ahead (course profile) | 5.2 min | 58% | 95% |
+| + race-day corrections: the field on a first race | 4.1 min | 73% | 96% |
+| + past runs remembered (the other four races) | 4.1 min | 73% | 95% |
 
 When the profile and the watch's course don't list the same checkpoints (`tools/research/benchmark_missing.py`, the four races and 129 activities with checkpoints every 5 km), placing points on the profile beats the old name-only matching, which fell back to "~" for any point the profile lacked:
 
@@ -109,6 +110,8 @@ When the profile and the watch's course don't list the same checkpoints (`tools/
 With the same checkpoints on both, nothing changes. Placing an unknown point by its altitude was tried as well and dropped: it didn't help.
 
 The slope is measured over the last 60 m: 40, 100, 150 and 200 m were tested (`tools/research/test_window.py`) and none did better; 60 m was best on the 129 activities (4.56 min against 4.61–4.72) and within 0.05 min of the best on the five races.
+
+A pasted "pace from past races" setting was dropped. Made from similar earlier activities (`tools/research/benchmark_similar_pace.py`) it helped in hours 1–4 of mountain races like them, but made the first half hour worse and hurt whenever the past runs were slower or different; weighing it less or letting it fade (`tools/research/tune_prior.py`) didn't make it reliably useful. What the watch remembers on its own stays, made to fade during the run (10 per bin, halving every 10 km) with a faster form factor (0.06), and missing grades are filled from both neighbours along Tobler's curve (`tools/research/test_shape.py`). Checked on every run (`tools/research/confirm_changes.py`, past runs as the watch would remember them): the five races 4.10 → 3.96 min, the 129 activities of 25 km or more 4.51 → 4.45, the 28 of 50 km or more with checkpoints where the runner stopped 5.37 → 5.14.
 
 Tested and dropped, because none did better: predicting from your speed over the last stretch times how much faster or slower you usually are on each slope (`tools/research/test_anchor.py`: the level from the last 0.5–2 km, the slope ratios from Tobler's curve or from the field's own; 4.2–5.0 min on the races against 4.1, 4.5–5.1 on the 129 activities against 4.5: the recent speed is too noisy an anchor, and the per-slope speeds learned today hold more); carrying today's trend forward (`tools/research/benchmark_trend.py`: the slope of today's pace against a fixed reference over the last 60–120 minutes, extrapolated over the leg and capped at ±10–20%, also leaving out the first 1–2 km after each checkpoint: worse on the four races, the 28 long runs and the 129 activities alike, 3.54 → 3.66–4.06 min on the races at best, and it doesn't fix the long runs' shortfall either); taking a fixed share (5–15%) off the prediction after each checkpoint (`tools/research/bias_after_checkpoint.py`: on the four races the first minutes of a leg run only slightly long, +1–2%, while on long training runs the prediction is about 10% short all along, so a fixed cut helps one and hurts the other); not letting the stretch around each checkpoint (200–500 m) change today's form and recent slowdown, on the theory that walking through aid stations makes the next leg look slow (`tools/research/benchmark_quiet.py`; the four races, 129 activities, and the 28 of 50 km or more with checkpoints where the runner stopped: overall error unchanged, a little less in the first 15 min after a checkpoint, worse on some legs); a projection of the slowdown with effort; a self-check every 1–3 km correcting by the last stretch's ratio (3.8–4.3 min); personal Naismith-Langmuir; Tobler's hiking function; ITRA km-effort; Minetti's energy cost; gradient-boosted trees.
 

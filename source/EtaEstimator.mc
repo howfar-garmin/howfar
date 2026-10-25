@@ -3,7 +3,7 @@ import Toybox.Lang;
 // Form factor (today vs. past runs), fatigue factor (the last couple of km vs. the model)
 // and time integration over grades. Mirrors EtaEstimator in tools/wpeta/model.py.
 class EtaEstimator {
-    const ALPHA = 0.03;
+    const ALPHA = 0.06;
     const MIN_OBS = 8;
     const FATIGUE_ALPHA = 0.01;  // ~70 observations, ~1.7 km half-life
     const FATIGUE_LO = 0.6;

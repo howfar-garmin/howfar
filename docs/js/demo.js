@@ -6,7 +6,7 @@
   if (!D) return;
 
   // frame columns
-  var T = 0, CD = 1, ALT = 2, K = 3, DN = 4, ACT = 5, STOPA = 6, STOPNOW = 7, SCALE = 8, FLAT = 9, UP = 10, DOWN = 11, FAT = 12, ETA0 = 13;
+  var T = 0, CD = 1, ALT = 2, K = 3, DN = 4, ACT = 5, STOPA = 6, STOPNOW = 7, SCALE = 8, FLAT = 9, UP = 10, DOWN = 11, FAT = 12, STOPS = 13, ETA0 = 14;
   var F = D.frames, WP = D.waypoints, PROF = D.profile, C = D.configs;
   var tStart = F[0][T], tEnd = F[F.length - 1][T];
   var startMs = Date.parse(D.start);
@@ -66,8 +66,6 @@
   // the prediction before rounding (the chart), and as the watch shows it (watch and readout)
   function eta(f, id) { return f[ETA0 + idx[id]]; }
   function err(f, id) { return eta(f, id) - (f[ACT] - f[STOPA]); }
-  function shownEta(f, id) { return shownSec(eta(f, id)); }
-  function shownErr(f, id) { return shownEta(f, id) - (f[ACT] - f[STOPA]); }
   function cfg(id) { return C[idx[id]]; }
   // the cases' names, short (chart, table) and next to the choice
   var LABELS = {
@@ -93,32 +91,56 @@
     return F[lo];
   }
 
+  // ---------- main and minor points: the big number counts down to the next main checkpoint;
+  // the full-screen watch also shows the next minor one on the way and the main one after
+  var LEGS = ETA0 + C.length;
+  // HowFar's time from now to checkpoint j (the next one, k, or a later one), unrounded
+  function timeTo(f, j) {
+    var e = eta(f, "profile");
+    return j === f[K] ? e : e + f[LEGS][j - f[K] - 1];
+  }
+  function mainFrom(j) { while (j < WP.length - 1 && WP[j].minor) j++; return j; }
+  function points(f) {
+    var m = mainFrom(f[K]);
+    var via = null;
+    for (var j = f[K]; j < m; j++) if (WP[j].minor) { via = j; break; }
+    var then = m < WP.length - 1 ? mainFrom(m + 1) : null;
+    return { main: m, via: via, then: then };
+  }
+
   // ---------- watch + readout
   function render() {
     var f = frameAt(state.t);
-    var wp = WP[f[K]];
-    var e = shownEta(f, state.main);
+    var pts = points(f);
+    var wp = WP[pts.main];
+    var e = shownSec(timeTo(f, pts.main));
     var marker = cfg(state.main).ahead ? "P " : "~ ";
 
     $("wLabel").textContent = marker + wp.name;
     var shown = etaText(e), learning = f[CD] < 4000; // the watch greys the time for its first ~4 km
-    $("wTime").innerHTML = shown[0] + '<span class="w-unit">' + shown[1] + "</span>";
+    $("wTime").innerHTML = shown[0] + '<span class="w-side"><span class="w-unit">' + shown[1] + '</span><span class="w-arr">@' + arrival(f[T], e) + "</span></span>";
     $("wTime").classList.toggle("learning", learning);
-    $("wArrive").textContent = "@ " + arrival(f[T], e) + (learning ? " " + _t("(learning)") : "");
+    var line = function (word, j) { return word + " " + WP[j].name + " @ " + arrival(f[T], shownSec(timeTo(f, j))); };
+    $("wVia").textContent = pts.via != null ? line(_t("via"), pts.via) : learning ? _t("(learning)") : "";
+    $("wThen").textContent = pts.then != null ? line(_t("then"), pts.then) : "";
 
     $("raceClock").textContent = dur(f[T]);
     $("rTime").innerHTML = _t("<b>{time}</b> · {clock} local time", { time: hm(f[T]), clock: clock(f[T]) }) +
       (f[STOPNOW] ? ' <span class="chip quiet">' + _t("Standing still") + "</span>" : "");
     $("rPos").innerHTML = _t("<b>{done}</b> of {total} · {alt} m", { done: km(f[CD]), total: km(WP[WP.length - 1].d), alt: num(f[ALT]) });
     var climb = wp.alt - f[ALT];
+    var ahead = wp.d - f[CD];
     $("rNext").innerHTML = "<b>" + wp.name + "</b> · " + (climb >= 0
-      ? _t("{dist} ahead, {m} m higher", { dist: km(f[DN]), m: num(climb) })
-      : _t("{dist} ahead, {m} m lower", { dist: km(f[DN]), m: num(-climb) }));
+      ? _t("{dist} ahead, {m} m higher", { dist: km(ahead), m: num(climb) })
+      : _t("{dist} ahead, {m} m lower", { dist: km(ahead), m: num(-climb) }));
     $("rSays").innerHTML = _t("<b>{time}</b>, arriving at {clock}", { time: shown[0] + " " + shown[1], clock: arrival(f[T], e) });
-    $("rActual").innerHTML = (f[STOPA] >= 60
-      ? _t("<b>{time}</b>, arrived at {clock}, including {stop} min stopped", { time: dur(f[ACT]), clock: clock(f[T] + f[ACT]), stop: Math.round(f[STOPA] / 60) })
-      : _t("<b>{time}</b>, arrived at {clock}", { time: dur(f[ACT]), clock: clock(f[T] + f[ACT]) }));
-    var x = shownErr(f, state.main);
+    // what it really took to the main checkpoint, and the stops on the way
+    var took = pts.main === f[K] ? f[ACT] : wp.arrive - f[T];
+    var stopped = pts.main === f[K] ? f[STOPA] : wp.stops - f[STOPS];
+    $("rActual").innerHTML = (stopped >= 60
+      ? _t("<b>{time}</b>, arrived at {clock}, including {stop} min stopped", { time: dur(took), clock: clock(f[T] + took), stop: Math.round(stopped / 60) })
+      : _t("<b>{time}</b>, arrived at {clock}", { time: dur(took), clock: clock(f[T] + took) }));
+    var x = e - (took - stopped);
     var ok = Math.abs(x) <= 300;
     $("rErr").innerHTML = _t("<b>{err}</b> (not counting stops)", { err: signedMin(x) }) + " " +
       (ok ? '<span class="chip good">✓ ' + _t("Within 5 min") + "</span>"

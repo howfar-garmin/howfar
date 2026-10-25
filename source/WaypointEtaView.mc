@@ -302,14 +302,15 @@ class WaypointEtaView extends WatchUi.DataField {
             return;
         }
         drawTimeWithArrival(dc, w / 2, h * 0.55, f[withExtras], main, unit, arriveSide, timeColor, fg, dot);
-        if (learning) {
+        // the word while learning, when there's room for it under the number (the grey digits say it anyway)
+        if (learning && h * 0.55 + dc.getFontHeight(f[withExtras]) * 0.4 + lineH < bottomY + lineH * 0.5 && h >= 120) {
             drawLine(dc, w / 2, bottomY, _learningWord, grey, null);
         }
     }
 
     const MAX_MINOR_LINES = 3;
 
-    // A full-screen field, top to bottom in the order you meet them: the minor points on the way
+    // A field of its own, top to bottom in the order you meet them: the minor points on the way
     // (grey, each with its time from now; the last line shown counts the others), the main
     // checkpoint with the time to it and the arrival, then the next main checkpoints with their
     // leg's moving time (+h:mm). Small screens get two of these lines, big ones four; minor points
@@ -448,11 +449,17 @@ class WaypointEtaView extends WatchUi.DataField {
         var left = x - (dw + sw + (dot != null ? _dotR * 6 + 2 : 0.0)) / 2.0;
         left += drawDot(dc, left, y, dot, _dotR * 2);
         var fh = dc.getFontHeight(font);
+        var lh = dc.getFontHeight(Graphics.FONT_XTINY);
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
         dc.drawText(left, y, font, digits, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(left + dw + 4, y - fh * 0.08, Graphics.FONT_XTINY, unit, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-        dc.drawText(left + dw + 4, y + fh * 0.14, Graphics.FONT_XTINY, arrival, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        if (fh * 0.7 < lh * 1.8) {
+            // digits too small to stack two lines beside them: the unit alone, as in drawTime
+            dc.drawText(left + dw + 4, y + fh * 0.18, Graphics.FONT_XTINY, unit, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            return;
+        }
+        dc.drawText(left + dw + 4, y - lh * 0.45, Graphics.FONT_XTINY, unit, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(left + dw + 4, y + lh * 0.5, Graphics.FONT_XTINY, arrival, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     // text + tail, shortening text until it fits maxW in FONT_XTINY

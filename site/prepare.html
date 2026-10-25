@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=55">
+<link rel="stylesheet" href="css/site.css?v=56">
 </head>
 <body>
 
@@ -31,7 +31,7 @@
     <div class="wrap">
       <p class="eyebrow">Race prep</p>
       <h1>Get HowFar ready for your next race</h1>
-      <p class="lede">HowFar learns your pace on every slope while you run. What it can't learn on its own is the course ahead. Give it the course profile, with every climb and descent between checkpoints, and it knows what's coming before you get there. Only with the profile can it also show the checkpoint after the next, and points you add. Make it here, then paste it into the Garmin Connect app. It's optional: without it, HowFar still counts down to your watch's checkpoints.</p>
+      <p class="lede">HowFar learns your pace on every slope while you run. What it can't learn on its own is the course ahead. Give it the course profile, with every climb and descent between checkpoints, and it knows what's coming before you get there. Only with the profile can it also show the points before and after the checkpoint, including points you add. Make it here, then paste it into the Garmin Connect app. It's optional: without it, HowFar still counts down to your watch's checkpoints.</p>
       <ol class="howto prep-overview" aria-label="The two steps">
         <li><b>Your checkpoints.</b> Add the course file of the race you'll run, and any points you want to add.</li>
         <li><b>Paste on the watch.</b> Copy the text into HowFar's settings in Garmin Connect.</li>
@@ -46,7 +46,7 @@
         <p class="eyebrow">Step 1</p>
         <h2>Your checkpoints</h2>
         <p class="muted">The race's course file, the same one you load on the watch. HowFar finds its checkpoints and notes the slope of every stretch between them, so it knows every climb and descent ahead (the <span class="pill">P</span> on the watch).</p>
-        <p class="muted">Your watch tells HowFar only about the checkpoints in the course you load. Here you can add more: the top and bottom of every big climb, huts and villages along the way. HowFar counts down to them too, without changing the course on your watch. Your watch's own alerts and checkpoint list stay as they are: only HowFar knows the points you add.</p>
+        <p class="muted">Your watch tells HowFar only about the checkpoints in the course you load. Here you can add more: the top and bottom of every big climb, huts and villages along the way. HowFar shows them too, without changing the course on your watch. Your watch's own alerts and checkpoint list stay as they are: only HowFar knows the points you add.</p>
       </div>
 
       <div class="prep-grid">
@@ -73,11 +73,11 @@
             <div class="chart-block">
               <div class="chart-head">
                 <h3>Course and checkpoints</h3>
-                <span class="small muted">The dots are the checkpoints HowFar will count down to.</span>
+                <span class="small muted">Big dots: the main checkpoints HowFar counts down to. Small dots: minor points.</span>
               </div>
               <div class="chart-box" id="courseChartBox"><svg id="courseChart" class="wide" viewBox="0 0 1000 280" role="img" aria-label="Elevation profile of the course with its checkpoints"></svg></div>
             </div>
-            <p class="small muted" id="coursePickNote" hidden>Untick a checkpoint that isn't part of this race: the text below updates. <b>Main</b> points are what the big number counts down to; <b>minor</b> ones (the points you add, at first) show on a full-screen field as you approach them, as in <i>via Col d'Arp in 0:35</i>. Press Main or Minor to switch a point.</p>
+            <p class="small muted" id="coursePickNote" hidden>Untick a checkpoint that isn't part of this race: the text below updates. <b>Main</b> points are what the big number counts down to; <b>minor</b> ones (the points you add, at first) show above the checkpoint's name on a field of its own, as in <i>Col d'Arp in 0:35</i>. Press Main or Minor to switch a point.</p>
             <div class="table-wrap">
               <table class="results prep-table">
                 <thead><tr><th scope="col">Checkpoint</th><th scope="col" class="num">At km</th><th scope="col" class="num">From the previous</th><th scope="col" class="num">Climb on the way</th><th scope="col">Main or minor</th></tr></thead>

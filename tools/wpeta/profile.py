@@ -6,7 +6,7 @@ point. Grades are in tenths of a percent, one per <step> metres, ordered towards
 point; the chunk next to the point may be shorter than <step>. A final entry named "*"
 covers the stretch from the last course point to the finish. A name starting with "+" is a
 minor point (a climb top, a hut, a point of your own): the field counts down to the main
-points, and shows the next minor one on the way on its bottom line.
+points, and on a field of its own lists the minor ones on the way above it.
 """
 
 from __future__ import annotations

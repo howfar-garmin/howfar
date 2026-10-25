@@ -302,7 +302,7 @@ function testProfileCountsDownToItsOwnPoints(logger as Test.Logger) as Boolean {
 (:test)
 function testProfileMinorPointOnTheWay(logger as Test.Logger) as Boolean {
     var est = new EtaEstimator(new SpeedGradeModel());
-    // a climb top marked minor ("+"): the field keeps counting down to B, the top is "via"
+    // a climb top marked minor ("+"): the field keeps counting down to B, the top is on the way
     var p = new CourseProfile("p1;100;+Top 900m|800|0;B|1200|0");
     Test.assert(p.update("B", 1700.0, 1700.0, 300.0, 1.0));
     Test.assert((p.targetName("B") as String).equals("B"));

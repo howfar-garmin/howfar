@@ -307,7 +307,7 @@ def test_matcher_minor_points_are_shown_on_the_way():
     from wpeta.model import EtaEstimator, SpeedGradeModel
 
     est = EtaEstimator(SpeedGradeModel())
-    # a climb top marked minor ("+"): the field keeps counting down to B, the top is "via"
+    # a climb top marked minor ("+"): the field keeps counting down to B, the top is on the way
     m = ProfileMatcher(100, [("+Top 900m", 800, [0] * 8), ("B", 1200, [0] * 12)])
     assert m.update("B", 1700, 1700, 300.0)
     assert m.target_name("B") == "B" and m.target_dist == pytest.approx(1700)
@@ -319,7 +319,7 @@ def test_matcher_minor_points_are_shown_on_the_way():
 
 
 def test_matcher_several_minor_points_in_turn():
-    # two minor points before B: "via" names the next one, then the one after it
+    # two minor points before B: `via` is the next one, then the one after it
     m = ProfileMatcher(100, [("+Col", 600, [0] * 6), ("+Lake", 600, [0] * 6), ("B", 800, [0] * 8)])
     assert m.update("B", 1900, 1900, 100.0)
     assert m.following_name(m.via) == "Col" and m.target_dist == pytest.approx(1900)

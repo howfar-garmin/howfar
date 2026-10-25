@@ -40,8 +40,23 @@ def text_center(d: ImageDraw.ImageDraw, cx: float, cy: float, s: str, f, fill) -
     d.text((cx * SS, cy * SS), s, font=f, fill=fill, anchor="mm")
 
 
-def watch(d: ImageDraw.ImageDraw, cx: float, cy: float, r: float, label: str, time: str, unit: str, arrive: str) -> None:
-    """A round watch like the site's: bezel, tick ring, black screen with the field's three lines."""
+GREEN, YELLOW, RED = (63, 207, 114), (242, 182, 48), (239, 90, 79)
+
+
+def line_with_dot(d: ImageDraw.ImageDraw, cx: float, cy: float, text: str, f, fill, dot, dr: float) -> None:
+    """A line centred on cx with its coloured dot before it, as the field draws its times."""
+    s = lambda v: v * SS
+    tw = d.textlength(text, font=f) / SS
+    left = cx - (tw + dr * 3) / 2
+    d.ellipse([s(left), s(cy - dr), s(left + 2 * dr), s(cy + dr)], fill=dot)
+    d.text((s(left + dr * 3), s(cy)), text, font=f, fill=fill, anchor="lm")
+
+
+def watch(d: ImageDraw.ImageDraw, cx: float, cy: float, r: float, minor: tuple | None, label: str, time: str, unit: str,
+          arrive: str, dot, then: tuple | None) -> None:
+    """A round watch like the site's: bezel, tick ring, black screen with the field on a screen of
+    its own: the minor point on the way (grey), the main checkpoint, the time with its dot, unit
+    and arrival, then the next main checkpoint with its leg time."""
     s = lambda v: v * SS
     d.ellipse([s(cx - r - 3), s(cy - r + 6), s(cx + r + 3), s(cy + r + 12)], fill=(0, 0, 0, 90))  # shadow
     d.ellipse([s(cx - r), s(cy - r), s(cx + r), s(cy + r)], fill=BEZEL_EDGE)
@@ -53,15 +68,24 @@ def watch(d: ImageDraw.ImageDraw, cx: float, cy: float, r: float, label: str, ti
                fill=TICK, width=int(s(max(2, r * 0.018))))
     rs = r * 0.84
     d.ellipse([s(cx - rs), s(cy - rs), s(cx + rs), s(cy + rs)], fill=SCREEN)
-    text_center(d, cx, cy - rs * 0.42, label, font(SANS, DEMI, rs * 0.15), INK)
-    # the digits big with the unit small after them, the pair centred, as on the watch
-    big, small = font(COND, BOLD, rs * 0.46), font(SANS, DEMI, rs * 0.14)
-    gap = rs * 0.04
-    dw, uw = d.textlength(time, font=big) / SS, d.textlength(unit, font=small) / SS
-    left = cx - (dw + gap + uw) / 2
-    d.text((s(left), s(cy + rs * 0.02)), time, font=big, fill=INK, anchor="lm")
-    d.text((s(left + dw + gap), s(cy + rs * 0.12)), unit, font=small, fill=INK, anchor="lm")
-    text_center(d, cx, cy + rs * 0.44, arrive, font(SANS, MEDIUM, rs * 0.14), INK_2)
+    small = font(SANS, MEDIUM, rs * 0.12)
+    if minor:
+        line_with_dot(d, cx, cy - rs * 0.58, minor[0], small, INK_2, minor[1], rs * 0.03)
+    text_center(d, cx, cy - rs * 0.36, label, font(SANS, DEMI, rs * 0.14), INK)
+    # the digits big after their dot, the unit and the arrival small and stacked after them
+    big, side = font(COND, BOLD, rs * 0.46), font(SANS, DEMI, rs * 0.12)
+    gap, dr = rs * 0.04, rs * 0.055
+    dw = d.textlength(time, font=big) / SS
+    sw = max(d.textlength(unit, font=side), d.textlength(arrive, font=side)) / SS
+    left = cx - (dr * 3 + dw + gap + sw) / 2
+    ty = cy + rs * 0.04
+    d.ellipse([s(left), s(ty - dr), s(left + 2 * dr), s(ty + dr)], fill=dot)
+    left += dr * 3
+    d.text((s(left), s(ty)), time, font=big, fill=INK, anchor="lm")
+    d.text((s(left + dw + gap), s(ty - rs * 0.07)), unit, font=side, fill=INK, anchor="lm")
+    d.text((s(left + dw + gap), s(ty + rs * 0.09)), arrive, font=side, fill=INK, anchor="lm")
+    if then:
+        line_with_dot(d, cx, cy + rs * 0.42, then[0], small, INK, then[1], rs * 0.03)
 
 
 def course_profile() -> list[tuple[float, float]]:
@@ -105,7 +129,8 @@ def cover() -> None:
     img = Image.new("RGB", (W * SS, H * SS), BG)  # RGB base so RGBA drawing blends
     d = ImageDraw.Draw(img, "RGBA")
     profile_band(d, -10, 360, W + 10, 500, fill=(108, 193, 150, 26), line=(108, 193, 150, 90), dots=False)
-    watch(d, W / 2, 205, 150, "P Col d'Arp", "1:10", "h", "@ 14:05")
+    watch(d, W / 2, 205, 150, ("Col d'Arp in 0:35", GREEN), "P Baite Youlaz", "1:10", "h", "@14:05", YELLOW,
+          ("then La Thuile +0:55", YELLOW))
     text_center(d, W / 2, 425, "HowFar?", font(COND, BOLD, 64), INK)
     text_center(d, W / 2, 468, "time to the next checkpoint", font(SANS, MEDIUM, 21), ACCENT)
     save(img, (W, H), "cover-500.png", 300)
@@ -117,14 +142,15 @@ def hero() -> None:
     d = ImageDraw.Draw(img, "RGBA")
     profile_band(d, -10, 520, W + 10, 700, fill=(108, 193, 150, 30), line=(108, 193, 150, 160), dots=True)
     left = 96
-    d.text((left * SS, 120 * SS), "HOWFAR? · FREE DATA FIELD FOR GARMIN", font=font(SANS, DEMI, 22), fill=ACCENT)
+    d.text((left * SS, 120 * SS), "HOWFAR · FREE DATA FIELD FOR GARMIN", font=font(SANS, DEMI, 22), fill=ACCENT)
     y = 165
     for line in ("How long to the", "next checkpoint?"):
         d.text((left * SS, y * SS), line, font=font(COND, BOLD, 92), fill=INK)
         y += 100
     d.text((left * SS, 385 * SS), "Learned from how you climb and descend.", font=font(SANS, MEDIUM, 28), fill=INK_2)
     d.text((left * SS, 425 * SS), "#ultratrail  #trailrunning  #skyrunning", font=font(SANS, DEMI, 22), fill=ACCENT)
-    watch(d, 1110, 285, 200, "P Rif. Deffeyes", "1:20", "h", "@ 19:10")
+    watch(d, 1110, 285, 200, ("Lac du Fond in 0:20", GREEN), "P Planaval", "1:20", "h", "@19:10", YELLOW,
+          ("then Valgrisenche +1:25", YELLOW))
     save(img, (W, H), "hero-1440x720.png", 2048)
 
 

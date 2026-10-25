@@ -99,7 +99,7 @@
   }
 
   // ---------- main and minor points: the big number counts down to the next main checkpoint;
-  // the full-screen watch also shows the next minor one on the way and the main one after
+  // the watch, a field of its own, also lists the minor ones on the way and the main ones after
   var LEGS = ETA0 + C.length;
   // HowFar's time from now to checkpoint j (the next one, k, or a later one), unrounded
   function timeTo(f, j) {
@@ -154,10 +154,9 @@
     var shown = etaText(e), learning = f[CD] < 4000; // the watch greys the time for its first ~4 km
     $("wTime").innerHTML = '<span class="dot ' + dotClass(e) + '"></span>' + shown[0] + '<span class="w-side"><span class="w-unit">' + shown[1] + '</span><span class="w-arr">@' + arrival(f[T], e) + "</span></span>";
     $("wTime").classList.toggle("learning", learning);
-    // a full-screen field, top to bottom in the order you meet them: the minor point on the way
-    // (grey, its time from now), the main checkpoint, then the next main ones with their leg's
-    // moving time from leaving the checkpoint before (+h:mm: stops there can't be known);
-    // "(learning)" in a free line
+    // a field of its own, top to bottom in the order you meet them: the minor points on the way
+    // (grey, their time from now), the main checkpoint, then the next main ones with their leg's
+    // moving time from leaving the checkpoint before (+h:mm: stops there can't be known)
     // two of these small lines fit on this screen (as on a 280-pixel watch): minor points first,
     // the last one shown counting the others, then "then" lines; "(learning)" in a free one
     var leg = function (j, from) { var s = timeTo(f, j) - timeTo(f, from); return [_t("then") + " " + WP[j].name, "+" + etaHm(s), s]; };

@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&amp;family=Public+Sans:wght@400;500;600&amp;family=Saira+Semi+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="css/site.css?v=55" rel="stylesheet"/>
+<link href="css/site.css?v=56" rel="stylesheet"/>
 <link href="https://howfar-garmin.github.io/howfar/" hreflang="en" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/it/" hreflang="it" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/fr/" hreflang="fr" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/de/" hreflang="de" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/" hreflang="x-default" rel="alternate"/><script>window.HOWFAR_LANG="en";window.HOWFAR_T={};
 window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\}/g,function(m,k){return k in v?v[k]:m}):x};
 (function(){try{var k="howfar.lang";document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-lang]");if(a)localStorage.setItem(k,a.getAttribute("data-lang"))});if(!localStorage.getItem(k)){var l=((navigator.languages&&navigator.languages[0])||navigator.language||"").slice(0,2).toLowerCase();if(["it", "fr", "de"].indexOf(l)>=0){localStorage.setItem(k,l);location.replace(l+"/"+location.pathname.split("/").pop()+location.hash)}}}catch(e){}})();</script></head>
@@ -55,7 +55,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <p class="muted">Add HowFar to one of your activity's data screens, load a course with checkpoints, and run. It shows the next checkpoint, the time to get there and when you'll arrive; on a field of its own, also the points before and after it.</p>
 </div>
 <div class="explain-grid">
-<div aria-label="Example on a full-screen field: Col de la Crosatie in 0:45, P Planaval, 1:55 h, @ 16:40, then Valgrisenche +1:25" class="watch watch-small" role="img">
+<div aria-label="Example on a field of its own: Col de la Crosatie in 0:45, P Planaval, 1:55 h, @ 16:40, then Valgrisenche +1:25" class="watch watch-small" role="img">
 <div class="screen with-then">
 <div class="w-minor"><span class="dot g"></span><span class="nm" translate="no">Col de la Crosatie</span><span class="tl">in 0:45</span></div>
 <div class="w-label" translate="no">P Planaval</div>
@@ -64,9 +64,9 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 </div>
 <ol class="callouts">
-<li><b>Top line: the next main checkpoint.</b> The name comes from your course, or from a point you added on the <a href="prepare.html">race prep page</a>, such as the top of a climb or a hut. The letter in front tells you how much the watch knows about the trail ahead: <span class="pill">P</span> it knows every climb and descent to the checkpoint (you gave it the course profile, see <a href="#prepare">Prepare a race</a>); <span class="pill">~</span> it only knows how far away and how much higher or lower the checkpoint is.</li>
-<li><b>Big number: time to get there</b> while you keep moving, only as precisely as it can be known: hours and minutes in 30-minute steps from four hours out, 15-minute steps from two and 5-minute steps from one (<i>2:15 h</i>), whole minutes closer in (<i>42 min</i>), minutes and seconds in the last 5 minutes. A small dot before it says how far off it may be: <b>green</b> under 45 minutes to go, usually within 5 minutes; <b>yellow</b> up to 2 hours, usually within 15; <b>red</b> beyond, often half an hour or more. The other times on a full-screen field have one too. For the first 4 km or so the number is grey and <i>(learning)</i> appears after the arrival time, or under the number on a full-screen field: it's only a rough guess, because HowFar is still learning how you're moving today. When it turns white, it has seen enough of your running. Time spent stopped at an aid station is not included, because nobody can guess how long you'll stay.</li>
-<li><b>Arrival time.</b> The time of day you'll get there, in your watch's 12 or 24 hour format: on the line below the number, or beside it on a full-screen field.</li>
+<li><b>The name: the next main checkpoint.</b> The name comes from your course, or from a point you added on the <a href="prepare.html">race prep page</a>, such as the top of a climb or a hut. The letter in front tells you how much the watch knows about the trail ahead: <span class="pill">P</span> it knows every climb and descent to the checkpoint (you gave it the course profile, see <a href="#prepare">Prepare a race</a>); <span class="pill">~</span> it only knows how far away and how much higher or lower the checkpoint is.</li>
+<li><b>Big number: time to get there</b> while you keep moving, only as precisely as it can be known: hours and minutes in 30-minute steps from four hours out, 15-minute steps from two and 5-minute steps from one (<i>2:15 h</i>), whole minutes closer in (<i>42 min</i>), minutes and seconds in the last 5 minutes. A small dot before it says how far off it may be: <b>green</b> under 45 minutes to go, usually within 5 minutes; <b>yellow</b> up to 2 hours, usually within 15; <b>red</b> beyond, often half an hour or more. The other times on a field of its own have one too. For the first 4 km or so the number is grey and <i>(learning)</i> appears under it: it's only a rough guess, because HowFar is still learning how you're moving today. When it turns white, it has seen enough of your running. Time spent stopped at an aid station is not included, because nobody can guess how long you'll stay.</li>
+<li><b>Arrival time.</b> The time of day you'll get there, small beside the number, in your watch's 12 or 24 hour format.</li>
 <li><b>On a field of its own, only with the course profile: the points around it, top to bottom in the order you meet them.</b> Above the name, in grey, the minor points on the way, such as a climb top or a hut you added, each with its time from now (<i>Col de la Crosatie in 0:45</i>). When more come before the checkpoint than fit, the last line counts the others (<i>Lac du Fond in 1:05 (+2)</i>), and each one you pass makes room for the next. Below the number, the next main checkpoints, as many as fit (<i>then Valgrisenche +1:25</i>). A main checkpoint's time is its leg's moving time, from when you leave the checkpoint before it: how long you'll stop there can't be known, so add it yourself. You choose which points are main and which minor on the <a href="prepare.html">race prep page</a>. On a smaller field, such as half the screen, HowFar shows just the countdown: the main checkpoint, the time and the arrival. Put it on two data screens to have both. Your watch tells a data field only about the next checkpoint, so without the profile these extra lines stay empty.</li>
 </ol>
 </div>
@@ -116,7 +116,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <dt>Next checkpoint</dt><dd id="rNext"></dd>
 <dt>The watch says</dt><dd id="rSays"></dd>
 <dt>It really took</dt><dd id="rActual"></dd>
-<dt>The watch was off by</dt><dd id="rErr"></dd>
+<dt class="hl">HowFar was off by</dt><dd class="hl" id="rErr"></dd>
 <dt>Your pace today</dt><dd id="lForm"></dd>
 <dt>Last couple of km</dt><dd id="lFatigue"></dd>
 </dl>
@@ -235,7 +235,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <ol class="steps">
 <li>Load the race course on the watch as usual (<b>Navigate</b> → <b>Courses</b>), ideally one with the checkpoints marked.</li>
 <li>Start the activity. HowFar shows the next checkpoint and counts down.</li>
-<li>For the first 4 km or so the time is grey, with <i>(learning)</i> after the arrival time: a rough guess while HowFar learns how you're moving today. Then it turns white. No practice run is needed beforehand.</li>
+<li>For the first 4 km or so the time is grey, with <i>(learning)</i> under it: a rough guess while HowFar learns how you're moving today. Then it turns white. No practice run is needed beforehand.</li>
 <li>Save the activity at the end: HowFar remembers what it learned for your next race.</li>
 </ol>
 </div>
@@ -260,7 +260,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <p class="muted">HowFar works without any preparation: it learns your pace as you run. One optional extra makes it better: the course profile, pasted into the field's settings in the Garmin Connect app on your phone. Only with it does HowFar:</p>
 <ul class="gains">
 <li><b>know every climb and descent</b> to the checkpoint, not just how much higher or lower it is (<span class="pill">P</span> on the watch instead of <span class="pill">~</span>);</li>
-<li><b>show the checkpoint after the next</b> and when you'll get there, on a full-screen field: your watch tells a data field only about the next one;</li>
+<li><b>show the points around the checkpoint</b> on a field of its own, the ones on the way and the next main ones, with their times: your watch tells a data field only about the next checkpoint;</li>
 <li><b>show points you add</b> on the <a href="prepare.html">race prep page</a>: the top and bottom of every big climb, huts and villages, or your own. Make each one main, to count down to it, or minor, to see it on the way. Your watch's course stays as it is.</li>
 </ul>
 <p class="muted">This needs HowFar installed from the Connect IQ Store: if you copied the file onto the watch with a cable instead, Garmin Connect shows no settings for it.</p>
@@ -293,12 +293,12 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="faq">
 <details><summary>Does it need a phone or a signal during the race?</summary><p>No. Everything happens on the watch. Your phone is only needed before the race, to paste the optional course profile.</p></details>
 <details><summary>Does it use more battery?</summary><p>It uses no sensors of its own: it reads the distance, altitude and course information your watch already records, and does a little arithmetic once a second. The watch's GPS and screen use far more.</p></details>
-<details><summary>What about time at aid stations?</summary><p>HowFar only counts the time you'll spend moving. It can't know whether you'll stop for two minutes or twenty, so stops are never included: not in the countdown, and not in the arrival time. If you plan to stop on the way, add that time in your head: with 1:10 h on the watch and a 15-minute break at an aid station before the checkpoint, expect to get there in about 1:25 h. While you're stopped the countdown waits, and when you set off again it carries on from where it was.</p></details>
+<details><summary>What about time at aid stations?</summary><p>HowFar only counts the time you'll spend moving. It can't know whether you'll stop for two minutes or twenty, so stops are never included: not in the countdown, and not in the arrival time. If you plan to stop on the way, add that time in your head: with 1:10 h on the watch and a 15-minute break at an aid station before the checkpoint, expect to get there in about 1:25 h. The times of the main checkpoints further on (<i>then Valgrisenche +1:25</i>) leave stops out too: each is that leg's moving time, from when you leave the checkpoint before it. While you're stopped the countdown waits, and when you set off again it carries on from where it was.</p></details>
 <details><summary>What if I go off course?</summary><p>HowFar uses the distance to the next checkpoint that your watch's navigation gives it. While you're off the course line the estimate is rougher; once you're back on it, it settles again.</p></details>
 <details><summary>What if my watch's course has checkpoints the course profile doesn't?</summary><p>No problem. HowFar works out where each checkpoint is on the profile from how far the finish is, so it still knows every climb and descent to it. It also copes with checkpoints the profile has and the watch doesn't, and with a course file that is a slightly different version of the race.</p></details>
 <details><summary>What if I slow down, or speed up, during the race?</summary><p>It follows you. It keeps comparing how you're moving on each slope with what it expected over the last couple of kilometres. If you're, say, 10% slower than that, it assumes you'll keep that pace on everything ahead, and the time to the next checkpoint gets about 10% longer. When you pick up again, it follows you back within a kilometre or two. A single slow minute, like tying a shoe, doesn't change it.</p></details>
 <details><summary>Does it keep up as my fitness changes?</summary><p>Yes. At the end of every activity with HowFar on a data screen, it adds what it learned to what it remembers, and older activities count a little less each time: after five more activities an old one counts less than half, after ten about a fifth. During a race, what it remembers counts less and less as today's kilometres add up, so today's running soon takes over.</p></details>
-<details><summary>Why is it off at the start of a race?</summary><p>It's still learning how you're moving today. That's why, for the first 4 km or so, the time is grey and the arrival time ends with <i>(learning)</i>: take it as a rough guess. When the time turns white, it has seen enough of your running.</p></details>
+<details><summary>Why is it off at the start of a race?</summary><p>It's still learning how you're moving today. That's why, for the first 4 km or so, the time is grey with <i>(learning)</i> under it: take it as a rough guess. When the time turns white, it has seen enough of your running.</p></details>
 <details><summary>Should I run with HowFar before a race?</summary><p>No need. In tests, a first race with HowFar was as accurate as one where it remembered earlier runs: in the first half hour a little more, after that a little less. It adapts within the first few kilometres. What it remembers helps only a little, later in the race.</p></details>
 <details><summary>Can I give it my pace from past races?</summary><p>Not any more. Early versions had a setting for it, and in tests it helped only in the first hours of races like the ones it was made from, and made things worse when they were different. Learning on the run catches up within a few kilometres, and HowFar already remembers your runs on its own.</p></details>
 <details><summary>Where does my data go?</summary><p>Nowhere. The watch keeps what it learns, and the race files you use to prepare stay on your own computer or phone. The one exception is optional: on the <a href="prepare.html">race prep page</a>, “Add huts and villages” asks OpenStreetMap what's around your course, sending only the corners of a rectangle around it.</p></details>
@@ -314,6 +314,6 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 </footer>
 <script src="demo/torx-s1.js?v=21"></script>
-<script src="js/demo.js?v=43"></script>
+<script src="js/demo.js?v=44"></script>
 </body>
 </html>

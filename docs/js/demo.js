@@ -152,6 +152,12 @@
     t.textContent = s;
     return t;
   }
+  // axis titles: x centred under the plot, y turned along the left edge
+  function axisLabels(svg, M, xLabel, yLabel) {
+    txt(svg, M.l + (M.W - M.l - M.r) / 2, M.H - 6, xLabel, { "text-anchor": "middle", fill: "var(--ink-2)" });
+    var y = M.t + (M.H - M.t - M.b) / 2;
+    txt(svg, 16, y, yLabel, { "text-anchor": "middle", fill: "var(--ink-2)", transform: "rotate(-90 16 " + y + ")" });
+  }
   function tipShow(box, html, px, py) {
     var tip = box.querySelector(".tip");
     if (!tip) { tip = document.createElement("div"); tip.className = "tip"; box.appendChild(tip); }
@@ -169,7 +175,7 @@
   }
 
   // ---------- elevation chart
-  var E = { W: 1000, H: 300, l: 52, r: 18, t: 74, b: 30 };
+  var E = { W: 1000, H: 318, l: 72, r: 18, t: 74, b: 48 };
   var maxD = WP[WP.length - 1].d;
   var elevAlts = PROF.map(function (p) { return p[1]; });
   E.y0 = Math.floor((Math.min.apply(null, elevAlts) - 100) / 200) * 200;
@@ -185,8 +191,9 @@
       txt(svg, E.l - 8, ey(a) + 4, num(a), { "text-anchor": "end" });
     }
     for (var k = 0; k <= maxD / 1000; k += 5) {
-      txt(svg, ex(k * 1000), E.H - 10, k + " km", { "text-anchor": "middle" });
+      txt(svg, ex(k * 1000), E.H - 28, String(k), { "text-anchor": "middle" });
     }
+    axisLabels(svg, E, _t("Distance (km)"), _t("Altitude (m)"));
     var pts = PROF.map(function (p) { return ex(p[0]).toFixed(1) + "," + ey(p[1]).toFixed(1); });
     el("polygon", { points: ex(0) + "," + ey(E.y0) + " " + pts.join(" ") + " " + ex(PROF[PROF.length - 1][0]) + "," + ey(E.y0), fill: "var(--terrain)" }, svg);
     el("polyline", { points: pts.join(" "), fill: "none", stroke: "var(--ink-3)", "stroke-width": 1.5 }, svg);
@@ -228,7 +235,7 @@
   }
 
   // ---------- error chart
-  var R = { W: 1000, H: 270, l: 52, r: 44, t: 14, b: 32, y0: -45, y1: 25 };
+  var R = { W: 1000, H: 288, l: 72, r: 62, t: 14, b: 50, y0: -45, y1: 25 };
   function rx(t) { return R.l + ((t - tStart) / (tEnd - tStart)) * (R.W - R.l - R.r); }
   function ry(m) { m = Math.max(R.y0, Math.min(R.y1, m)); return R.t + ((R.y1 - m) / (R.y1 - R.y0)) * (R.H - R.t - R.b); }
   var errCursor;
@@ -243,10 +250,13 @@
       el("line", { x1: R.l, x2: R.W - R.r, y1: ry(m), y2: ry(m), stroke: m === 0 ? "var(--ink-3)" : "var(--line-soft)", "stroke-width": 1 }, svg);
       txt(svg, R.l - 8, ry(m) + 4, (m > 0 ? "+" : m < 0 ? "−" : "") + Math.abs(m), { "text-anchor": "end" });
     });
-    txt(svg, R.W - R.r + 6, ry(0) + 4, "min", {});
+    // which side of zero means what
+    txt(svg, R.W - R.r + 6, ry(0) - 6, _t("earlier"), { fill: "var(--ink-2)" });
+    txt(svg, R.W - R.r + 6, ry(0) + 15, _t("later"), { fill: "var(--ink-2)" });
     for (var h = 0; h <= (tEnd - tStart) / 3600; h += 2) {
-      txt(svg, rx(tStart + h * 3600), R.H - 10, h + " h", { "text-anchor": "middle" });
+      txt(svg, rx(tStart + h * 3600), R.H - 30, String(h), { "text-anchor": "middle" });
     }
+    axisLabels(svg, R, _t("Race time (h)"), _t("Minutes off"));
     WP.forEach(function (w, i) {
       if (i < D.firstWaypoint || w.arrive == null) return;
       el("line", { x1: rx(w.arrive), x2: rx(w.arrive), y1: R.t, y2: R.H - R.b, stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": "2 4" }, svg);

@@ -34,9 +34,9 @@ class FieldLogic:
         self.using_profile = False
         self.shown_name: str | None = None  # the point the countdown is for
         self.then_name: str | None = None  # the main profile point after it
-        self.then_eta: int | None = None
+        self.then_leg: int | None = None  # its leg's moving time, from leaving the point before it
         self.then2_name: str | None = None  # and the main point after that
-        self.then2_eta: int | None = None
+        self.then2_leg: int | None = None
         self.via_name: str | None = None  # the next minor profile point on the way
         self.via_eta: int | None = None
         self._smooth_speed: float | None = None
@@ -64,7 +64,7 @@ class FieldLogic:
         self.shown_name = name
         if dist_next is None or dist_next <= 0:
             self._smooth_speed = None
-            self.then_name = self.then_eta = self.then2_name = self.then2_eta = self.via_name = self.via_eta = None
+            self.then_name = self.then_leg = self.then2_name = self.then2_leg = self.via_name = self.via_eta = None
             return None
 
         if timer_on and dist is not None and dist_dest is not None:
@@ -94,7 +94,7 @@ class FieldLogic:
         self._smooth_speed = v if self._smooth_speed is None else self._smooth_speed + (v - self._smooth_speed) * SMOOTHING
         eta = int(max(dist_next, 1.0) / self._smooth_speed + 0.5)
 
-        self.then_name = self.then_eta = self.then2_name = self.then2_eta = self.via_name = self.via_eta = None
+        self.then_name = self.then_leg = self.then2_name = self.then2_leg = self.via_name = self.via_eta = None
         if self.using_profile and self.profile.via is not None:
             self.via_name = self.profile.following_name(self.profile.via)
             self.via_eta = int(self.profile.via_time(self.estimator, scale) + 0.5)
@@ -102,11 +102,13 @@ class FieldLogic:
             i = self.profile.following()
             if i is not None:
                 self.then_name = self.profile.following_name(i)
-                self.then_eta = eta + int(self.profile.following_time(i, self.estimator, scale) + 0.5)
+                # leg times: stops at the checkpoints in between can't be known
+                t1 = self.profile.following_time(i, self.estimator, scale)
+                self.then_leg = int(t1 + 0.5)
                 i2 = self.profile.following_after(i)
                 if i2 is not None:
                     self.then2_name = self.profile.following_name(i2)
-                    self.then2_eta = eta + int(self.profile.following_time(i2, self.estimator, scale) + 0.5)
+                    self.then2_leg = int(self.profile.following_time(i2, self.estimator, scale) - t1 + 0.5)
         return eta
 
     def timer_reset(self) -> bool:

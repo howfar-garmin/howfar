@@ -24,9 +24,9 @@ class WaypointEtaView extends WatchUi.DataField {
     hidden var _inWord as String;     // "in": ... and the time to it
     hidden var _learningWord as String;
     hidden var _thenName as String?;  // the main profile point after the next one
-    hidden var _thenSec as Number?;
+    hidden var _thenSec as Number?;   // its leg's moving time, from leaving the point before it
     hidden var _then2Name as String?; // and the main point after that
-    hidden var _then2Sec as Number?;
+    hidden var _then2Sec as Number?;  // ... and its leg's
     hidden var _viaName as String?;   // the next minor profile point on the way
     hidden var _viaSec as Number?;
     hidden var _smoothSpeed as Float?;
@@ -159,12 +159,15 @@ class WaypointEtaView extends WatchUi.DataField {
         if (_usingProfile && profile != null) {
             var i = profile.following();
             if (i != null) {
+                // leg times: stops at the checkpoints in between can't be known, so these don't
+                // count from now but from leaving the point before
+                var t1 = profile.followingTime(i, _estimator, scale);
                 _thenName = profile.followingName(i);
-                _thenSec = eta + (profile.followingTime(i, _estimator, scale) + 0.5).toNumber();
+                _thenSec = (t1 + 0.5).toNumber();
                 var i2 = profile.followingAfter(i);
                 if (i2 != null) {
                     _then2Name = profile.followingName(i2);
-                    _then2Sec = eta + (profile.followingTime(i2, _estimator, scale) + 0.5).toNumber();
+                    _then2Sec = (profile.followingTime(i2, _estimator, scale) - t1 + 0.5).toNumber();
                 }
             }
         }
@@ -286,8 +289,9 @@ class WaypointEtaView extends WatchUi.DataField {
         if (withThen) {
             var grey = bg == Graphics.COLOR_BLACK ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_DK_GRAY;
             drawTimeWithArrival(dc, w / 2, h * 0.42, f[withExtras], main, unit, arriveSide, timeColor, fg, dot);
-            // middle line: the minor point on the way (grey), or else the next main point; bottom
-            // line: the main point after that; each with its time to go (the arrival is the big number's only)
+            // middle line: the minor point on the way (grey) with its time to go, or else the next
+            // main point; bottom line: the main point after that. Main points get their leg's moving
+            // time (+h:mm), the dot by that time; the arrival is the big number's only
             var botW = bottomObscured ? w * 0.8 : maxW;  // a round screen is still 0.8 wide this low
             var middle = "";
             var middleGrey = false;
@@ -304,14 +308,14 @@ class WaypointEtaView extends WatchUi.DataField {
                 middleGrey = true;
                 middleSec = viaSec;
                 if (thenName != null && thenSec != null) {
-                    bottom = fitText(dc, _thenWord + " " + thenName, " " + _inWord + " " + WpUtil.etaHm(thenSec as Number), botW);
+                    bottom = fitText(dc, _thenWord + " " + thenName, " +" + WpUtil.etaHm(thenSec as Number), botW);
                     bottomSec = thenSec;
                 }
             } else if (thenName != null && thenSec != null) {
-                middle = fitText(dc, _thenWord + " " + thenName, " " + _inWord + " " + WpUtil.etaHm(thenSec as Number), lineW);
+                middle = fitText(dc, _thenWord + " " + thenName, " +" + WpUtil.etaHm(thenSec as Number), lineW);
                 middleSec = thenSec;
                 if (then2Name != null && then2Sec != null) {
-                    bottom = fitText(dc, _thenWord + " " + then2Name, " " + _inWord + " " + WpUtil.etaHm(then2Sec as Number), botW);
+                    bottom = fitText(dc, _thenWord + " " + then2Name, " +" + WpUtil.etaHm(then2Sec as Number), botW);
                     bottomSec = then2Sec;
                 }
             }

@@ -55,19 +55,19 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <p class="muted">Aggiungi HowFar a una delle schermate dati della tua attività, carica un percorso con i checkpoint e corri. Mostra tre righe; un campo a schermo intero ne mostra quattro, con l'ora di arrivo accanto al numero.</p>
 </div>
 <div class="explain-grid">
-<div aria-label="Esempio su un campo a schermo intero: P Planaval, 1:55 h, @ 16:40, via Col de la Crosatie tra 0:45, poi Valgrisenche tra 3:15" class="watch watch-small" role="img">
+<div aria-label="Esempio su un campo a schermo intero: P Planaval, 1:55 h, @ 16:40, via Col de la Crosatie tra 0:45, poi Valgrisenche +1:25" class="watch watch-small" role="img">
 <div class="screen with-then">
 <div class="w-label" translate="no">P Planaval</div>
 <div class="w-time" translate="no"><span class="dot y"></span>1:55<span class="w-side"><span class="w-unit">h</span><span class="w-arr">@16:40</span></span></div>
 <div class="w-via"><span class="dot g"></span>via Col de la Crosatie tra 0:45</div>
-<div class="w-then"><span class="dot r"></span>poi Valgrisenche tra 3:15</div>
+<div class="w-then"><span class="dot y"></span>poi Valgrisenche +1:25</div>
 </div>
 </div>
 <ol class="callouts">
 <li><b>Riga in alto: il prossimo checkpoint principale.</b> Il nome viene dal tuo percorso, o da un punto che hai aggiunto nella <a href="prepare.html">pagina di preparazione</a>, come la cima di una salita o un rifugio. La lettera davanti ti dice quanto sa l'orologio del sentiero che ti aspetta: <span class="pill">P</span> conosce ogni salita e discesa fino al checkpoint (gli hai dato il profilo del percorso, vedi <a href="#prepare">Prepara una gara</a>); <span class="pill">~</span> sa solo quanto è lontano il checkpoint e quanto è più in alto o più in basso.</li>
 <li><b>Numero grande: il tempo per arrivarci</b> finché continui a muoverti, preciso solo quanto può esserlo: ore e minuti a passi di 30 minuti da quattro ore in su, di 15 da due e di 5 da una (<i>2:15 h</i>), minuti interi più vicino (<i>42 min</i>), minuti e secondi negli ultimi 5 minuti. Un pallino davanti dice di quanto può sbagliare: <b>verde</b> se mancano meno di 45 minuti, di solito entro 5 minuti; <b>giallo</b> fino a 2 ore, di solito entro 15; <b>rosso</b> oltre, spesso mezz'ora o più. Anche i tempi nelle righe in basso di un campo a schermo intero ne hanno uno. Per i primi 4 km circa il numero è grigio e <i>(imparo)</i> compare dopo l'ora di arrivo, o sotto il numero su un campo a schermo intero: è solo una stima grossolana, perché HowFar sta ancora imparando come ti muovi oggi. Quando diventa bianco, ha visto abbastanza della tua corsa. Il tempo fermo a un ristoro non è incluso, perché nessuno può sapere quanto ti fermerai.</li>
 <li><b>Ora di arrivo.</b> L'ora del giorno in cui arriverai, nel formato a 12 o 24 ore del tuo orologio: nella riga sotto il numero, o accanto a esso su un campo a schermo intero.</li>
-<li><b>Su un campo a schermo intero, solo con il profilo del percorso: due righe in più.</b> In grigio, il prossimo punto secondario lungo la strada, come una cima o un rifugio che hai aggiunto (<i>via Col de la Crosatie tra 0:45</i>); sotto, il checkpoint principale dopo il prossimo (<i>poi Valgrisenche tra 3:15</i>). Se non c'è un punto secondario davanti, le due righe mostrano invece i prossimi due checkpoint principali: ognuno con il tempo che manca (<i>poi La Thuile tra 1:35</i>). Scegli quali punti sono principali e quali secondari nella <a href="prepare.html">pagina di preparazione</a>. L'orologio comunica a un campo dati solo il prossimo checkpoint, quindi senza il profilo queste righe restano vuote.</li>
+<li><b>Su un campo a schermo intero, solo con il profilo del percorso: due righe in più.</b> In grigio, il prossimo punto secondario lungo la strada, come una cima o un rifugio che hai aggiunto (<i>via Col de la Crosatie tra 0:45</i>); sotto, il checkpoint principale dopo il prossimo (<i>poi Valgrisenche +1:25</i>). Se non c'è un punto secondario davanti, le due righe mostrano invece i prossimi due checkpoint principali (<i>poi La Thuile +1:35</i>). Il tempo di un checkpoint principale è il tempo in movimento della sua tratta, da quando lasci il checkpoint precedente: quanto ti fermerai lì non si può sapere, quindi aggiungilo tu. Il tempo del punto secondario conta da adesso. Scegli quali punti sono principali e quali secondari nella <a href="prepare.html">pagina di preparazione</a>. L'orologio comunica a un campo dati solo il prossimo checkpoint, quindi senza il profilo queste righe restano vuote.</li>
 </ol>
 </div>
 <p class="small muted explain-note">Senza un percorso, o tra un percorso e l'altro, il campo mostra <b>--</b>. Su una schermata con molti campi mostra solo il numero grande.</p>
@@ -312,6 +312,6 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 </footer>
 <script src="../demo/torx-s1.js?v=21"></script>
-<script src="../js/demo.js?v=38"></script>
+<script src="../js/demo.js?v=39"></script>
 </body>
 </html>

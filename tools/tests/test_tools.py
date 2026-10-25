@@ -342,7 +342,7 @@ def test_field_shows_the_minor_point_on_the_way():
     f = FieldLogic(profile=(100, entries))
     eta = f.compute(1.0, True, 0.0, 300.0, 2000.0, "B", 3000.0, 300.0)
     assert f.shown_name == "B" and f.via_name == "Top 900m" and f.then_name == "C"
-    assert 0 < f.via_eta < eta < f.then_eta
+    assert 0 < f.via_eta < eta and f.then_leg > 0
 
 
 def test_field_names_the_profile_point():
@@ -358,16 +358,17 @@ def test_field_shows_two_main_points_ahead():
     f = FieldLogic(profile=(100, entries))
     eta = f.compute(1.0, True, 0.0, 300.0, 1000.0, "A", 4000.0, 300.0)
     assert f.via_name is None and f.then_name == "B" and f.then2_name == "C"
-    assert eta < f.then_eta < f.then2_eta
+    # leg times, from leaving the point before: B is 2 km after A, C 1 km after B
+    assert f.then_leg > f.then2_leg > 0
 
 
 def test_field_shows_the_point_after_the_next():
     entries = [("A", 1000, [0] * 10), ("B", 2000, [0] * 20)]
     f = FieldLogic(profile=(100, entries))
     eta = f.compute(1.0, True, 0.0, 300.0, 1000.0, "A", 3000.0, 300.0)
-    assert f.then_name == "B" and f.then_eta > eta
+    assert f.then_name == "B" and f.then_leg > eta  # B's leg is twice as long as the km to A
     f.compute(2.0, True, 3.0, 300.0, None, None, None, None)
-    assert f.then_name is None and f.then_eta is None
+    assert f.then_name is None and f.then_leg is None
 
 
 def test_matcher_time_crosses_entries():

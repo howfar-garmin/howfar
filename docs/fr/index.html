@@ -55,19 +55,19 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <p class="muted">Ajoute HowFar à l'un des écrans de données de ton activité, charge un parcours avec des points de contrôle et cours. Il affiche trois lignes ; un champ en plein écran en affiche quatre, avec l'heure d'arrivée à côté du nombre.</p>
 </div>
 <div class="explain-grid">
-<div aria-label="Exemple sur un champ en plein écran : P Planaval, 1:55 h, @ 16:40, via Col de la Crosatie dans 0:45, puis Valgrisenche dans 3:15" class="watch watch-small" role="img">
+<div aria-label="Exemple sur un champ en plein écran : P Planaval, 1:55 h, @ 16:40, via Col de la Crosatie dans 0:45, puis Valgrisenche +1:25" class="watch watch-small" role="img">
 <div class="screen with-then">
 <div class="w-label" translate="no">P Planaval</div>
 <div class="w-time" translate="no"><span class="dot y"></span>1:55<span class="w-side"><span class="w-unit">h</span><span class="w-arr">@16:40</span></span></div>
 <div class="w-via"><span class="dot g"></span>via Col de la Crosatie dans 0:45</div>
-<div class="w-then"><span class="dot r"></span>puis Valgrisenche dans 3:15</div>
+<div class="w-then"><span class="dot y"></span>puis Valgrisenche +1:25</div>
 </div>
 </div>
 <ol class="callouts">
 <li><b>Ligne du haut : le prochain point de contrôle principal.</b> Le nom vient de ton parcours, ou d'un point que tu as ajouté sur la <a href="prepare.html">page de préparation</a>, comme le haut d'une montée ou un refuge. La lettre devant indique ce que la montre sait du sentier à venir : <span class="pill">P</span> elle connaît chaque montée et chaque descente jusqu'au point de contrôle (tu lui as donné le profil du parcours, voir <a href="#prepare">Préparer une course</a>) ; <span class="pill">~</span> elle sait seulement à quelle distance se trouve le point de contrôle et de combien il est plus haut ou plus bas.</li>
 <li><b>Le grand nombre : le temps pour y arriver</b> tant que tu avances, aussi précis qu'il peut l'être : heures et minutes par pas de 30 minutes à partir de quatre heures, de 15 à partir de deux et de 5 à partir d'une (<i>2:15 h</i>), minutes entières plus près (<i>42 min</i>), minutes et secondes dans les 5 dernières minutes. Un petit point devant indique de combien il peut se tromper : <b>vert</b> à moins de 45 minutes, d'habitude à 5 minutes près ; <b>jaune</b> jusqu'à 2 heures, d'habitude à 15 près ; <b>rouge</b> au-delà, souvent une demi-heure ou plus. Les temps des lignes du bas d'un champ en plein écran en ont un aussi. Pendant les 4 premiers km environ, le nombre est gris et <i>(apprend)</i> apparaît après l'heure d'arrivée, ou sous le nombre sur un champ en plein écran : ce n'est qu'une estimation grossière, car HowFar apprend encore comment tu te déplaces aujourd'hui. Quand il devient blanc, il en a vu assez de ta course. Le temps passé à l'arrêt à un ravitaillement n'est pas inclus, car personne ne peut deviner combien de temps tu y resteras.</li>
 <li><b>Heure d'arrivée.</b> L'heure à laquelle tu y seras, au format 12 ou 24 heures de ta montre : sur la ligne sous le nombre, ou à côté de lui sur un champ en plein écran.</li>
-<li><b>Sur un champ en plein écran, seulement avec le profil du parcours : deux lignes de plus.</b> En gris, le prochain point secondaire sur le chemin, comme un sommet ou un refuge que tu as ajouté (<i>via Col de la Crosatie dans 0:45</i>) ; dessous, le point de passage principal d'après (<i>puis Valgrisenche dans 3:15</i>). S'il n'y a pas de point secondaire devant, les deux lignes affichent à la place les deux prochains points de passage principaux : chacun avec le temps restant (<i>puis La Thuile dans 1:35</i>). Tu choisis quels points sont principaux et lesquels secondaires sur la <a href="prepare.html">page de préparation</a>. Ta montre n'indique à un champ de données que le prochain point de passage, donc sans le profil ces lignes restent vides.</li>
+<li><b>Sur un champ en plein écran, seulement avec le profil du parcours : deux lignes de plus.</b> En gris, le prochain point secondaire sur le chemin, comme un sommet ou un refuge que tu as ajouté (<i>via Col de la Crosatie dans 0:45</i>) ; dessous, le point de passage principal d'après (<i>puis Valgrisenche +1:25</i>). S'il n'y a pas de point secondaire devant, les deux lignes affichent à la place les deux prochains points de passage principaux (<i>puis La Thuile +1:35</i>). Le temps d'un point principal est le temps en mouvement de son tronçon, à partir du moment où tu quittes le point précédent : combien de temps tu t'y arrêteras ne peut pas être connu, alors ajoute-le toi-même. Le temps du point secondaire compte à partir de maintenant. Tu choisis quels points sont principaux et lesquels secondaires sur la <a href="prepare.html">page de préparation</a>. Ta montre n'indique à un champ de données que le prochain point de passage, donc sans le profil ces lignes restent vides.</li>
 </ol>
 </div>
 <p class="small muted explain-note">Sans parcours, ou entre deux parcours, le champ affiche <b>--</b>. Sur un écran avec beaucoup de champs, il n'affiche que le grand chiffre.</p>
@@ -312,6 +312,6 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 </footer>
 <script src="../demo/torx-s1.js?v=21"></script>
-<script src="../js/demo.js?v=38"></script>
+<script src="../js/demo.js?v=39"></script>
 </body>
 </html>

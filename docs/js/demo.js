@@ -145,9 +145,12 @@
     // the lines under the time, as on a full-screen field: the minor point on the way (grey) or
     // else the next main point, with the time to go; then the main point after that, with its
     // arrival; "(learning)" in a free line
-    var inn = function (word, j) { return [word + " " + WP[j].name + " " + _t("in") + " " + etaHm(timeTo(f, j)), timeTo(f, j)]; };
-    var mid = pts.via != null ? inn(_t("via"), pts.via) : pts.then != null ? inn(_t("then"), pts.then) : null;
-    var low = pts.via != null ? (pts.then != null ? inn(_t("then"), pts.then) : null) : (pts.then2 != null ? inn(_t("then"), pts.then2) : null);
+    // the minor point: its time from now; the main points: their leg's moving time from leaving
+    // the checkpoint before (+h:mm), since stops at the checkpoints in between can't be known
+    var inn = function (j) { return [_t("via") + " " + WP[j].name + " " + _t("in") + " " + etaHm(timeTo(f, j)), timeTo(f, j)]; };
+    var leg = function (j, from) { var s = timeTo(f, j) - timeTo(f, from); return [_t("then") + " " + WP[j].name + " +" + etaHm(s), s]; };
+    var mid = pts.via != null ? inn(pts.via) : pts.then != null ? leg(pts.then, pts.main) : null;
+    var low = pts.via != null ? (pts.then != null ? leg(pts.then, pts.main) : null) : (pts.then2 != null ? leg(pts.then2, pts.then) : null);
     setLine($("wVia"), mid);
     $("wVia").classList.toggle("main", pts.via == null);
     setLine($("wThen"), low || (learning ? [_t("(learning)"), null] : null));

@@ -64,9 +64,11 @@
     var m = s / 60;
     return (m >= 0 ? "+" : "−") + Math.abs(m).toFixed(1) + " min";
   }
-  // the time as the watch shows it, rounded: the errors on the page are of what the runner sees
-  function eta(f, id) { return shownSec(f[ETA0 + idx[id]]); }
+  // the prediction before rounding (the chart), and as the watch shows it (watch and readout)
+  function eta(f, id) { return f[ETA0 + idx[id]]; }
   function err(f, id) { return eta(f, id) - (f[ACT] - f[STOPA]); }
+  function shownEta(f, id) { return shownSec(eta(f, id)); }
+  function shownErr(f, id) { return shownEta(f, id) - (f[ACT] - f[STOPA]); }
   function cfg(id) { return C[idx[id]]; }
 
   function frameAt(t) {
@@ -82,7 +84,7 @@
   function render() {
     var f = frameAt(state.t);
     var wp = WP[f[K]];
-    var e = eta(f, state.main);
+    var e = shownEta(f, state.main);
     var marker = cfg(state.main).ahead ? "P " : "~ ";
 
     $("wLabel").textContent = marker + wp.name;
@@ -101,7 +103,7 @@
     $("rSays").innerHTML = "<b>" + shown[0] + " " + shown[1] + "</b>, arriving at " + arrival(f[T], e);
     $("rActual").innerHTML = "<b>" + dur(f[ACT]) + "</b>, arrived at " + clock(f[T] + f[ACT]) +
       (f[STOPA] >= 60 ? ", including " + Math.round(f[STOPA] / 60) + " min stopped" : "");
-    var x = err(f, state.main);
+    var x = shownErr(f, state.main);
     var ok = Math.abs(x) <= 300;
     $("rErr").innerHTML = "<b>" + signedMin(x) + "</b> (not counting stops) " +
       (ok ? '<span class="chip good">✓ Within 5 min</span>'

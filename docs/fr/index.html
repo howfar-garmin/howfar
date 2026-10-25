@@ -122,6 +122,13 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 <div class="chart-block">
 <div class="chart-head">
+<h3>Où tu es sur le parcours</h3>
+<span class="small muted">En vert : le sentier jusqu'au prochain point de contrôle. Clique pour y aller.</span>
+</div>
+<div class="chart-box" id="elevBox"><svg aria-label="Elevation profile of the course with checkpoints and current position" class="wide" id="elev" role="img" viewbox="0 0 1000 318"></svg></div>
+</div>
+<div class="chart-block">
+<div class="chart-head">
 <h3>De combien HowFar s'est trompé</h3>
 <div class="legend" id="errLegend"></div>
 </div>
@@ -133,13 +140,6 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <span class="eyebrow">Ce que la montre a remarqué aujourd'hui</span>
 <span id="lScale"></span>
 </div>
-</div>
-<div class="chart-block">
-<div class="chart-head">
-<h3>Où tu es sur le parcours</h3>
-<span class="small muted">En vert : le sentier jusqu'au prochain point de contrôle. Clique pour y aller.</span>
-</div>
-<div class="chart-box" id="elevBox"><svg aria-label="Elevation profile of the course with checkpoints and current position" class="wide" id="elev" role="img" viewbox="0 0 1000 318"></svg></div>
 </div>
 </div>
 </section>

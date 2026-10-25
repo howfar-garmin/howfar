@@ -434,3 +434,4 @@ label.btn { cursor: pointer; }
 .lang-switch a[aria-current] { color: var(--accent); background: var(--accent-soft); }
 .site-head .wrap .site-nav { margin-left: auto; }
 .site-head .wrap .site-nav + .lang-switch { margin-left: 8px; }
+.results th .race-km { display: block; font-weight: 500; font-size: 0.72rem; }

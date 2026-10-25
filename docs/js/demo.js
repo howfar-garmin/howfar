@@ -328,7 +328,8 @@
     };
     var head = table.querySelector("thead tr");
     head.innerHTML = '<th scope="col">' + _t("What you prepared") + "</th>" +
-      RACES.map(function (r) { return '<th scope="col" class="num" title="' + _t("{race}: average minutes off", { race: r.name }) + '">' + (SHORT[r.key] || r.name) + "</th>"; }).join("") +
+      RACES.map(function (r) { return '<th scope="col" class="num" title="' + _t("{race}: average minutes off", { race: r.name }) + '">' + (SHORT[r.key] || r.name) +
+        (r.km ? ' <span class="race-km">(' + r.km.toLocaleString(LANG, { maximumFractionDigits: 1 }) + " km)</span>" : "") + "</th>"; }).join("") +
       '<th scope="col" class="num" title="' + _t("Average of the four races") + '">' + _t("Average") + '</th><th scope="col" class="bar-col"><span class="sr-only">' + _t("Average, as a bar") + "</span></th>" +
       '<th scope="col" class="num" title="' + _t("Out of every 100 times the watch showed a time, how many were less than 5 minutes off") + '">' + _t("Less than 5 min off") + "</th>" +
       '<th scope="col" class="num" title="' + _t("How far off the watch was when you were 2 km from each checkpoint") + '">' + _t("Off by, 2 km before") + "</th>";

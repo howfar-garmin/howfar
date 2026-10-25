@@ -94,7 +94,8 @@ def main() -> int:
     data = dict(
         start=start,
         configs=[dict(id=c[0], label=c[1], long=c[2], ahead=c[3]["ahead"]) for c in CONFIGS],
-        races=[dict(key=k, name=B.RACES[k][0]) for k in B.RACES],
+        # km: the length of course replayed (the last checkpoint reached, for a DNF)
+        races=[dict(key=k, name=B.RACES[k][0], km=round(B.race(k).waypoints[-1].course_dist / 1000, 1)) for k in B.RACES],
         pastNames=[B.RACES[k][0] for k in B.PAST[KEY]],
         frames=frames,
         profile=[[round(d), round(race.elev.at(d))] for d in range(0, int(race.elev.length) + 1, 100)],

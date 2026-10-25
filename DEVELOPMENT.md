@@ -1,6 +1,6 @@
-# Developing HowFar?
+# Developing HowFar
 
-Everything needed to build, test and release HowFar?. For what it does and how to use it, see the [README](README.md) and the [website](https://howfar-garmin.github.io/howfar/).
+Everything needed to build, test and release HowFar. For what it does and how to use it, see the [README](README.md) and the [website](https://howfar-garmin.github.io/howfar/).
 
 ## How the prediction works
 

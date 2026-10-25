@@ -23,7 +23,7 @@ SDK="$(cat "$HOME/Library/Application Support/Garmin/ConnectIQ/current-sdk.cfg")
 2. Mark it as a beta app. Garmin validates the package; a beta is not reviewed.
 3. Add the description below. A beta has no public page, so screenshots are optional.
 4. Install it from your developer dashboard at apps.garmin.com: open the app and use its download/install button. It reaches the watch at the next sync of the Garmin Connect app, with no file copying.
-5. Its Settings then appear in the Garmin Connect app (your watch → Connect IQ apps → HowFar? beta → Settings).
+5. Its Settings then appear in the Garmin Connect app (your watch → Connect IQ apps → HowFar beta → Settings).
 
 ## Submit the public app (later)
 
@@ -31,7 +31,7 @@ Upload `HowFar.iq` the same way, without the beta option. While Garmin reviews i
 
 ## App name
 
-HowFar?
+HowFar
 
 ## Category
 
@@ -45,7 +45,7 @@ Time to the next checkpoint of your course, learned from how you climb and desce
 
 How many times have you wanted to know how long to the next checkpoint? You asked a volunteer, then got angry at how far off they were.
 
-HowFar? puts the answer on your wrist. While you follow a course, it shows:
+HowFar puts the answer on your wrist. While you follow a course, it shows:
 - the name of the next checkpoint
 - the time to get there, while you keep moving
 - the time of day you'll arrive

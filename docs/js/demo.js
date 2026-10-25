@@ -1,4 +1,4 @@
-// Sped-up replay of a recorded run through each step of the HowFar? prediction
+// Sped-up replay of a recorded run through each step of the HowFar prediction
 // (all predictions precomputed in demo/torx-s1.js by tools/research/demo_export.py).
 (function () {
   "use strict";
@@ -15,10 +15,10 @@
   C.forEach(function (c, i) { idx[c.id] = i; });
 
   var NOTES = {
-    none: "Your first race with HowFar?, with nothing pasted in its settings. It learns your pace from today's run as you go, and knows only how far away the checkpoint is and how much higher or lower (~). After a few runs with HowFar? it also remembers your past runs.",
+    none: "Your first race with HowFar, with nothing pasted in its settings. It learns your pace from today's run as you go, and knows only how far away the checkpoint is and how much higher or lower (~). After a few runs with HowFar it also remembers your past runs.",
     pace: "You pasted your pace from past races (here: the other three races in the test), so it knows how you climb and descend from the first kilometre. It still knows only how far away the checkpoint is and how much higher or lower (~).",
     profile: "You pasted the course profile, so it knows every climb and descent to the checkpoint (P). Your pace it learns from today's run as you go.",
-    both: "You pasted both: it knows your pace from the first kilometre and every climb and descent ahead (P). This is HowFar? with full race prep."
+    both: "You pasted both: it knows your pace from the first kilometre and every climb and descent ahead (P). This is HowFar with full race prep."
   };
 
   var state = { t: tStart + 2.17 * 3600, main: "both", cmp: "none", speed: 300, playing: false, last: 0 };

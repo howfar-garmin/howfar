@@ -1,4 +1,4 @@
-// HowFar? race prep page: pace from past activities, course profile, library. Everything runs
+// HowFar race prep page: pace from past activities, course profile, library. Everything runs
 // in the browser; files are never uploaded. The calculations are in howfar-core.js.
 import * as core from "./howfar-core.js?v=5";
 import * as extra from "./extra-points.js?v=4";
@@ -381,7 +381,7 @@ function renderCourse() {
     $("courseRows").innerHTML = v.checkpoints.map((c) => row(c, "")).join("");
   }
   const warn = [];
-  if (!real.length) warn.push("This course has no checkpoints, so HowFar? will only count down to the finish. If the race publishes a file with checkpoints, use that one.");
+  if (!real.length) warn.push("This course has no checkpoints, so HowFar will only count down to the finish. If the race publishes a file with checkpoints, use that one.");
   const offTrack = course.candidates ? course.offTrack : (course.skipped || []).length;
   if (offTrack) warn.push(`${offTrack} checkpoint${offTrack === 1 ? " was" : "s were"} left out because ${offTrack === 1 ? "it isn't" : "they aren't"} on this course's track (race files often list the whole race's).`);
   const finishes = (cands || []).filter((c) => c.finish && !c.on);
@@ -643,7 +643,7 @@ $("backupLoad").addEventListener("change", async (e) => {
     renderLibrary();
     $("backupStatus").textContent = added ? `Added ${added} item${added === 1 ? "" : "s"} from the backup.` : "Everything in that backup is already here.";
   } catch (err) {
-    $("backupStatus").textContent = "That file isn't a HowFar? backup.";
+    $("backupStatus").textContent = "That file isn't a HowFar backup.";
   }
 });
 

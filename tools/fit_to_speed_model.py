@@ -4,7 +4,7 @@
     python tools/fit_to_speed_model.py run1.fit run2.gpx ...
 
 Prints a string to paste into the data field's "Imported speed model" setting
-(Garmin Connect app > device > Connect IQ apps > HowFar? > Settings).
+(Garmin Connect app > device > Connect IQ apps > HowFar > Settings).
 """
 
 import argparse

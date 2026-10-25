@@ -27,7 +27,7 @@ from wpeta.readers import read_course  # noqa: E402
 
 KEY = "S1"
 
-# What the runner pasted into HowFar?'s settings before the race. The field always makes its
+# What the runner pasted into HowFar's settings before the race. The field always makes its
 # race-day corrections, so every case has them. id, short label (chart, table), label next to
 # the choice, benchmark options (trail ahead decides P/~ on the watch)
 CONFIGS = [

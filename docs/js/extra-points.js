@@ -1,4 +1,4 @@
-// HowFar? race prep: points to add to a course's checkpoints. The tops and bottoms of the big
+// HowFar race prep: points to add to a course's checkpoints. The tops and bottoms of the big
 // climbs, found on the course's elevation profile the way UltraTrailMate finds them (resample
 // every 40 m with a 50 m median, keep the highs and lows that stand out by the chosen height,
 // at least 900 m apart), and named huts and villages from OpenStreetMap next to the track.

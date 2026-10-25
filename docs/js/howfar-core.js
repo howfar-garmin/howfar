@@ -1,4 +1,4 @@
-// HowFar? race prep, in the browser: reads activities and courses (GPX or FIT), learns pace by
+// HowFar race prep, in the browser: reads activities and courses (GPX or FIT), learns pace by
 // slope and builds the course profile. A line-by-line copy of tools/wpeta (readers.py, model.py,
 // learn.py, profile.py) so the texts it makes are the same as the Python tools'.
 // web-tests/ checks that they match.

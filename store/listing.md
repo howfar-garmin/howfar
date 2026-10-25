@@ -66,5 +66,5 @@ First version: next checkpoint, time to it and arrival time; learns your pace by
 
 ## Links
 
-- Website: https://alfredobenso.github.io/howfar/
-- Source: https://github.com/alfredobenso/howfar
+- Website: https://howfar-garmin.github.io/howfar/
+- Source: https://github.com/howfar-garmin/howfar

@@ -1,6 +1,6 @@
 # HowFar?
 
-**Website:** https://alfredobenso.github.io/howfar/ · **Download:** [latest release](https://github.com/alfredobenso/howfar/releases/latest) · **License:** MIT
+**Website:** https://howfar-garmin.github.io/howfar/ · **Download:** [latest release](https://github.com/howfar-garmin/howfar/releases/latest) · **License:** MIT
 
 A Connect IQ data field for Fēnix 8 / Epix Pro that predicts how long it will take you to reach the next course point. It shows the time-to-go, plus the arrival clock time and the waypoint name when the field is big enough. It's active only while you follow a course; otherwise it shows `--`.
 

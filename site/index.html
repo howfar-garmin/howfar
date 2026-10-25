@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=47">
+<link rel="stylesheet" href="css/site.css?v=48">
 </head>
 <body>
 
@@ -98,7 +98,6 @@
               <div class="w-then" id="wThen"></div>
             </div>
           </div>
-          <p class="watch-caption">Your first race with HowFar, with the course profile pasted in its settings: it knows every climb and descent to the checkpoint (P). It learns your pace on every slope from today's run as you go. Here Col d'Arp, Col Passo Alto, Col de la Crosatie and Lac du Fond are minor points, shown on the way.</p>
         </div>
 
         <div class="panel">
@@ -122,12 +121,6 @@
             <dt>The watch was off by</dt><dd id="rErr"></dd>
           </dl>
 
-          <div class="learned" aria-live="off">
-            <span class="eyebrow">What the watch has noticed today</span>
-            <span id="lScale"></span>
-            <span id="lForm"></span>
-            <span id="lFatigue"></span>
-          </div>
         </div>
       </div>
 
@@ -138,6 +131,15 @@
         </div>
         <div class="chart-box" id="errBox"><svg id="err" class="wide" viewBox="0 0 1000 236" role="img" aria-label="How far off each prediction was during the race"></svg></div>
         <p class="small muted">For every moment of the race: the time HowFar predicted (before the watch rounds it for display), minus the time it really took to reach the next checkpoint (stops left out). Above zero, you arrived earlier than the watch said; below zero, later. The green band is ±5 minutes. Notice how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead.</p>
+      </div>
+      <div class="demo-notes">
+        <p class="small muted demo-caption">Your first race with HowFar, with the course profile pasted in its settings: it knows every climb and descent to the checkpoint (P). It learns your pace on every slope from today's run as you go. Here Col d'Arp, Col Passo Alto, Col de la Crosatie and Lac du Fond are minor points, shown on the way.</p>
+        <div class="learned" aria-live="off">
+          <span class="eyebrow">What the watch has noticed today</span>
+          <span id="lScale"></span>
+          <span id="lForm"></span>
+          <span id="lFatigue"></span>
+        </div>
       </div>
       <div class="chart-block">
         <div class="chart-head">

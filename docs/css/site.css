@@ -243,6 +243,10 @@ section + section { border-top: 1px solid var(--line-soft); }
 .chip.warn { background: var(--warn-soft); color: var(--warn); }
 .chip.quiet { background: var(--line-soft); color: var(--ink-2); }
 .learned { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 8px; font-size: var(--step--1); color: var(--ink-2); }
+/* under the "how far off" chart: what the demo assumes, and what the watch has noticed */
+.demo-notes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 16px 32px; margin-top: 16px; align-items: start; }
+.demo-notes .demo-caption { margin: 0; border-top: 1px solid var(--line); padding-top: 14px; }
+@media (max-width: 760px) { .demo-notes { grid-template-columns: minmax(0, 1fr); } }
 .learned b { color: var(--ink); font-variant-numeric: tabular-nums; }
 
 /* charts */

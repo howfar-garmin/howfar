@@ -32,9 +32,10 @@ class FieldLogic:
         self.profile = ProfileMatcher(*profile) if profile else None
         self.using_profile = False
         self.shown_name: str | None = None  # the point the countdown is for
-        self.then_name: str | None = None  # bottom line: the next minor point on the way, or the main one after
+        self.then_name: str | None = None  # the main profile point after it
         self.then_eta: int | None = None
-        self.then_via = False  # True: then_name is a minor point on the way
+        self.via_name: str | None = None  # the next minor profile point on the way
+        self.via_eta: int | None = None
         self._smooth_speed: float | None = None
         self._last_name: str | None = None
         self._last_dist = 0.0
@@ -60,7 +61,7 @@ class FieldLogic:
         self.shown_name = name
         if dist_next is None or dist_next <= 0:
             self._smooth_speed = None
-            self.then_name = self.then_eta = None
+            self.then_name = self.then_eta = self.via_name = self.via_eta = None
             return None
 
         if timer_on and dist is not None and dist_dest is not None:
@@ -90,13 +91,11 @@ class FieldLogic:
         self._smooth_speed = v if self._smooth_speed is None else self._smooth_speed + (v - self._smooth_speed) * SMOOTHING
         eta = int(max(dist_next, 1.0) / self._smooth_speed + 0.5)
 
-        self.then_name = self.then_eta = None
-        self.then_via = False
+        self.then_name = self.then_eta = self.via_name = self.via_eta = None
         if self.using_profile and self.profile.via is not None:
-            self.then_name = self.profile.following_name(self.profile.via)
-            self.then_eta = int(self.profile.via_time(self.estimator, scale) + 0.5)
-            self.then_via = True
-        elif self.using_profile:
+            self.via_name = self.profile.following_name(self.profile.via)
+            self.via_eta = int(self.profile.via_time(self.estimator, scale) + 0.5)
+        if self.using_profile:
             i = self.profile.following()
             if i is not None:
                 self.then_name = self.profile.following_name(i)

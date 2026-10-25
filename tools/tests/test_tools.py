@@ -330,8 +330,8 @@ def test_field_shows_the_minor_point_on_the_way():
     entries = [("+Top 900m", 800, [0] * 8), ("B", 1200, [0] * 12), ("C", 1000, [0] * 10)]
     f = FieldLogic(profile=(100, entries))
     eta = f.compute(1.0, True, 0.0, 300.0, 2000.0, "B", 3000.0, 300.0)
-    assert f.shown_name == "B" and f.then_name == "Top 900m" and f.then_via
-    assert 0 < f.then_eta < eta
+    assert f.shown_name == "B" and f.via_name == "Top 900m" and f.then_name == "C"
+    assert 0 < f.via_eta < eta < f.then_eta
 
 
 def test_field_names_the_profile_point():

@@ -22,9 +22,10 @@ class WaypointEtaView extends WatchUi.DataField {
     hidden var _thenWord as String;   // "then", in the watch's language
     hidden var _viaWord as String;    // "via": the bottom line names a minor point on the way
     hidden var _learningWord as String;
-    hidden var _thenName as String?;  // the minor point on the way, or the main point after the next one
-    hidden var _thenVia as Boolean = false;
+    hidden var _thenName as String?;  // the main profile point after the next one
     hidden var _thenSec as Number?;
+    hidden var _viaName as String?;   // the next minor profile point on the way
+    hidden var _viaSec as Number?;
     hidden var _smoothSpeed as Float?;
     hidden var _lastName as String?;
     hidden var _lastDist as Float = 0.0;
@@ -87,6 +88,8 @@ class WaypointEtaView extends WatchUi.DataField {
             _smoothSpeed = null;
             _thenName = null;
             _thenSec = null;
+            _viaName = null;
+            _viaSec = null;
             return;
         }
 
@@ -139,12 +142,13 @@ class WaypointEtaView extends WatchUi.DataField {
 
         _thenName = null;
         _thenSec = null;
-        _thenVia = false;
+        _viaName = null;
+        _viaSec = null;
         if (_usingProfile && profile != null && profile.via != null) {
-            _thenName = profile.followingName(profile.via as Number);
-            _thenSec = (profile.viaTime(_estimator, scale) + 0.5).toNumber();
-            _thenVia = true;
-        } else if (_usingProfile && profile != null) {
+            _viaName = profile.followingName(profile.via as Number);
+            _viaSec = (profile.viaTime(_estimator, scale) + 0.5).toNumber();
+        }
+        if (_usingProfile && profile != null) {
             var i = profile.following();
             if (i != null) {
                 _thenName = profile.followingName(i);
@@ -174,6 +178,8 @@ class WaypointEtaView extends WatchUi.DataField {
         _etaSec = null;
         _thenName = null;
         _thenSec = null;
+        _viaName = null;
+        _viaSec = null;
     }
 
     const MIN_FONT_WITH_EXTRAS = 4;  // FONT_MEDIUM: smallest font the time gets when label and arrival are shown too
@@ -227,14 +233,20 @@ class WaypointEtaView extends WatchUi.DataField {
         var unitW = unit.length() > 0 ? dc.getTextWidthInPixels(unit, Graphics.FONT_XTINY) + 4 : 0;
         var digitsW = maxW - unitW;
 
-        // the checkpoint after the next on tall fields, while the time can still be big
+        // tall fields: the arrival beside the time, freeing two lines below it for the minor point
+        // on the way (via) and the main point after the next (then), while the time can still be big
         var thenName = _thenName;
         var thenSec = _thenSec;
-        var withThen = eta != null && thenName != null && thenSec != null && h >= MIN_HEIGHT_WITH_THEN
-            && fitFont(dc, main, digitsW, h * 0.36) <= MIN_FONT_WITH_EXTRAS;
+        var viaName = _viaName;
+        var viaSec = _viaSec;
+        var arriveSide = eta == null ? "" : "@" + WpUtil.formatClock(eta);
+        var sideW = (unitW > dc.getTextWidthInPixels(arriveSide, Graphics.FONT_XTINY) + 4
+            ? unitW : dc.getTextWidthInPixels(arriveSide, Graphics.FONT_XTINY) + 4);
+        var withThen = eta != null && (thenName != null || viaName != null) && h >= MIN_HEIGHT_WITH_THEN
+            && fitFont(dc, main, maxW - sideW, h * 0.5) <= MIN_FONT_WITH_EXTRAS;
 
         // label and arrival only when the time can still be big; otherwise the time alone
-        var withExtras = fitFont(dc, main, digitsW, h * (withThen ? 0.36 : 0.5));
+        var withExtras = fitFont(dc, main, withThen ? maxW - sideW : digitsW, h * 0.5);
         if (h < 90 || withExtras > MIN_FONT_WITH_EXTRAS) {
             drawTime(dc, w / 2, h / 2, f[fitFont(dc, main, digitsW, h * 0.95)], main, unit, timeColor, fg, bg);
             return;
@@ -252,11 +264,22 @@ class WaypointEtaView extends WatchUi.DataField {
         dc.drawText(w / 2, topY, Graphics.FONT_XTINY, label, center);
         var arrive = eta == null ? "" : "@ " + WpUtil.formatClock(eta) + (learning ? " " + _learningWord : "");
         if (withThen) {
-            drawTime(dc, w / 2, h * 0.45, f[withExtras], main, unit, timeColor, fg, bg);
-            dc.drawText(w / 2, h * 0.64, Graphics.FONT_XTINY, arrive, center);
-            var then = fitText(dc, (_thenVia ? _viaWord : _thenWord) + " " + thenName, " @ " + WpUtil.formatClock(thenSec as Number),
-                bottomObscured ? w * 0.8 : maxW);  // a round screen is still 0.8 wide this low
-            dc.drawText(w / 2, h * (bottomObscured ? 0.80 : 0.86), Graphics.FONT_XTINY, then, center);
+            var grey = bg == Graphics.COLOR_BLACK ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_DK_GRAY;
+            drawTimeWithArrival(dc, w / 2, h * 0.42, f[withExtras], main, unit, arriveSide, timeColor, fg, bg);
+            // the minor point on the way, in grey; while learning, the word for it takes its place
+            var middle = viaName != null && viaSec != null
+                ? fitText(dc, _viaWord + " " + viaName, " @ " + WpUtil.formatClock(viaSec as Number), maxW)
+                : (learning ? _learningWord : "");
+            if (middle.length() > 0) {
+                dc.setColor(grey, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(w / 2, h * 0.67, Graphics.FONT_XTINY, middle, center);
+                dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
+            }
+            if (thenName != null && thenSec != null) {
+                var then = fitText(dc, _thenWord + " " + thenName, " @ " + WpUtil.formatClock(thenSec as Number),
+                    bottomObscured ? w * 0.8 : maxW);  // a round screen is still 0.8 wide this low
+                dc.drawText(w / 2, h * (bottomObscured ? 0.80 : 0.84), Graphics.FONT_XTINY, then, center);
+            }
             return;
         }
         drawTime(dc, w / 2, h * 0.5, f[withExtras], main, unit, timeColor, fg, bg);
@@ -278,6 +301,23 @@ class WaypointEtaView extends WatchUi.DataField {
             dc.drawText(left + dw + 4, y + dc.getFontHeight(font) * 0.18, Graphics.FONT_XTINY, unit,
                 Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         }
+    }
+
+    // The digits centred on x with the unit small after them, top, and the arrival under the unit
+    hidden function drawTimeWithArrival(dc as Graphics.Dc, x as Number or Float, y as Number or Float,
+            font as Graphics.FontDefinition, digits as String, unit as String, arrival as String,
+            color as Graphics.ColorType, fg as Graphics.ColorType, bg as Graphics.ColorType) as Void {
+        var dw = dc.getTextWidthInPixels(digits, font);
+        var uw = dc.getTextWidthInPixels(unit, Graphics.FONT_XTINY);
+        var aw = dc.getTextWidthInPixels(arrival, Graphics.FONT_XTINY);
+        var sw = (uw > aw ? uw : aw) + 4;
+        var left = x - (dw + sw) / 2.0;
+        var fh = dc.getFontHeight(font);
+        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(left, y, font, digits, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(left + dw + 4, y - fh * 0.08, Graphics.FONT_XTINY, unit, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(left + dw + 4, y + fh * 0.14, Graphics.FONT_XTINY, arrival, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     // text + tail, shortening text until it fits maxW in FONT_XTINY

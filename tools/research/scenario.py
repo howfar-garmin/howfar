@@ -146,5 +146,6 @@ def score(rows) -> dict:
     near = [(eta - am) / 60 for t, k, dn, eta, act, am in rows if am <= 3600]
     out["mae_hour"] = sum(abs(e) for e in near) / len(near)
     out["within5_hour"] = sum(abs(e) <= 5 for e in near) / len(near)
+    out["within10_hour"] = sum(abs(e) <= 10 for e in near) / len(near)
     out["bias_hour"] = sum(near) / len(near)
     return out

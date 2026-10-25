@@ -29,6 +29,7 @@ sys.path.insert(0, str(HERE.parent))
 import predictors as P  # noqa: E402
 import replay as R  # noqa: E402
 import scenario as S  # noqa: E402
+from wpeta import model as M  # noqa: E402
 from wpeta.model import Layer  # noqa: E402
 from wpeta.profile import Elevation  # noqa: E402
 from wpeta.readers import read_track  # noqa: E402
@@ -112,13 +113,13 @@ def main() -> int:
     acts.sort(key=lambda a: a[0])
     print(f"{len(acts)} activities of at least {args.min_km:.0f} km", flush=True)
 
-    # past races of each activity: everything recorded before it
+    # past races of each activity: everything recorded before it, merged the way the watch's
+    # stored model does (older runs fade by STORED_DECAY at each new one, capped at STORED_CAP)
     todo = []
     running = Layer()
     for when, f, layer in acts:
         todo.append((str(f), (list(running.paces), list(running.weights)) if running.total_weight() else None, specs()))
-        for i in range(len(layer.paces)):
-            running.add_pace(i, layer.paces[i], layer.weights[i])
+        running.merge_from(layer, M.STORED_DECAY, M.STORED_CAP)
 
     results = {}
     with ProcessPoolExecutor(args.jobs) as ex:

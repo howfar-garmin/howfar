@@ -23,7 +23,7 @@ import predictors as P  # noqa: E402
 import scenario as S  # noqa: E402
 from wpeta.model import NUM_BINS, bin_center  # noqa: E402
 from wpeta.profile import best_profile  # noqa: E402
-from wpeta.readers import read_course  # noqa: E402
+from wpeta.readers import read_course, read_track  # noqa: E402
 
 KEY = "S1"
 
@@ -86,7 +86,9 @@ def main() -> int:
     cpts, cps = read_course(str(B.RACES[KEY][2]))
     step, profile_str = best_profile(cpts, cps, 4000)
     l1 = P.layer_from_obs(P.past_observations(race.points))
-    l2 = P.layer_from_obs(P.past_observations(B.race("S2").points))
+    # the tools section's chart compares what was learned from the two Tor sections
+    s2 = [p for p in read_track(str(B.ROOT / "samples/TORX26_Sezione_2_DNF.gpx")) if p.t is not None and p.alt is not None]
+    l2 = P.layer_from_obs(P.past_observations(s2))
     results = json.load(open(args.results))
     scores = {cid: {r: {m: round(v, 3) for m, v in results[B.label(o)][r]["score"].items()} for r in B.RACES}
               for cid, _, _, o in CONFIGS}

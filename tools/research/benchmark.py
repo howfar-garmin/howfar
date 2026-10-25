@@ -23,15 +23,20 @@ sys.path.insert(0, str(HERE.parent))
 
 import predictors as P  # noqa: E402
 import scenario as S  # noqa: E402
+from wpeta.readers import read_track  # noqa: E402
 from wpeta.field import shown_seconds  # noqa: E402
 
 ROOT = HERE.parents[1]
 # key: (name, recorded run in samples/, course file in courses/)
+# key: (name, recorded run in samples/, course file in courses/ or None for a run whose
+# course has no checkpoints (they go where the runner stopped), score only the legs where
+# the run follows the course: for a course file of another edition of the race)
 RACES = {
-    "S1": ("TORX 2026 section 1", ROOT / "samples/TORX26_Sezione_1.gpx", ROOT / "courses/TOR330-CERT-2026-T1.gpx"),
-    "S2": ("TORX 2026 section 2 (DNF)", ROOT / "samples/TORX26_Sezione_2_DNF.gpx", ROOT / "courses/TOR330-CERT-2026-T2.gpx"),
-    "AN": ("La via di Annibale skyrace", ROOT / "samples/La_via_di_Annibale_Skyrace.gpx", ROOT / "courses/La via di annibale - 42 km - 2024.gpx"),
-    "STL": ("STL25", ROOT / "samples/STL25.gpx", ROOT / "courses/STL25 def 2026 2.gpx"),
+    "TOR": ("Tor des Géants 2023", ROOT / "samples/TOR330_2023.gpx", ROOT / "courses/TOR330-CERT-2026.gpx", True),
+    "AW": ("Abbots Way 2018", ROOT / "samples/Abbots_Way_2018.gpx", None, False),
+    "S1": ("TORX 2026 section 1", ROOT / "samples/TORX26_Sezione_1.gpx", ROOT / "courses/TOR330-CERT-2026-T1.gpx", False),
+    "AN": ("La via di Annibale skyrace", ROOT / "samples/La_via_di_Annibale_Skyrace.gpx", ROOT / "courses/La via di annibale - 42 km - 2024.gpx", False),
+    "STL": ("STL25", ROOT / "samples/STL25.gpx", ROOT / "courses/STL25 def 2026 2.gpx", False),
 }
 # each race learns its "past races" from all the others, so nothing is tested on what it learned from
 PAST = {k: [o for o in RACES if o != k] for k in RACES}
@@ -41,8 +46,14 @@ _cache: dict = {}
 
 def race(key):
     if key not in _cache:
-        name, act, course = RACES[key]
-        _cache[key] = S.load_race(name, str(act), str(course))
+        name, act, course, matching = RACES[key]
+        if course is None:
+            pts = [p for p in read_track(act) if p.t is not None and p.alt is not None]
+            _cache[key] = S.race_from_stops(name, pts)[0]
+        else:
+            _cache[key] = S.load_race(name, str(act), str(course))
+        if matching:
+            _cache[key].skip = S.unmatched_legs(_cache[key])
     return _cache[key]
 
 

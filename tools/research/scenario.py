@@ -46,6 +46,7 @@ class Race:
     elev: Elevation  # course elevation by course distance
     stops: list[float]  # cumulative stopped time (offline rule) per point
     arrival: dict[int, tuple[float, float]] = field(default_factory=dict)
+    skip: set[int] = field(default_factory=set)  # legs (index of their end) left out of the score
 
 
 def load_race(name: str, activity: str, course: str) -> Race:
@@ -69,6 +70,71 @@ def load_race(name: str, activity: str, course: str) -> Race:
             race.arrival[k] = (p.t, race.stops[i])
             k += 1
     return race
+
+
+STOP_S = 90
+STOP_SEP = 3000.0
+GAP = 20000.0
+
+
+def race_from_stops(name: str, pts) -> tuple[Race, int]:
+    """The activity as its own course, with checkpoints where the runner stopped for at least
+    STOP_S seconds (aid stations, refuges, fountains), at least STOP_SEP apart, and a filler
+    point in gaps longer than GAP. For runs whose course file has no checkpoints."""
+    stops = R.stop_time_index(pts)
+    total = pts[-1].dist
+    # runs of consecutive stopped samples: (where it started, how long)
+    runs, i = [], 1
+    while i < len(pts):
+        if stops[i] > stops[i - 1]:
+            j = i
+            while j + 1 < len(pts) and stops[j + 1] > stops[j]:
+                j += 1
+            runs.append((pts[i].dist, stops[j] - stops[i - 1]))
+            i = j + 1
+        else:
+            i += 1
+    # with auto-pause the watch records no points while you stand: a time gap in place
+    runs += [(pts[i].dist, pts[i].t - pts[i - 1].t) for i in range(1, len(pts))
+             if pts[i].t - pts[i - 1].t >= STOP_S and pts[i].dist - pts[i - 1].dist < 100]
+    runs.sort()
+    found = []
+    for d, length in runs:
+        if length < STOP_S or not 1000 < d < total - 1000:
+            continue
+        if found and d - found[-1][0] < STOP_SEP:
+            if length > found[-1][1]:
+                found[-1] = (d, length)
+        else:
+            found.append((d, length))
+    at = [0.0] + [d for d, _ in found] + [total]
+    cps = []
+    for a, b in zip(at, at[1:]):
+        n = int((b - a) // GAP)
+        cps += [a + (b - a) * m / (n + 1) for m in range(1, n + 1)] + [b]
+    wps = [R.Waypoint("Start", 0.0, 0.0)] + [R.Waypoint(f"cp {m}", d, d) for m, d in enumerate(cps[:-1], 1)]
+    wps.append(R.Waypoint("Finish", total, total))
+    race = Race(name, pts, wps, Elevation(pts), stops)
+    k = 0
+    for idx, p in enumerate(pts):
+        while k < len(wps) and p.dist >= wps[k].act_dist:
+            race.arrival[k] = (p.t, stops[idx])
+            k += 1
+    return race, len(found)
+
+
+def unmatched_legs(race: Race, lo: float = 0.95, hi: float = 1.35) -> set[int]:
+    """Legs where the run doesn't follow the course file: the watch measured less than lo or
+    more than hi times the course's length (switchbacks and GPS add 5-25%). Another edition of
+    the course, or a detour."""
+    out = set()
+    wps = race.waypoints
+    for k in range(1, len(wps)):
+        c = wps[k].course_dist - wps[k - 1].course_dist
+        a = wps[k].act_dist - wps[k - 1].act_dist
+        if c <= 0 or not lo <= a / c <= hi:
+            out.add(k)
+    return out
 
 
 def chunks_ahead(elev: Elevation, start: float, end: float) -> list[tuple[float, float]]:
@@ -123,6 +189,8 @@ def run(race: Race, predictor, trail_ahead: bool = True, first_wp: int | None = 
             ch = [(dn, max(-40.0, min(40.0, (elev_next - p.alt) / dn * 100.0)))]
         ctx = Ctx(p.t, p.dist, p.alt, dn, total - cd, elev_next, ch, k)
         eta = predictor.predict(ctx)
+        if k in race.skip:
+            continue
         t_arr, s_arr = race.arrival[k]
         actual = t_arr - p.t
         rows.append((p.t, k, dn, eta, actual, actual - (s_arr - race.stops[i])))

@@ -20,7 +20,7 @@
 
   var NOTES = {
     none: _t("Your first race with HowFar, with nothing pasted in its settings. It learns your pace from today's run as you go, and knows only how far away the checkpoint is and how much higher or lower (~). After a few runs with HowFar it also remembers your past runs."),
-    pace: _t("You pasted your pace from past races (here: the other three races in the test), so it knows how you climb and descend from the first kilometre. It still knows only how far away the checkpoint is and how much higher or lower (~)."),
+    pace: _t("You pasted your pace from past races (here: the other races in the test), so it knows how you climb and descend from the first kilometre. It still knows only how far away the checkpoint is and how much higher or lower (~)."),
     profile: _t("You pasted the course profile, so it knows every climb and descent to the checkpoint (P). Your pace it learns from today's run as you go."),
     both: _t("You pasted both: it knows your pace from the first kilometre and every climb and descent ahead (P). This is HowFar with full race prep.")
   };
@@ -317,7 +317,7 @@
     updateSeries(); render();
   }
 
-  var SHORT = { S1: "TORX S1", S2: "TORX S2", AN: "Annibale", STL: "STL25" };
+  var SHORT = { TOR: "Tor 330", AW: "Abbots Way", S1: "TORX S1", AN: "Annibale", STL: "STL25" };
   function buildTable() {
     var table = $("results");
     var RACES = D.races, S = D.scores;
@@ -330,7 +330,7 @@
     head.innerHTML = '<th scope="col">' + _t("What you prepared") + "</th>" +
       RACES.map(function (r) { return '<th scope="col" class="num" title="' + _t("{race}: average minutes off", { race: r.name }) + '">' + (SHORT[r.key] || r.name) +
         (r.km ? ' <span class="race-km">(' + r.km.toLocaleString(LANG, { maximumFractionDigits: 1 }) + " km)</span>" : "") + "</th>"; }).join("") +
-      '<th scope="col" class="num" title="' + _t("Average of the four races") + '">' + _t("Average") + '</th><th scope="col" class="bar-col"><span class="sr-only">' + _t("Average, as a bar") + "</span></th>" +
+      '<th scope="col" class="num" title="' + _t("Average of the races") + '">' + _t("Average") + '</th><th scope="col" class="bar-col"><span class="sr-only">' + _t("Average, as a bar") + "</span></th>" +
       '<th scope="col" class="num" title="' + _t("Out of every 100 times the watch showed a time, how many were less than 5 minutes off") + '">' + _t("Less than 5 min off") + "</th>" +
       '<th scope="col" class="num" title="' + _t("How far off the watch was when you were 2 km from each checkpoint") + '">' + _t("Off by, 2 km before") + "</th>";
     var max = 0, best = STEPS[0];

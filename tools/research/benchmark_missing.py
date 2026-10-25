@@ -183,6 +183,8 @@ def job(args):
 def race_jobs():
     out = []
     for key in B.RACES:
+        if B.RACES[key][2] is None:
+            continue  # no course file to take checkpoints out of
         r = B.race(key)
         course_pts, _ = read_course(str(B.RACES[key][2]))
         out.append((key, r.points, r.waypoints, course_pts, B.past_layer(key)))

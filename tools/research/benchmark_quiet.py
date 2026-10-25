@@ -39,10 +39,6 @@ import scenario as S  # noqa: E402
 from wpeta import model as M  # noqa: E402
 from wpeta.model import Layer  # noqa: E402
 
-STOP_S = 90
-STOP_SEP = 3000.0
-GAP = 20000.0
-
 VARIANTS = [("base", 0, None), ("form 200 m", 200, "form"), ("form 300 m", 300, "form"), ("form 500 m", 500, "form"),
             ("all 300 m", 300, "all")]
 
@@ -93,49 +89,7 @@ def race_job(key):
 
 
 def stop_race(name, pts):
-    """The activity as a course whose checkpoints are where the runner stopped."""
-    import replay as R
-
-    stops = R.stop_time_index(pts)
-    total = pts[-1].dist
-    # runs of consecutive stopped samples: (where it started, how long)
-    runs, i = [], 1
-    while i < len(pts):
-        if stops[i] > stops[i - 1]:
-            j = i
-            while j + 1 < len(pts) and stops[j + 1] > stops[j]:
-                j += 1
-            runs.append((pts[i].dist, stops[j] - stops[i - 1]))
-            i = j + 1
-        else:
-            i += 1
-    # with auto-pause the watch records no points while you stand: a time gap in place
-    runs += [(pts[i].dist, pts[i].t - pts[i - 1].t) for i in range(1, len(pts))
-             if pts[i].t - pts[i - 1].t >= STOP_S and pts[i].dist - pts[i - 1].dist < 100]
-    runs.sort()
-    found = []
-    for d, length in runs:
-        if length < STOP_S or not 1000 < d < total - 1000:
-            continue
-        if found and d - found[-1][0] < STOP_SEP:
-            if length > found[-1][1]:
-                found[-1] = (d, length)
-        else:
-            found.append((d, length))
-    at = [0.0] + [d for d, _ in found] + [total]
-    cps = []
-    for a, b in zip(at, at[1:]):
-        n = int((b - a) // GAP)
-        cps += [a + (b - a) * m / (n + 1) for m in range(1, n + 1)] + [b]
-    wps = [R.Waypoint("Start", 0.0, 0.0)] + [R.Waypoint(f"cp {m}", d, d) for m, d in enumerate(cps[:-1], 1)]
-    wps.append(R.Waypoint("Finish", total, total))
-    race = S.Race(name, pts, wps, BA.Elevation(pts), stops)
-    k = 0
-    for idx, p in enumerate(pts):
-        while k < len(wps) and p.dist >= wps[k].act_dist:
-            race.arrival[k] = (p.t, stops[idx])
-            k += 1
-    return race, len(found)
+    return S.race_from_stops(name, pts)
 
 
 def activity_job(args):

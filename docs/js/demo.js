@@ -32,6 +32,21 @@
     var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
     return h > 0 ? h + ":" + pad(m) + ":" + pad(x) : m + ":" + pad(x);
   }
+  // the countdown as the watch shows it (WpUtil.etaText): h:mm in 5-minute steps from an hour
+  // out, whole minutes from 5 minutes out, m:ss in the last 5 minutes
+  function etaStep(s) { return s >= 3450 ? 300 : s >= 300 ? 60 : 1; }
+  function etaText(s) {
+    s = Math.max(0, Math.round(s));
+    var r = Math.round(s / etaStep(s)) * etaStep(s);
+    if (r >= 3600) return [Math.floor(r / 3600) + ":" + pad(Math.floor((r % 3600) / 60)), "h"];
+    if (r >= 300) return [String(Math.round(r / 60)), "min"];
+    return [Math.floor(r / 60) + ":" + pad(r % 60), "min"];
+  }
+  // arrival clock, rounded like the countdown
+  function arrival(raceSec, e) {
+    var stepMs = (etaStep(e) >= 300 ? 5 : 1) * 60000;
+    return clockFmt.format(new Date(Math.round((startMs + (raceSec + e) * 1000) / stepMs) * stepMs));
+  }
   function hm(s) {
     s = Math.max(0, Math.round(s));
     return Math.floor(s / 3600) + " h " + pad(Math.floor((s % 3600) / 60)) + " min";
@@ -67,8 +82,10 @@
     var marker = cfg(state.main).ahead ? "P " : "~ ";
 
     $("wLabel").textContent = marker + wp.name;
-    $("wTime").textContent = dur(e);
-    $("wArrive").textContent = "@ " + clock(f[T] + e);
+    var shown = etaText(e), learning = f[CD] < 2000; // the watch greys the time for its first ~2 km
+    $("wTime").innerHTML = shown[0] + '<span class="w-unit">' + shown[1] + "</span>";
+    $("wTime").classList.toggle("learning", learning);
+    $("wArrive").textContent = "@ " + arrival(f[T], e) + (learning ? " (learning)" : "");
 
     $("raceClock").textContent = dur(f[T]);
     $("rTime").innerHTML = "<b>" + hm(f[T]) + "</b> · " + clock(f[T]) + " local time" +
@@ -77,7 +94,7 @@
     var climb = wp.alt - f[ALT];
     $("rNext").innerHTML = "<b>" + wp.name + "</b> · " + km(f[DN]) + " ahead, " +
       (climb >= 0 ? num(climb) + " m higher" : num(-climb) + " m lower");
-    $("rSays").innerHTML = "<b>" + dur(e) + "</b>, arriving at " + clock(f[T] + e);
+    $("rSays").innerHTML = "<b>" + shown[0] + " " + shown[1] + "</b>, arriving at " + arrival(f[T], e);
     $("rActual").innerHTML = "<b>" + dur(f[ACT]) + "</b>, arrived at " + clock(f[T] + f[ACT]) +
       (f[STOPA] >= 60 ? ", including " + Math.round(f[STOPA] / 60) + " min stopped" : "");
     var x = err(f, state.main);

@@ -29,8 +29,16 @@ function testSplit(logger as Test.Logger) as Boolean {
 
 (:test)
 function testFormatDuration(logger as Test.Logger) as Boolean {
-    Test.assert(WpUtil.formatDuration(65).equals("1:05"));
-    Test.assert(WpUtil.formatDuration(3725).equals("1:02:05"));
+    var a = WpUtil.etaText(65);
+    Test.assert(a[0].equals("1:05") && a[1].equals("min"));
+    a = WpUtil.etaText(2530);  // 42 min 10 s
+    Test.assert(a[0].equals("42") && a[1].equals("min"));
+    a = WpUtil.etaText(3725);  // 1 h 2 min: 5-minute steps from an hour out
+    Test.assert(a[0].equals("1:00") && a[1].equals("h"));
+    a = WpUtil.etaText(7890);  // 2 h 11.5 min
+    Test.assert(a[0].equals("2:10") && a[1].equals("h"));
+    a = WpUtil.etaText(3449);  // just under: whole minutes
+    Test.assert(a[0].equals("57") && a[1].equals("min"));
     return true;
 }
 

@@ -30,31 +30,43 @@ module WpUtil {
         return parts;
     }
 
-    // m:ss below an hour, h:mm:ss above
-    function formatDuration(seconds as Number) as String {
+    // Rounding step (s) for a time this far away: the prediction is good to ~10-15% of the
+    // time left, so seconds two hours out would promise far more than it knows
+    function etaStep(seconds as Number) as Number {
+        return seconds >= 3450 ? 300 : (seconds >= 300 ? 60 : 1);
+    }
+
+    // What the countdown shows: [digits, unit]. h:mm in 5-minute steps from an hour out,
+    // whole minutes from 5 minutes out, m:ss in the last 5 minutes.
+    function etaText(seconds as Number) as Array<String> {
         if (seconds < 0) {
             seconds = 0;
         }
-        var h = seconds / 3600;
-        var m = (seconds % 3600) / 60;
-        var s = seconds % 60;
-        if (h > 0) {
-            return h.format("%d") + ":" + m.format("%02d") + ":" + s.format("%02d");
+        var step = etaStep(seconds);
+        var r = ((seconds + step / 2) / step) * step;
+        if (r >= 3600) {
+            return [(r / 3600).format("%d") + ":" + ((r % 3600) / 60).format("%02d"), "h"] as Array<String>;
         }
-        return m.format("%d") + ":" + s.format("%02d");
+        if (r >= 300) {
+            return [(r / 60).format("%d"), "min"] as Array<String>;
+        }
+        return [(r / 60).format("%d") + ":" + (r % 60).format("%02d"), "min"] as Array<String>;
     }
 
-    // Clock time `seconds` from now, in the watch's 12/24 h setting
+    // Clock time `seconds` from now, in the watch's 12/24 h setting, rounded like the countdown
     function formatClock(seconds as Number) as String {
         var info = Gregorian.info(Time.now().add(new Time.Duration(seconds)), Time.FORMAT_SHORT);
-        var hour = info.hour as Number;
+        var step = etaStep(seconds) >= 300 ? 5 : 1;
+        var mins = (info.hour as Number) * 60 + (info.min as Number) + ((info.sec as Number) >= 30 ? 1 : 0);
+        mins = (((mins + step / 2) / step) * step) % 1440;
+        var hour = mins / 60;
         if (!System.getDeviceSettings().is24Hour) {
             hour = hour % 12;
             if (hour == 0) {
                 hour = 12;
             }
         }
-        return hour.format("%d") + ":" + (info.min as Number).format("%02d");
+        return hour.format("%d") + ":" + (mins % 60).format("%02d");
     }
 
     // Case-insensitive; also matches when one name is a prefix (>= 3 chars) of the

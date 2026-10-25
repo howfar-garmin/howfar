@@ -40,7 +40,7 @@ def text_center(d: ImageDraw.ImageDraw, cx: float, cy: float, s: str, f, fill) -
     d.text((cx * SS, cy * SS), s, font=f, fill=fill, anchor="mm")
 
 
-def watch(d: ImageDraw.ImageDraw, cx: float, cy: float, r: float, label: str, time: str, arrive: str) -> None:
+def watch(d: ImageDraw.ImageDraw, cx: float, cy: float, r: float, label: str, time: str, unit: str, arrive: str) -> None:
     """A round watch like the site's: bezel, tick ring, black screen with the field's three lines."""
     s = lambda v: v * SS
     d.ellipse([s(cx - r - 3), s(cy - r + 6), s(cx + r + 3), s(cy + r + 12)], fill=(0, 0, 0, 90))  # shadow
@@ -54,7 +54,13 @@ def watch(d: ImageDraw.ImageDraw, cx: float, cy: float, r: float, label: str, ti
     rs = r * 0.84
     d.ellipse([s(cx - rs), s(cy - rs), s(cx + rs), s(cy + rs)], fill=SCREEN)
     text_center(d, cx, cy - rs * 0.42, label, font(SANS, DEMI, rs * 0.15), INK)
-    text_center(d, cx, cy + rs * 0.02, time, font(COND, BOLD, rs * 0.46), INK)
+    # the digits big with the unit small after them, the pair centred, as on the watch
+    big, small = font(COND, BOLD, rs * 0.46), font(SANS, DEMI, rs * 0.14)
+    gap = rs * 0.04
+    dw, uw = d.textlength(time, font=big) / SS, d.textlength(unit, font=small) / SS
+    left = cx - (dw + gap + uw) / 2
+    d.text((s(left), s(cy + rs * 0.02)), time, font=big, fill=INK, anchor="lm")
+    d.text((s(left + dw + gap), s(cy + rs * 0.12)), unit, font=small, fill=INK, anchor="lm")
     text_center(d, cx, cy + rs * 0.44, arrive, font(SANS, MEDIUM, rs * 0.14), INK_2)
 
 
@@ -99,7 +105,7 @@ def cover() -> None:
     img = Image.new("RGB", (W * SS, H * SS), BG)  # RGB base so RGBA drawing blends
     d = ImageDraw.Draw(img, "RGBA")
     profile_band(d, -10, 360, W + 10, 500, fill=(108, 193, 150, 26), line=(108, 193, 150, 90), dots=False)
-    watch(d, W / 2, 205, 150, "P Col d'Arp", "1:12:30", "@ 14:05")
+    watch(d, W / 2, 205, 150, "P Col d'Arp", "1:10", "h", "@ 14:05")
     text_center(d, W / 2, 425, "HowFar?", font(COND, BOLD, 64), INK)
     text_center(d, W / 2, 468, "time to the next checkpoint", font(SANS, MEDIUM, 21), ACCENT)
     save(img, (W, H), "cover-500.png", 300)
@@ -118,7 +124,7 @@ def hero() -> None:
         y += 100
     d.text((left * SS, 385 * SS), "Learned from how you climb and descend.", font=font(SANS, MEDIUM, 28), fill=INK_2)
     d.text((left * SS, 425 * SS), "#ultratrail  #trailrunning  #skyrunning", font=font(SANS, DEMI, 22), fill=ACCENT)
-    watch(d, 1110, 285, 200, "P Rif. Deffeyes", "1:18:41", "@ 19:12")
+    watch(d, 1110, 285, 200, "P Rif. Deffeyes", "1:20", "h", "@ 19:10")
     save(img, (W, H), "hero-1440x720.png", 2048)
 
 

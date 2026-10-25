@@ -209,6 +209,8 @@ section + section { border-top: 1px solid var(--line-soft); }
 }
 .screen .w-label { align-self: end; font: 600 9.5cqi/1.2 var(--font-body); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .screen .w-time { font: 700 24cqi/1 var(--font-display); font-variant-numeric: tabular-nums; letter-spacing: 0.01em; margin-block: 2.5cqi; white-space: nowrap; }
+.screen .w-unit { font: 600 7.5cqi/1 var(--font-body); margin-left: 1.5cqi; letter-spacing: 0; }
+.screen .w-time.learning { color: var(--screen-ink-2); }
 .screen .w-arrive { align-self: start; font: 500 9cqi/1.2 var(--font-body); color: var(--screen-ink-2); font-variant-numeric: tabular-nums; }
 .watch-caption { font-size: var(--step--1); color: var(--ink-3); text-align: center; max-width: 32ch; }
 
@@ -233,7 +235,7 @@ section + section { border-top: 1px solid var(--line-soft); }
 .chart-box { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 8px 4px; overflow-x: auto; }
 .chart-box svg { display: block; width: 100%; height: auto; cursor: crosshair; }
 .chart-box svg.wide { min-width: 560px; } /* full-width charts scroll sideways on phones instead of shrinking their labels */
-.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: var(--step--1); color: var(--ink-2); }
+.legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; font-size: var(--step--1); color: var(--ink-2); }
 .legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
 .tip {
   position: absolute; pointer-events: none; z-index: 2;

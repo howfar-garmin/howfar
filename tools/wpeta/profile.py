@@ -339,6 +339,13 @@ class ProfileMatcher:
                 return i
         return None
 
+    def following_after(self, i: int) -> int | None:
+        """Entry of the main profile point after entry i, if any."""
+        for j in range(i + 1, len(self.entries)):
+            if not self.minor[j] and self._end(j) > self._end(i) + 1:
+                return j
+        return None
+
     def via_time(self, estimator, scale: float) -> float:
         """Time from where you are to the next minor point (`via`)."""
         assert self._here is not None and self.via is not None

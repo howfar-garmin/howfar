@@ -343,6 +343,17 @@ class CourseProfile {
         return null;
     }
 
+    // Entry of the main profile point after entry i, if any
+    function followingAfter(i as Number) as Number? {
+        var at = _starts[i] + _lengths[i];
+        for (var j = i + 1; j < _names.size(); j++) {
+            if (!_minor[j] && _starts[j] + _lengths[j] > at + 1.0) {
+                return j;
+            }
+        }
+        return null;
+    }
+
     // Time from where you are to the next minor point (via)
     function viaTime(estimator as EtaEstimator, scale as Float) as Float {
         var i = via as Number;

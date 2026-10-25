@@ -9,10 +9,11 @@ MIN_OBS_TO_COMMIT = 20
 
 
 def shown_seconds(s: float) -> int:
-    """The time as the watch shows it (WpUtil.etaText): 5-minute steps from an hour out, whole
-    minutes from 5 minutes out, seconds in the last 5 minutes."""
+    """The time as the watch shows it (WpUtil.etaText): 30-minute steps from four hours out,
+    15-minute steps from two, 5-minute steps from one, whole minutes from 5 minutes out, seconds
+    in the last 5."""
     s = max(0, int(round(s)))
-    step = 300 if s >= 3450 else 60 if s >= 300 else 1
+    step = 1800 if s >= 13500 else 900 if s >= 6750 else 300 if s >= 3450 else 60 if s >= 300 else 1
     return (s + step // 2) // step * step
 SMOOTHING = 0.2
 
@@ -34,6 +35,8 @@ class FieldLogic:
         self.shown_name: str | None = None  # the point the countdown is for
         self.then_name: str | None = None  # the main profile point after it
         self.then_eta: int | None = None
+        self.then2_name: str | None = None  # and the main point after that
+        self.then2_eta: int | None = None
         self.via_name: str | None = None  # the next minor profile point on the way
         self.via_eta: int | None = None
         self._smooth_speed: float | None = None
@@ -61,7 +64,7 @@ class FieldLogic:
         self.shown_name = name
         if dist_next is None or dist_next <= 0:
             self._smooth_speed = None
-            self.then_name = self.then_eta = self.via_name = self.via_eta = None
+            self.then_name = self.then_eta = self.then2_name = self.then2_eta = self.via_name = self.via_eta = None
             return None
 
         if timer_on and dist is not None and dist_dest is not None:
@@ -91,7 +94,7 @@ class FieldLogic:
         self._smooth_speed = v if self._smooth_speed is None else self._smooth_speed + (v - self._smooth_speed) * SMOOTHING
         eta = int(max(dist_next, 1.0) / self._smooth_speed + 0.5)
 
-        self.then_name = self.then_eta = self.via_name = self.via_eta = None
+        self.then_name = self.then_eta = self.then2_name = self.then2_eta = self.via_name = self.via_eta = None
         if self.using_profile and self.profile.via is not None:
             self.via_name = self.profile.following_name(self.profile.via)
             self.via_eta = int(self.profile.via_time(self.estimator, scale) + 0.5)
@@ -100,6 +103,10 @@ class FieldLogic:
             if i is not None:
                 self.then_name = self.profile.following_name(i)
                 self.then_eta = eta + int(self.profile.following_time(i, self.estimator, scale) + 0.5)
+                i2 = self.profile.following_after(i)
+                if i2 is not None:
+                    self.then2_name = self.profile.following_name(i2)
+                    self.then2_eta = eta + int(self.profile.following_time(i2, self.estimator, scale) + 0.5)
         return eta
 
     def timer_reset(self) -> bool:

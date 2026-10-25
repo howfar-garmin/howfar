@@ -352,6 +352,15 @@ def test_field_names_the_profile_point():
     assert f.shown_name == "Top 900m" and f.then_name == "B"
 
 
+def test_field_shows_two_main_points_ahead():
+    # no minor point: the next main point after the countdown's, and the one after that
+    entries = [("A", 1000, [0] * 10), ("B", 2000, [0] * 20), ("C", 1000, [0] * 10)]
+    f = FieldLogic(profile=(100, entries))
+    eta = f.compute(1.0, True, 0.0, 300.0, 1000.0, "A", 4000.0, 300.0)
+    assert f.via_name is None and f.then_name == "B" and f.then2_name == "C"
+    assert eta < f.then_eta < f.then2_eta
+
+
 def test_field_shows_the_point_after_the_next():
     entries = [("A", 1000, [0] * 10), ("B", 2000, [0] * 20)]
     f = FieldLogic(profile=(100, entries))
@@ -486,6 +495,17 @@ def test_gpx_loop_start_stays_at_the_start(tmp_path):
     write_loop_gpx(p)
     pts, cps = read_course(p)
     assert [(c.name, round(c.dist)) for c in cps] == [("Start", 0), ("Rifugio", 2500), ("Finish", round(pts[-1].dist))]
+
+
+def test_shown_seconds_rounds_like_the_watch():
+    from wpeta.field import shown_seconds
+
+    assert shown_seconds(65) == 65
+    assert shown_seconds(2530) == 42 * 60
+    assert shown_seconds(3725) == 3600  # 5-minute steps from an hour out
+    assert shown_seconds(6600) == 6600
+    assert shown_seconds(7890) == 8100  # 15-minute steps from two hours out
+    assert shown_seconds(16000) == 16200  # 30-minute steps from four hours out
 
 
 def test_course_scale():

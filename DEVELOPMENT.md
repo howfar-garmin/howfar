@@ -29,7 +29,7 @@ Profile points are **main or minor**: a minor point's name starts with `+` in th
 
 On the race prep page, `docs/js/extra-points.js` finds the added points: climbs as in UltraTrailMate (profile resampled every 40 m with a 50 m median, highs and lows standing out by the chosen D+, 900 m apart), places with one Overpass query for the course's bounding box (the only network request the page makes besides loading its libraries). It can also write the course as a FIT file with every ticked checkpoint as a course point, for runners who want the watch itself to know them.
 
-**On the watch**, the time is shown only as precisely as it is known: `h:mm` in 5-minute steps from an hour out, whole minutes from 5 minutes out, `m:ss` in the last 5 minutes, each with its unit in small type (the number fonts have no letters); the arrival time is rounded the same way. For the first ~4 km of an activity (160 observations) the digits are grey and the arrival line says "(learning)": today's form is still a guess. How the error grows with the time left (`tools/research/error_by_time.py`, 4 out of 5 predictions within): about 17% of the time left on the four races with "P", about a third on long training runs with checkpoints where the runner stopped.
+**On the watch**, the time is shown only as precisely as it is known: `h:mm` in 30-minute steps from four hours out, 15-minute steps from two and 5-minute steps from one, whole minutes from 5 minutes out, `m:ss` in the last 5 minutes, each with its unit in small type (the number fonts have no letters); the arrival time is rounded the same way. For the first ~4 km of an activity (160 observations) the digits are grey and the arrival line says "(learning)": today's form is still a guess. How the error grows with the time left (`tools/research/error_by_time.py`, 4 out of 5 predictions within): about 17% of the time left on the four races with "P", about a third on long training runs with checkpoints where the runner stopped.
 
 ## Code layout
 
@@ -98,6 +98,8 @@ On six races: Tor des Géants 2023 on the official 2026 course (legs where the r
 | + trail ahead (course profile) | 5.0 min | 60% | 96% |
 | + race-day corrections: the field on a first race | 3.9 min | 73% | 96% |
 | + past runs remembered (the other five races) | 3.9 min | 74% | 95% |
+
+How good the times further ahead are (`tools/research/benchmark_ahead.py`, the six races, every moment, rounded as shown): the next checkpoint 7.8 min off on average (0.9 h out), the one after 19.8 min (2.1 h out), the one after that 30.5 min (3.2 h out); about 11–12% of the time to go each time, hence the coarser steps far out.
 
 On the TORX100 the course profile adds little (3.0 min without it, 3.2 with it, but 4.2 → 3.6 min 2 km before a checkpoint): almost every checkpoint is a col or a hut, so each leg is a single climb or descent and the average grade already describes it.
 

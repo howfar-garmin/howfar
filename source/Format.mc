@@ -33,10 +33,11 @@ module WpUtil {
     // Rounding step (s) for a time this far away: the prediction is good to ~10-15% of the
     // time left, so seconds two hours out would promise far more than it knows
     function etaStep(seconds as Number) as Number {
-        return seconds >= 3450 ? 300 : (seconds >= 300 ? 60 : 1);
+        return seconds >= 13500 ? 1800 : (seconds >= 6750 ? 900 : (seconds >= 3450 ? 300 : (seconds >= 300 ? 60 : 1)));
     }
 
-    // What the countdown shows: [digits, unit]. h:mm in 5-minute steps from an hour out,
+    // What the countdown shows: [digits, unit]. h:mm in 30-minute steps from four hours out,
+    // 15-minute steps from two and 5-minute steps from one,
     // whole minutes from 5 minutes out, m:ss in the last 5 minutes.
     function etaText(seconds as Number) as Array<String> {
         if (seconds < 0) {
@@ -54,20 +55,20 @@ module WpUtil {
     }
 
     // Clock time `seconds` from now, in the watch's 12/24 h setting, rounded like the countdown
-    // Time to go as h:mm, for the line naming the minor point on the way: 5-minute steps from
-    // an hour out, whole minutes closer in
+    // Time to go as h:mm, for the lines under the countdown: rounded like it, whole minutes
+    // in the last 5 minutes
     function etaHm(seconds as Number) as String {
         if (seconds < 0) {
             seconds = 0;
         }
-        var step = seconds >= 3450 ? 300 : 60;
+        var step = etaStep(seconds) > 60 ? etaStep(seconds) : 60;
         var r = ((seconds + step / 2) / step) * step;
         return (r / 3600).format("%d") + ":" + ((r % 3600) / 60).format("%02d");
     }
 
     function formatClock(seconds as Number) as String {
         var info = Gregorian.info(Time.now().add(new Time.Duration(seconds)), Time.FORMAT_SHORT);
-        var step = etaStep(seconds) >= 300 ? 5 : 1;
+        var step = etaStep(seconds) >= 300 ? etaStep(seconds) / 60 : 1;
         var mins = (info.hour as Number) * 60 + (info.min as Number) + ((info.sec as Number) >= 30 ? 1 : 0);
         mins = (((mins + step / 2) / step) * step) % 1440;
         var hour = mins / 60;

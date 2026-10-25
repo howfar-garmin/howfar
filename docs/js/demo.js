@@ -30,9 +30,10 @@
     var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
     return h > 0 ? h + ":" + pad(m) + ":" + pad(x) : m + ":" + pad(x);
   }
-  // the countdown as the watch shows it (WpUtil.etaText): h:mm in 5-minute steps from an hour
-  // out, whole minutes from 5 minutes out, m:ss in the last 5 minutes
-  function etaStep(s) { return s >= 3450 ? 300 : s >= 300 ? 60 : 1; }
+  // the countdown as the watch shows it (WpUtil.etaText): h:mm in 30-minute steps from four hours
+  // out, 15-minute steps from two and 5-minute steps from one, whole minutes from 5 minutes out,
+  // m:ss in the last 5
+  function etaStep(s) { return s >= 13500 ? 1800 : s >= 6750 ? 900 : s >= 3450 ? 300 : s >= 300 ? 60 : 1; }
   function shownSec(s) {
     s = Math.max(0, Math.round(s));
     return Math.round(s / etaStep(s)) * etaStep(s);
@@ -45,13 +46,13 @@
   }
   // arrival clock, rounded like the countdown
   function arrival(raceSec, e) {
-    var stepMs = (etaStep(e) >= 300 ? 5 : 1) * 60000;
+    var stepMs = (etaStep(e) >= 300 ? etaStep(e) / 60 : 1) * 60000;
     return clockFmt.format(new Date(Math.round((startMs + (raceSec + e) * 1000) / stepMs) * stepMs));
   }
-  // the time to the minor point on the way, as the watch shows it (WpUtil.etaHm)
+  // time to go under the countdown, as the watch shows it (WpUtil.etaHm)
   function etaHm(s) {
     s = Math.max(0, Math.round(s));
-    var step = s >= 3450 ? 300 : 60, r = Math.round(s / step) * step;
+    var step = Math.max(60, etaStep(s)), r = Math.round(s / step) * step;
     return Math.floor(r / 3600) + ":" + pad(Math.floor((r % 3600) / 60));
   }
   function hm(s) {
@@ -111,7 +112,8 @@
     var via = null;
     for (var j = f[K]; j < m; j++) if (WP[j].minor) { via = j; break; }
     var then = m < WP.length - 1 ? mainFrom(m + 1) : null;
-    return { main: m, via: via, then: then };
+    var then2 = then != null && then < WP.length - 1 ? mainFrom(then + 1) : null;
+    return { main: m, via: via, then: then, then2: then2 };
   }
 
   // ---------- watch + readout
@@ -126,10 +128,17 @@
     var shown = etaText(e), learning = f[CD] < 4000; // the watch greys the time for its first ~4 km
     $("wTime").innerHTML = shown[0] + '<span class="w-side"><span class="w-unit">' + shown[1] + '</span><span class="w-arr">@' + arrival(f[T], e) + "</span></span>";
     $("wTime").classList.toggle("learning", learning);
-    var line = function (word, j) { return word + " " + WP[j].name + " @ " + arrival(f[T], shownSec(timeTo(f, j))); };
-    $("wVia").textContent = pts.via != null ? _t("via") + " " + WP[pts.via].name + " " + _t("in") + " " + etaHm(timeTo(f, pts.via))
-      : learning ? _t("(learning)") : "";
-    $("wThen").textContent = pts.then != null ? line(_t("then"), pts.then) : "";
+    // the lines under the time, as on a full-screen field: the minor point on the way (grey) or
+    // else the next main point, with the time to go; then the main point after that, with its
+    // arrival; "(learning)" in a free line
+    var at = function (word, j) { return word + " " + WP[j].name + " @ " + arrival(f[T], shownSec(timeTo(f, j))); };
+    var inn = function (word, j) { return word + " " + WP[j].name + " " + _t("in") + " " + etaHm(timeTo(f, j)); };
+    var mid = pts.via != null ? inn(_t("via"), pts.via) : pts.then != null ? inn(_t("then"), pts.then) : "";
+    var low = pts.via != null ? (pts.then != null ? at(_t("then"), pts.then) : "") : (pts.then2 != null ? at(_t("then"), pts.then2) : "");
+    $("wVia").textContent = mid;
+    $("wVia").classList.toggle("main", pts.via == null);
+    $("wThen").textContent = low || (learning ? _t("(learning)") : "");
+    $("wThen").classList.toggle("note", !low);
 
     $("raceClock").textContent = dur(f[T]);
     $("rTime").innerHTML = _t("<b>{time}</b> · {clock} local time", { time: hm(f[T]), clock: clock(f[T]) }) +

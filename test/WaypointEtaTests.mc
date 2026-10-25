@@ -35,8 +35,12 @@ function testFormatDuration(logger as Test.Logger) as Boolean {
     Test.assert(a[0].equals("42") && a[1].equals("min"));
     a = WpUtil.etaText(3725);  // 1 h 2 min: 5-minute steps from an hour out
     Test.assert(a[0].equals("1:00") && a[1].equals("h"));
-    a = WpUtil.etaText(7890);  // 2 h 11.5 min
-    Test.assert(a[0].equals("2:10") && a[1].equals("h"));
+    a = WpUtil.etaText(7890);  // 2 h 11.5 min: 15-minute steps from two hours out
+    Test.assert(a[0].equals("2:15") && a[1].equals("h"));
+    a = WpUtil.etaText(6600);  // 1 h 50 min: still 5-minute steps
+    Test.assert(a[0].equals("1:50") && a[1].equals("h"));
+    Test.assert(WpUtil.etaHm(10000).equals("2:45"));
+    Test.assert(WpUtil.etaHm(16000).equals("4:30"));  // 30-minute steps from four hours out
     Test.assert(WpUtil.etaHm(2700).equals("0:45"));
     Test.assert(WpUtil.etaHm(4740).equals("1:20"));  // 1:19 rounds to 5 minutes from an hour out
     a = WpUtil.etaText(3449);  // just under: whole minutes

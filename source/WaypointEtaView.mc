@@ -25,6 +25,8 @@ class WaypointEtaView extends WatchUi.DataField {
     hidden var _learningWord as String;
     hidden var _thenName as String?;  // the main profile point after the next one
     hidden var _thenSec as Number?;
+    hidden var _then2Name as String?; // and the main point after that
+    hidden var _then2Sec as Number?;
     hidden var _viaName as String?;   // the next minor profile point on the way
     hidden var _viaSec as Number?;
     hidden var _smoothSpeed as Float?;
@@ -92,6 +94,8 @@ class WaypointEtaView extends WatchUi.DataField {
             _thenSec = null;
             _viaName = null;
             _viaSec = null;
+            _then2Name = null;
+            _then2Sec = null;
             return;
         }
 
@@ -146,6 +150,8 @@ class WaypointEtaView extends WatchUi.DataField {
         _thenSec = null;
         _viaName = null;
         _viaSec = null;
+        _then2Name = null;
+        _then2Sec = null;
         if (_usingProfile && profile != null && profile.via != null) {
             _viaName = profile.followingName(profile.via as Number);
             _viaSec = (profile.viaTime(_estimator, scale) + 0.5).toNumber();
@@ -155,6 +161,11 @@ class WaypointEtaView extends WatchUi.DataField {
             if (i != null) {
                 _thenName = profile.followingName(i);
                 _thenSec = eta + (profile.followingTime(i, _estimator, scale) + 0.5).toNumber();
+                var i2 = profile.followingAfter(i);
+                if (i2 != null) {
+                    _then2Name = profile.followingName(i2);
+                    _then2Sec = eta + (profile.followingTime(i2, _estimator, scale) + 0.5).toNumber();
+                }
             }
         }
     }
@@ -182,6 +193,8 @@ class WaypointEtaView extends WatchUi.DataField {
         _thenSec = null;
         _viaName = null;
         _viaSec = null;
+        _then2Name = null;
+        _then2Sec = null;
     }
 
     const MIN_FONT_WITH_EXTRAS = 4;  // FONT_MEDIUM: smallest font the time gets when label and arrival are shown too
@@ -268,20 +281,41 @@ class WaypointEtaView extends WatchUi.DataField {
         if (withThen) {
             var grey = bg == Graphics.COLOR_BLACK ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_DK_GRAY;
             drawTimeWithArrival(dc, w / 2, h * 0.42, f[withExtras], main, unit, arriveSide, timeColor, fg, bg);
-            // the minor point on the way, in grey; while learning, the word for it takes its place
-            var middle = viaName != null && viaSec != null
-                ? fitText(dc, _viaWord + " " + viaName, " " + _inWord + " " + WpUtil.etaHm(viaSec as Number), maxW)
-                : (learning ? _learningWord : "");
+            // middle line: the minor point on the way (grey) with its time to go, or else the next
+            // main point with its time to go; bottom line: the main point after that, with its arrival
+            var botW = bottomObscured ? w * 0.8 : maxW;  // a round screen is still 0.8 wide this low
+            var middle = "";
+            var middleGrey = false;
+            var bottom = "";
+            var bottomGrey = false;
+            var then2Name = _then2Name;
+            var then2Sec = _then2Sec;
+            if (viaName != null && viaSec != null) {
+                middle = fitText(dc, _viaWord + " " + viaName, " " + _inWord + " " + WpUtil.etaHm(viaSec as Number), maxW);
+                middleGrey = true;
+                if (thenName != null && thenSec != null) {
+                    bottom = fitText(dc, _thenWord + " " + thenName, " @ " + WpUtil.formatClock(thenSec as Number), botW);
+                }
+            } else if (thenName != null && thenSec != null) {
+                middle = fitText(dc, _thenWord + " " + thenName, " " + _inWord + " " + WpUtil.etaHm(thenSec as Number), maxW);
+                if (then2Name != null && then2Sec != null) {
+                    bottom = fitText(dc, _thenWord + " " + then2Name, " @ " + WpUtil.formatClock(then2Sec as Number), botW);
+                }
+            }
+            // while learning, the word takes a free line (the grey digits say it anyway)
+            if (learning && bottom.length() == 0) {
+                bottom = _learningWord;
+                bottomGrey = true;
+            }
             if (middle.length() > 0) {
-                dc.setColor(grey, Graphics.COLOR_TRANSPARENT);
+                dc.setColor(middleGrey ? grey : fg, Graphics.COLOR_TRANSPARENT);
                 dc.drawText(w / 2, h * 0.67, Graphics.FONT_XTINY, middle, center);
-                dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
             }
-            if (thenName != null && thenSec != null) {
-                var then = fitText(dc, _thenWord + " " + thenName, " @ " + WpUtil.formatClock(thenSec as Number),
-                    bottomObscured ? w * 0.8 : maxW);  // a round screen is still 0.8 wide this low
-                dc.drawText(w / 2, h * (bottomObscured ? 0.80 : 0.84), Graphics.FONT_XTINY, then, center);
+            if (bottom.length() > 0) {
+                dc.setColor(bottomGrey ? grey : fg, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(w / 2, h * (bottomObscured ? 0.80 : 0.84), Graphics.FONT_XTINY, bottom, center);
             }
+            dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
             return;
         }
         drawTime(dc, w / 2, h * 0.5, f[withExtras], main, unit, timeColor, fg, bg);

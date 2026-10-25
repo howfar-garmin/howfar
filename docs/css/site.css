@@ -422,3 +422,7 @@ label.btn { cursor: pointer; }
 .prep-choice legend { padding: 0 6px; font-size: var(--step--1); font-weight: 600; color: var(--ink-2); }
 .prep-choice label { display: flex; align-items: center; gap: 8px; font-size: var(--step--1); color: var(--ink); cursor: pointer; }
 .prep-choice input { accent-color: var(--series-p); margin: 0; }
+
+/* race prep: how to get the texts from a computer to the settings */
+.tip-box { display: grid; gap: 10px; margin-top: 20px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 760px; }
+.tip-box h3, .tip-box p { margin: 0; }

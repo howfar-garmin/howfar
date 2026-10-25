@@ -91,12 +91,12 @@ The three must agree: the watch reads the texts the Python tools and the race pr
 
 On five races: Tor des Géants 2023 on the official 2026 course (legs where the route changed since are left out of the score), Abbots Way 2018 (no checkpoints in its file, so they go where the runner stopped), TORX 2026 section 1, La via di Annibale, STL25. Times are scored as the watch rounds them (`benchmark.py --shown`):
 
-| Configuration | Average error | Within 10 min |
-|---|---|---|
-| Current race only | 7.1 min | 74% |
-| + past races | 6.9 min | 76% |
-| + trail ahead | 5.5 min | 81% |
-| + race-day corrections (the field) | 4.3 min | 87% |
+| Configuration | Average error | Within 5 min | Within 15 min |
+|---|---|---|---|
+| Current race only | 7.1 min | 48% | 88% |
+| + past races | 6.9 min | 46% | 90% |
+| + trail ahead | 5.5 min | 62% | 91% |
+| + race-day corrections (the field) | 4.3 min | 73% | 94% |
 
 When the profile and the watch's course don't list the same checkpoints (`tools/research/benchmark_missing.py`, the four races and 129 activities with checkpoints every 5 km), placing points on the profile beats the old name-only matching, which fell back to "~" for any point the profile lacked:
 

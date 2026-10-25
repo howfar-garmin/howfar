@@ -215,5 +215,6 @@ def score(rows) -> dict:
     out["mae_hour"] = sum(abs(e) for e in near) / len(near)
     out["within5_hour"] = sum(abs(e) <= 5 for e in near) / len(near)
     out["within10_hour"] = sum(abs(e) <= 10 for e in near) / len(near)
+    out["within15_hour"] = sum(abs(e) <= 15 for e in near) / len(near)
     out["bias_hour"] = sum(near) / len(near)
     return out

@@ -435,3 +435,8 @@ label.btn { cursor: pointer; }
 .site-head .wrap .site-nav { margin-left: auto; }
 .site-head .wrap .site-nav + .lang-switch { margin-left: 8px; }
 .results th .race-km { display: block; font-weight: 500; font-size: 0.72rem; }
+/* results table: headings may wrap, so the columns fit the page */
+#results thead th { white-space: normal; vertical-align: bottom; line-height: 1.25; }
+#results .bar-col { width: 14%; }
+#results thead th .race-name, #results thead th .race-km { white-space: nowrap; }
+#results thead th:nth-last-child(-n+3) { min-width: 5.5em; }

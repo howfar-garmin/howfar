@@ -170,7 +170,7 @@ class WaypointEtaView extends WatchUi.DataField {
 
     const MIN_FONT_WITH_EXTRAS = 4;  // FONT_MEDIUM: smallest font the time gets when label and arrival are shown too
     const MIN_HEIGHT_WITH_THEN = 150;  // px: fields this tall also show the checkpoint after the next
-    const LEARN_OBS = 80;  // ~2 km of moving: until then today's form is still a guess (grey digits)
+    const LEARN_OBS = 160;  // ~4 km of moving: until then today's form is still a guess (grey digits)
 
     hidden function fonts() as Array<Graphics.FontDefinition> {
         return [

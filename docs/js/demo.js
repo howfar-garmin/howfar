@@ -82,7 +82,7 @@
     var marker = cfg(state.main).ahead ? "P " : "~ ";
 
     $("wLabel").textContent = marker + wp.name;
-    var shown = etaText(e), learning = f[CD] < 2000; // the watch greys the time for its first ~2 km
+    var shown = etaText(e), learning = f[CD] < 4000; // the watch greys the time for its first ~4 km
     $("wTime").innerHTML = shown[0] + '<span class="w-unit">' + shown[1] + "</span>";
     $("wTime").classList.toggle("learning", learning);
     $("wArrive").textContent = "@ " + arrival(f[T], e) + (learning ? " (learning)" : "");

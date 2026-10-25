@@ -26,11 +26,13 @@ For the slope ahead, the field can use a **course profile**: the elevation of th
 
 ## Build and run
 
-- **Simulator:** in VS Code, *Monkey C: Run* and pick a Fēnix 8 device.
-  - For navigation values, use *Simulation → Activity Data* and set the next-point fields by hand.
-  - Or load a course and play back a FIT file (*Simulation → FIT Data → Simulate Data*).
+- **Simulator:** in VS Code, *Monkey C: Run* and pick a device.
+  - Next waypoint: *Simulation → Set Navigation Data* (distance, elevation and name of the next point and the destination).
+  - A recorded run: *Simulation → Activity Data*, data source *FIT/GPX Playable File*, *Load File*, then *Start* and play.
+  - Field sizes: *Data Fields → Layout*, then run the field again.
 - **Unit tests:** *Monkey C: Run Tests*, or `monkeyc -t` and then `monkeydo <prg> <device> -t`.
 - **On the watch:** *Monkey C: Build for Device*. Copy the `.prg` to `GARMIN/APPS/` over USB, then add the field to a data screen of your run activity.
+- **Connect IQ Store:** `HowFar.iq` (public, reviewed) and `HowFar-beta.iq` (private beta with its own app ID, from `beta.jungle`). See `store/listing.md`.
 
 ## Using the tools
 

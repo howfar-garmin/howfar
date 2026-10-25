@@ -1,5 +1,6 @@
 <strings>
     <string id="AppName">HowFar?</string>
+    <string id="AppNameBeta">HowFar? beta</string>
     <string id="ImportedSpeedModelTitle">Imported speed model (from fit_to_speed_model.py)</string>
     <string id="CourseProfileTitle">Course profile (from course_to_profile.py)</string>
     <string id="ResetModelTitle">Forget what was learned from past runs</string>

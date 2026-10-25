@@ -1,0 +1,4 @@
+# Private beta for the Connect IQ Store: same code, its own app ID and name (manifest-beta.xml).
+# monkeyc -e -f beta.jungle -o bin/release/HowFar-beta.iq -y developer_key -r
+project.manifest = manifest-beta.xml
+base.sourcePath = source;test

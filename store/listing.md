@@ -1,6 +1,33 @@
 # Connect IQ Store listing
 
-Text to paste into the Connect IQ developer site when uploading `HowFar.iq`.
+Text to paste into the Connect IQ developer site when uploading, and how to upload.
+
+## Two packages
+
+| Package | App ID | Store visibility | Review |
+|---|---|---|---|
+| `HowFar-beta.iq` (build with `beta.jungle`) | its own (`manifest-beta.xml`) | only the developer's account | none |
+| `HowFar.iq` (build with `monkey.jungle`) | the public one (`manifest.xml`) | everyone, once approved | Garmin reviews it |
+
+A beta must use a different app ID from the public app; that is what keeps it private. Keep the product lists of the two manifests the same.
+
+```bash
+SDK="$(cat "$HOME/Library/Application Support/Garmin/ConnectIQ/current-sdk.cfg")"
+"$SDK/bin/monkeyc" -e -f beta.jungle -o bin/release/HowFar-beta.iq -y developer_key -r
+"$SDK/bin/monkeyc" -e -f monkey.jungle -o bin/release/HowFar.iq -y developer_key -r
+```
+
+## Upload the private beta
+
+1. Sign in at https://apps.garmin.com/developer/upload with your Garmin account and upload `HowFar-beta.iq`.
+2. Mark it as a beta app. Garmin validates the package; a beta is not reviewed.
+3. Add the description below. A beta has no public page, so screenshots are optional.
+4. Install it from your developer dashboard at apps.garmin.com: open the app and use its download/install button. It reaches the watch at the next sync of the Garmin Connect app, with no file copying.
+5. Its Settings then appear in the Garmin Connect app (your watch → Connect IQ apps → HowFar? beta → Settings).
+
+## Submit the public app (later)
+
+Upload `HowFar.iq` the same way, without the beta option. While Garmin reviews it, it stays out of the store but you can preview and download it for testing; once approved it appears publicly. See https://developer.garmin.com/connect-iq/submit-an-app/ and Garmin's App Review Guidelines.
 
 ## App name
 

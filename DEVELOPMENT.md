@@ -104,7 +104,7 @@ When the profile and the watch's course don't list the same checkpoints (`tools/
 
 With the same checkpoints on both, nothing changes. Placing an unknown point by its altitude was tried as well and dropped: it didn't help.
 
-Tested and dropped, because none did better: a projection of the slowdown with effort; a self-check every 1–3 km correcting by the last stretch's ratio (3.8–4.3 min); personal Naismith-Langmuir; Tobler's hiking function; ITRA km-effort; Minetti's energy cost; gradient-boosted trees.
+Tested and dropped, because none did better: not letting the stretch around each checkpoint (200–500 m) change today's form and recent slowdown, on the theory that walking through aid stations makes the next leg look slow (`tools/research/benchmark_quiet.py`; the four races, 129 activities, and the 28 of 50 km or more with checkpoints where the runner stopped: overall error unchanged, a little less in the first 15 min after a checkpoint, worse on some legs); a projection of the slowdown with effort; a self-check every 1–3 km correcting by the last stretch's ratio (3.8–4.3 min); personal Naismith-Langmuir; Tobler's hiking function; ITRA km-effort; Minetti's energy cost; gradient-boosted trees.
 
 ## Still to check on a real watch
 

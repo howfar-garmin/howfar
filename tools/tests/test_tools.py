@@ -318,6 +318,17 @@ def test_matcher_minor_points_are_shown_on_the_way():
     assert m.via is None and m.target_dist == pytest.approx(1100)
 
 
+def test_matcher_several_minor_points_in_turn():
+    # two minor points before B: "via" names the next one, then the one after it
+    m = ProfileMatcher(100, [("+Col", 600, [0] * 6), ("+Lake", 600, [0] * 6), ("B", 800, [0] * 8)])
+    assert m.update("B", 1900, 1900, 100.0)
+    assert m.following_name(m.via) == "Col" and m.target_dist == pytest.approx(1900)
+    assert m.update("B", 1000, 1000, 1000.0)
+    assert m.following_name(m.via) == "Lake" and m.target_dist == pytest.approx(1000)
+    assert m.update("B", 500, 500, 1500.0)
+    assert m.via is None
+
+
 def test_matcher_skips_a_minor_point_the_watch_counts_down_to():
     # the watch's course has the top too (downloaded with every point), but it's minor
     m = ProfileMatcher(100, [("+Top 900m", 800, [0] * 8), ("B", 1200, [0] * 12)])

@@ -54,6 +54,17 @@ module WpUtil {
     }
 
     // Clock time `seconds` from now, in the watch's 12/24 h setting, rounded like the countdown
+    // Time to go as h:mm, for the line naming the minor point on the way: 5-minute steps from
+    // an hour out, whole minutes closer in
+    function etaHm(seconds as Number) as String {
+        if (seconds < 0) {
+            seconds = 0;
+        }
+        var step = seconds >= 3450 ? 300 : 60;
+        var r = ((seconds + step / 2) / step) * step;
+        return (r / 3600).format("%d") + ":" + ((r % 3600) / 60).format("%02d");
+    }
+
     function formatClock(seconds as Number) as String {
         var info = Gregorian.info(Time.now().add(new Time.Duration(seconds)), Time.FORMAT_SHORT);
         var step = etaStep(seconds) >= 300 ? 5 : 1;

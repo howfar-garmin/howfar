@@ -20,7 +20,8 @@ class WaypointEtaView extends WatchUi.DataField {
     hidden var _name as String?;
     hidden var _usingProfile as Boolean = false;
     hidden var _thenWord as String;   // "then", in the watch's language
-    hidden var _viaWord as String;    // "via": the bottom line names a minor point on the way
+    hidden var _viaWord as String;    // "via": a line names the minor point on the way
+    hidden var _inWord as String;     // "in": ... and the time to it
     hidden var _learningWord as String;
     hidden var _thenName as String?;  // the main profile point after the next one
     hidden var _thenSec as Number?;
@@ -38,6 +39,7 @@ class WaypointEtaView extends WatchUi.DataField {
         _scale = new CourseScale();
         _thenWord = WatchUi.loadResource(Rez.Strings.Then) as String;
         _viaWord = WatchUi.loadResource(Rez.Strings.Via) as String;
+        _inWord = WatchUi.loadResource(Rez.Strings.In) as String;
         _learningWord = WatchUi.loadResource(Rez.Strings.Learning) as String;
         var stored = Application.Storage.getValue(STORAGE_KEY);
         if (stored instanceof Array) {
@@ -268,7 +270,7 @@ class WaypointEtaView extends WatchUi.DataField {
             drawTimeWithArrival(dc, w / 2, h * 0.42, f[withExtras], main, unit, arriveSide, timeColor, fg, bg);
             // the minor point on the way, in grey; while learning, the word for it takes its place
             var middle = viaName != null && viaSec != null
-                ? fitText(dc, _viaWord + " " + viaName, " @ " + WpUtil.formatClock(viaSec as Number), maxW)
+                ? fitText(dc, _viaWord + " " + viaName, " " + _inWord + " " + WpUtil.etaHm(viaSec as Number), maxW)
                 : (learning ? _learningWord : "");
             if (middle.length() > 0) {
                 dc.setColor(grey, Graphics.COLOR_TRANSPARENT);

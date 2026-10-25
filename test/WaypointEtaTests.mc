@@ -37,6 +37,8 @@ function testFormatDuration(logger as Test.Logger) as Boolean {
     Test.assert(a[0].equals("1:00") && a[1].equals("h"));
     a = WpUtil.etaText(7890);  // 2 h 11.5 min
     Test.assert(a[0].equals("2:10") && a[1].equals("h"));
+    Test.assert(WpUtil.etaHm(2700).equals("0:45"));
+    Test.assert(WpUtil.etaHm(4740).equals("1:20"));  // 1:19 rounds to 5 minutes from an hour out
     a = WpUtil.etaText(3449);  // just under: whole minutes
     Test.assert(a[0].equals("57") && a[1].equals("min"));
     return true;

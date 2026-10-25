@@ -48,6 +48,12 @@
     var stepMs = (etaStep(e) >= 300 ? 5 : 1) * 60000;
     return clockFmt.format(new Date(Math.round((startMs + (raceSec + e) * 1000) / stepMs) * stepMs));
   }
+  // the time to the minor point on the way, as the watch shows it (WpUtil.etaHm)
+  function etaHm(s) {
+    s = Math.max(0, Math.round(s));
+    var step = s >= 3450 ? 300 : 60, r = Math.round(s / step) * step;
+    return Math.floor(r / 3600) + ":" + pad(Math.floor((r % 3600) / 60));
+  }
   function hm(s) {
     s = Math.max(0, Math.round(s));
     return Math.floor(s / 3600) + " h " + pad(Math.floor((s % 3600) / 60)) + " min";
@@ -121,7 +127,8 @@
     $("wTime").innerHTML = shown[0] + '<span class="w-side"><span class="w-unit">' + shown[1] + '</span><span class="w-arr">@' + arrival(f[T], e) + "</span></span>";
     $("wTime").classList.toggle("learning", learning);
     var line = function (word, j) { return word + " " + WP[j].name + " @ " + arrival(f[T], shownSec(timeTo(f, j))); };
-    $("wVia").textContent = pts.via != null ? line(_t("via"), pts.via) : learning ? _t("(learning)") : "";
+    $("wVia").textContent = pts.via != null ? _t("via") + " " + WP[pts.via].name + " " + _t("in") + " " + etaHm(timeTo(f, pts.via))
+      : learning ? _t("(learning)") : "";
     $("wThen").textContent = pts.then != null ? line(_t("then"), pts.then) : "";
 
     $("raceClock").textContent = dur(f[T]);

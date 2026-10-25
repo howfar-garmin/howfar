@@ -31,10 +31,10 @@ KEY = "S1"
 # race-day corrections, so every case has them. id, short label (chart, table), label next to
 # the choice, benchmark options (trail ahead decides P/~ on the watch)
 CONFIGS = [
-    ("none", "Nothing", "Nothing (first race with HowFar?)", dict(past=False, ahead=False, raceday=True)),
-    ("pace", "Your pace", "Your pace from past races", dict(past=True, ahead=False, raceday=True)),
-    ("profile", "Course profile", "The course profile", dict(past=False, ahead=True, raceday=True)),
-    ("both", "Both", "Both (full race prep)", dict(past=True, ahead=True, raceday=True)),
+    ("none", "No race prep", "Nothing: no race prep", dict(past=False, ahead=False, raceday=True)),
+    ("pace", "Pace only", "Only my pace from past races", dict(past=True, ahead=False, raceday=True)),
+    ("profile", "Course profile only", "Only the course profile", dict(past=False, ahead=True, raceday=True)),
+    ("both", "Full race prep", "Both: full race prep", dict(past=True, ahead=True, raceday=True)),
 ]
 
 

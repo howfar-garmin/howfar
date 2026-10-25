@@ -287,7 +287,7 @@ table.results { border-collapse: collapse; width: 100%; min-width: 640px; font-s
 .results .num { text-align: right; }
 .results tr.group td { color: var(--ink-3); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.75rem; padding-top: 16px; background: var(--bg); }
 .results tr.current td:first-child { font-weight: 600; }
-.results tr.current td:first-child::after { content: "full race prep"; margin-left: 8px; font-size: 0.72rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 8px; }
+.results tr.current td:first-child::after { content: "recommended"; margin-left: 8px; font-size: 0.72rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 8px; }
 .results tr:hover td { background: var(--accent-soft); cursor: pointer; }
 .results tr.group:hover td { background: var(--bg); cursor: default; }
 .bar-col { width: 30%; }

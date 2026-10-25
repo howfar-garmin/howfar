@@ -18,12 +18,8 @@
   var LANG = window.HOWFAR_LANG || "en";
   var _t = window._t || function (s, v) { return v ? s.replace(/\{(\w+)\}/g, function (m, k) { return k in v ? v[k] : m; }) : s; };
 
-  var NOTES = {
-    none: _t("Your first race with HowFar, nothing pasted in its settings. It learns your pace on every slope from today's run as you go, and knows only how far away the checkpoint is and how much higher or lower (~)."),
-    profile: _t("Your first race with HowFar, with the course profile pasted in its settings: it knows every climb and descent to the checkpoint (P). It learns your pace on every slope from today's run as you go.")
-  };
-
-  var state = { t: tStart + 2.17 * 3600, main: "profile", cmp: "average", speed: 300, playing: false, last: 0 };
+  // the watch shows HowFar with the course profile; the error chart shows every line
+  var state = { t: tStart + 2.17 * 3600, main: "profile", speed: 300, playing: false, last: 0 };
   var $ = function (id) { return document.getElementById(id); };
   var SVGNS = "http://www.w3.org/2000/svg";
 
@@ -75,11 +71,18 @@
   function cfg(id) { return C[idx[id]]; }
   // the cases' names, short (chart, table) and next to the choice
   var LABELS = {
-    average: [_t("Average pace so far"), ""],
-    none: [_t("HowFar, no course profile"), _t("Nothing")],
-    profile: [_t("HowFar with the course profile"), _t("The course profile")]
+    average: _t("Average pace so far"),
+    none: _t("HowFar, no course profile"),
+    profile: _t("HowFar with the course profile")
   };
-  function label(id) { return LABELS[id] ? LABELS[id][0] : cfg(id).label; }
+  function label(id) { return LABELS[id] || cfg(id).label; }
+  // the error chart's lines, back to front, and their colours
+  var STEPS = ["average", "none", "profile"];
+  var COLORS = { average: "var(--line-average)", none: "var(--line-none)", profile: "var(--line-profile)" };
+  var DASHED = { none: true };  // yellow and green are close for some colour-blind readers
+  function swatch(id) {
+    return '<i style="background:' + (DASHED[id] ? "repeating-linear-gradient(90deg, " + COLORS[id] + " 0 5px, transparent 5px 8px)" : COLORS[id]) + '"></i>';
+  }
 
   function frameAt(t) {
     var lo = 0, hi = F.length - 1;
@@ -228,7 +231,7 @@
   var R = { W: 1000, H: 270, l: 52, r: 44, t: 14, b: 32, y0: -45, y1: 25 };
   function rx(t) { return R.l + ((t - tStart) / (tEnd - tStart)) * (R.W - R.l - R.r); }
   function ry(m) { m = Math.max(R.y0, Math.min(R.y1, m)); return R.t + ((R.y1 - m) / (R.y1 - R.y0)) * (R.H - R.t - R.b); }
-  var errCursor, lineMain, lineCmp;
+  var errCursor;
 
   function seriesPoints(id) {
     return F.map(function (f) { return rx(f[T]).toFixed(1) + "," + ry(err(f, id) / 60).toFixed(1); }).join(" ");
@@ -248,8 +251,14 @@
       if (i < D.firstWaypoint || w.arrive == null) return;
       el("line", { x1: rx(w.arrive), x2: rx(w.arrive), y1: R.t, y2: R.H - R.b, stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": "2 4" }, svg);
     });
-    lineCmp = el("polyline", { fill: "none", stroke: "var(--series-a)", "stroke-width": 1.75, "stroke-linejoin": "round" }, svg);
-    lineMain = el("polyline", { fill: "none", stroke: "var(--series-p)", "stroke-width": 1.75, "stroke-linejoin": "round" }, svg);
+    STEPS.forEach(function (id) {
+      var attrs = { points: seriesPoints(id), fill: "none", stroke: COLORS[id], "stroke-width": id === "profile" ? 2 : 1.5, "stroke-linejoin": "round" };
+      if (DASHED[id]) attrs["stroke-dasharray"] = "6 4";
+      el("polyline", attrs, svg);
+    });
+    $("errLegend").innerHTML = STEPS.slice().reverse().map(function (id) {
+      return "<span>" + swatch(id) + label(id) + "</span>";
+    }).join("");
     errCursor = el("line", { y1: R.t, y2: R.H - R.b, stroke: "var(--ink)", "stroke-width": 1.25 }, svg);
 
     var box = $("errBox");
@@ -257,8 +266,9 @@
       var p = svgPoint(svg, evt);
       var f = frameAt(tStart + ((p.x - R.l) / (R.W - R.l - R.r)) * (tEnd - tStart));
       tipShow(box, _t("<b>{time}</b> · to {name}", { time: hm(f[T]), name: WP[f[K]].name }) +
-        '<br><i style="background:var(--series-p)"></i>' + label(state.main) + " " + signedMin(err(f, state.main)) +
-        '<br><i style="background:var(--series-a)"></i>' + label(state.cmp) + " " + signedMin(err(f, state.cmp)), p.px, p.py);
+        STEPS.slice().reverse().map(function (id) {
+          return "<br>" + swatch(id) + label(id) + " " + signedMin(err(f, id));
+        }).join(""), p.px, p.py);
     });
     svg.addEventListener("mouseleave", function () { tipHide(box); });
     svg.addEventListener("click", function (evt) {
@@ -266,12 +276,6 @@
       state.t = Math.min(tEnd, Math.max(tStart, tStart + ((p.x - R.l) / (R.W - R.l - R.r)) * (tEnd - tStart)));
       render();
     });
-  }
-  function updateSeries() {
-    lineMain.setAttribute("points", seriesPoints(state.main));
-    lineCmp.setAttribute("points", seriesPoints(state.cmp));
-    $("legMain").textContent = label(state.main);
-    $("modeNote").textContent = NOTES[state.main] || "";
   }
 
   function moveCursors(f) {
@@ -285,35 +289,7 @@
     errCursor.setAttribute("x1", xt); errCursor.setAttribute("x2", xt);
   }
 
-  // ---------- method pickers and results table
-  var STEPS = ["average", "none", "profile"], CHOICES = ["none", "profile"];
-  function fillPicker(sel, value) {
-    STEPS.forEach(function (id) {
-      var o = document.createElement("option");
-      o.value = id; o.textContent = label(id);
-      sel.appendChild(o);
-    });
-    sel.value = value;
-  }
-  // the choice under the watch: one radio button per case
-  function fillChoice(box, value) {
-    CHOICES.forEach(function (id) {
-      var l = document.createElement("label");
-      var r = document.createElement("input");
-      r.type = "radio"; r.name = "prepChoice"; r.value = id; r.checked = id === value;
-      r.addEventListener("change", function () { if (r.checked) setMain(id); });
-      l.appendChild(r);
-      l.appendChild(document.createTextNode(" " + (LABELS[id] ? LABELS[id][1] : cfg(id).long)));
-      box.appendChild(l);
-    });
-  }
-  function setMain(id) {
-    state.main = id;
-    var r = document.querySelector('input[name="prepChoice"][value="' + id + '"]');
-    if (r) r.checked = true;
-    updateSeries(); render();
-  }
-
+  // ---------- results table
   var SHORT = { TOR: "Tor 330", AW: "Abbots Way", S1: "TORX S1", AN: "La Via di Annibale", STL: "STL25" };
   function buildTable() {
     var table = $("results");
@@ -336,19 +312,13 @@
       var v = mean(id, "mae_hour");
       var row = document.createElement("tr");
       if (id === "profile") row.className = "current";
-      var onWatch = CHOICES.indexOf(id) >= 0;
-      if (onWatch) { row.tabIndex = 0; row.title = _t("Show on the watch"); } else row.className = "baseline";
+      if (id === "average") row.className = "baseline";
       row.innerHTML = "<td>" + label(id) + "</td>" +
         RACES.map(function (r) { return '<td class="num">' + dec(S[id][r.key].mae_hour, 1) + " min</td>"; }).join("") +
         '<td class="num"><b>' + dec(v, 1) + " min</b></td>" +
         '<td class="num">' + Math.round(mean(id, "within5_hour") * 100) + "%</td>" +
         '<td class="num">' + Math.round(mean(id, "within15_hour") * 100) + "%</td>" +
         '<td class="num">' + dec(mean(id, "mae_2000"), 1) + " min</td>";
-      var pick = function () { setMain(id); $("demo").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); };
-      if (onWatch) {
-        row.addEventListener("click", pick);
-        row.addEventListener("keydown", function (e) { if (e.key === "Enter") pick(); });
-      }
       body.appendChild(row);
     });
   }
@@ -412,13 +382,9 @@
     state.t = tStart + (+$("scrub").value / 1000) * (tEnd - tStart);
     render();
   });
-  fillChoice($("pickMain"), state.main);
-  fillPicker($("pickCmp"), state.cmp);
-  $("pickCmp").addEventListener("change", function () { state.cmp = this.value; updateSeries(); render(); });
 
   drawElevation();
   drawError();
-  updateSeries();
   buildTable();
   fillTools();
   render();

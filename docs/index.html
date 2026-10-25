@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&amp;family=Public+Sans:wght@400;500;600&amp;family=Saira+Semi+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="css/site.css?v=40" rel="stylesheet"/>
+<link href="css/site.css?v=43" rel="stylesheet"/>
 <link href="https://howfar-garmin.github.io/howfar/" hreflang="en" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/it/" hreflang="it" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/fr/" hreflang="fr" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/de/" hreflang="de" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/" hreflang="x-default" rel="alternate"/><script>window.HOWFAR_LANG="en";window.HOWFAR_T={};
 window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\}/g,function(m,k){return k in v?v[k]:m}):x};
 (function(){try{var k="howfar.lang";document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-lang]");if(a)localStorage.setItem(k,a.getAttribute("data-lang"))});if(!localStorage.getItem(k)){var l=((navigator.languages&&navigator.languages[0])||navigator.language||"").slice(0,2).toLowerCase();if(["it", "fr", "de"].indexOf(l)>=0){localStorage.setItem(k,l);location.replace(l+"/"+location.pathname.split("/").pop()+location.hash)}}}catch(e){}})();</script></head>
@@ -66,7 +66,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <li><b>Top line: the next checkpoint.</b> The name comes from your course, or from a point you added on the <a href="prepare.html">race prep page</a>, such as the top of a climb or a hut. The letter in front tells you how much the watch knows about the trail ahead: <span class="pill">P</span> it knows every climb and descent to the checkpoint (you gave it the course profile, see <a href="#prepare">Prepare a race</a>); <span class="pill">~</span> it only knows how far away and how much higher or lower the checkpoint is.</li>
 <li><b>Big number: time to get there</b> while you keep moving, only as precisely as it can be known: hours and minutes in 5-minute steps from an hour out (<i>2:15 h</i>), whole minutes closer in (<i>42 min</i>), minutes and seconds in the last 5 minutes. For the first few kilometres the number is grey: it's still learning how you're moving today. Time spent stopped at an aid station is not included, because nobody can guess how long you'll stay.</li>
 <li><b>Bottom line: arrival time.</b> The time of day you'll get there, in your watch's 12 or 24 hour format.</li>
-<li><b>On a full-screen field: the checkpoint after that.</b> Its name and when you'll get there, for example <i>then Baite Youlaz @ 15:25</i>. It needs the course profile, because your watch only tells a data field about the next checkpoint.</li>
+<li><b>On a full-screen field, only with the course profile: the checkpoint after that.</b> Its name and when you'll get there, for example <i>then Baite Youlaz @ 15:25</i>. Your watch tells a data field only about the next checkpoint, so without the profile this line stays empty.</li>
 </ol>
 </div>
 <p class="small muted explain-note">Without a course, or between courses, the field shows <b>--</b>. On a screen with many fields it shows just the big number.</p>
@@ -82,8 +82,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <ol aria-label="How to use the demo" class="howto">
 <li><b>Press Play.</b> The race replays 300 times faster than real life: the whole 13½ hours in under 3 minutes. Use <b>60×</b> for a closer look or <b>900×</b> to rush through.</li>
 <li><b>Drag the slider</b> to jump to any moment, or click anywhere on the elevation chart.</li>
-<li><b>Choose what you pasted</b>, under the watch: nothing, or the course profile. The watch shows what HowFar would have said in that case. Either way it learns your pace on every slope from the run itself, starting from nothing, as on your first race with HowFar.</li>
-<li><b>Compare</b> it on the “how far off” chart below with the usual estimate, the distance left at your average pace so far, or with the other choice, using “Compare with”.</li>
+<li><b>Compare</b> on the “how far off” chart below: HowFar with the course profile, HowFar without it, and the usual estimate, the distance left at your average pace so far.</li>
 </ol>
 <div class="demo-grid">
 <div class="watch-col">
@@ -94,10 +93,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="w-arrive" id="wArrive">@ 14:05</div>
 </div>
 </div>
-<fieldset class="prep-choice" id="pickMain">
-<legend>What did you paste into HowFar's settings before the race?</legend>
-</fieldset>
-<p class="watch-caption" id="modeNote"></p>
+<p class="watch-caption">Your first race with HowFar, with the course profile pasted in its settings: it knows every climb and descent to the checkpoint (P). It learns your pace on every slope from today's run as you go.</p>
 </div>
 <div class="panel">
 <div class="controls">
@@ -136,15 +132,10 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="chart-block">
 <div class="chart-head">
 <h3>How far off the watch was</h3>
-<div class="legend">
-<span><i style="background: var(--series-p)"></i><span id="legMain"></span></span>
-<label class="picker legend-picker" for="pickCmp"><span class="swatch" style="background: var(--series-a)"></span>Compare with
-              <select id="pickCmp"></select>
-</label>
-</div>
+<div class="legend" id="errLegend"></div>
 </div>
 <p class="small muted">For every moment of the race: the time HowFar predicted (before the watch rounds it for display), minus the time it really took to reach the next checkpoint (stops left out). Above zero, you arrived earlier than the watch said; below zero, later. The green band is ±5 minutes. Notice how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead.</p>
-<div class="chart-box" id="errBox"><svg aria-label="How far off the two chosen predictions were during the race" class="wide" id="err" role="img" viewbox="0 0 1000 270"></svg></div>
+<div class="chart-box" id="errBox"><svg aria-label="How far off each prediction was during the race" class="wide" id="err" role="img" viewbox="0 0 1000 270"></svg></div>
 </div>
 </div>
 </section>
@@ -177,7 +168,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <p class="eyebrow">Does it work?</p>
 <h2>Tested on five real races</h2>
 <p class="muted">HowFar works best where it was made and tested: trail runs of 25 km or more with real climbs and descents. Here, five races from 26 to 337 km; behind them, 129 training runs of at least 25 km.</p>
-<p class="muted">Each race was replayed and the prediction checked against reality at every moment, as if it were the runner's first race with HowFar: nothing remembered from earlier runs. “Average pace so far” is the usual estimate, the distance left at your average moving speed since the start. Lower minutes and a higher “less than 5 min off” are better. Click a HowFar row to show it on the demo watch.</p>
+<p class="muted">Each race was replayed and the prediction checked against reality at every moment, as if it were the runner's first race with HowFar: nothing remembered from earlier runs. “Average pace so far” is the usual estimate, the distance left at your average moving speed since the start. Lower minutes and a higher “less than 5 min off” are better.</p>
 </div>
 <div class="table-wrap">
 <table class="results" id="results">
@@ -259,8 +250,13 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="section-head">
 <p class="eyebrow">Prepare a race (optional)</p>
 <h2>Show it the trail ahead</h2>
-<p class="muted">HowFar works without any preparation: it learns your pace as you run. One optional extra makes it better: the course profile, pasted into the field's settings in the Garmin Connect app on your phone. This needs HowFar installed from the Connect IQ Store: if you copied the file onto the watch with a cable instead, Garmin Connect shows no settings for it.</p>
-<p class="muted">On the <a href="prepare.html">race prep page</a> you can also add points of your own to count down to: the top and bottom of every big climb, huts and villages along the way. Your watch's course stays as it is.</p>
+<p class="muted">HowFar works without any preparation: it learns your pace as you run. One optional extra makes it better: the course profile, pasted into the field's settings in the Garmin Connect app on your phone. Only with it does HowFar:</p>
+<ul class="gains">
+<li><b>know every climb and descent</b> to the checkpoint, not just how much higher or lower it is (<span class="pill">P</span> on the watch instead of <span class="pill">~</span>);</li>
+<li><b>show the checkpoint after the next</b> and when you'll get there, on a full-screen field: your watch tells a data field only about the next one;</li>
+<li><b>count down to points you add</b> on the <a href="prepare.html">race prep page</a>: the top and bottom of every big climb, huts and villages. Your watch's course stays as it is.</li>
+</ul>
+<p class="muted">This needs HowFar installed from the Connect IQ Store: if you copied the file onto the watch with a cable instead, Garmin Connect shows no settings for it.</p>
 <p class="prep-cta"><a class="btn primary" href="prepare.html">Open race prep</a> <span class="small muted">Make it from your race's course file, right in your browser.</span></p>
 </div>
 <div class="tools-grid single">
@@ -310,6 +306,6 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 </footer>
 <script src="demo/torx-s1.js?v=18"></script>
-<script src="js/demo.js?v=27"></script>
+<script src="js/demo.js?v=30"></script>
 </body>
 </html>

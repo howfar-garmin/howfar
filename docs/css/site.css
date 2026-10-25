@@ -413,6 +413,9 @@ label.btn { cursor: pointer; }
 .add-row .small { flex: 1 1 260px; }
 .added-tag { display: inline-block; margin-left: 8px; font-size: 0.72rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 8px; }
 .add-row .field.inline { display: inline-flex; align-items: center; gap: 8px; margin-top: 0; font-weight: 500; }
+#ownName { width: 13em; max-width: 60vw; }
+#ownKm { width: 5em; }
+svg.pickable { cursor: crosshair; }
 .fit-out summary { cursor: pointer; font-weight: 600; color: var(--ink-2); }
 .fit-out p { margin: 8px 0; max-width: 70ch; }
 

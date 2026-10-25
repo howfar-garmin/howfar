@@ -1,7 +1,7 @@
 // HowFar race prep page: course profile and checkpoints, library. Everything runs
 // in the browser; files are never uploaded. The calculations are in howfar-core.js.
 import * as core from "./howfar-core.js?v=6";
-import * as extra from "./extra-points.js?v=5";
+import * as extra from "./extra-points.js?v=6";
 
 const FIT_SDK = "https://cdn.jsdelivr.net/npm/@garmin/fitsdk@21.217.0/+esm";
 const JSZIP = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
@@ -137,7 +137,8 @@ function tip(box, html, evt) {
   t.style.top = Math.max(4, y - 10) + "px";
 }
 
-function drawCourse(profile, checkpoints) {
+/** onPick(metres): called with the course distance clicked, when points can be added. */
+function drawCourse(profile, checkpoints, onPick) {
   const svg = $("courseChart"), box = $("courseChartBox");
   svg.replaceChildren();
   const E = { W: 1000, H: 280, l: 52, r: 18, t: 56, b: 30 };
@@ -169,9 +170,14 @@ function drawCourse(profile, checkpoints) {
     const r = svg.getBoundingClientRect();
     const d = Math.min(dmax, Math.max(0, ((((e.clientX - r.left) / r.width) * E.W - E.l) / (E.W - E.l - E.r)) * dmax));
     const p = profile.reduce((best, q) => (Math.abs(q[0] - d) < Math.abs(best[0] - d) ? q : best), profile[0]);
-    tip(box, `<b>${km(p[0])}</b> · ${num(p[1])} m`, e);
+    tip(box, `<b>${km(p[0])}</b> · ${num(p[1])} m` + (onPick ? "<br>" + _t("Click to add a point here") : ""), e);
   };
   svg.onmouseleave = () => tip(box, null);
+  svg.onclick = onPick ? (e) => {
+    const r = svg.getBoundingClientRect();
+    onPick(Math.min(dmax, Math.max(0, ((((e.clientX - r.left) / r.width) * E.W - E.l) / (E.W - E.l - E.r)) * dmax)));
+  } : null;
+  svg.classList.toggle("pickable", !!onPick);
 }
 
 // ---------------------------------------------------------------- what's open
@@ -256,11 +262,12 @@ function renderCourse() {
   const has = (kinds) => (course.candidates || []).some((c) => kinds.includes(c.added));
   $("removeClimbs").hidden = !has(["top", "bottom"]);
   $("removePlaces").hidden = !has(["hut", "village"]);
+  $("removeOwn").hidden = !has(["own"]);
   $("courseSummary").innerHTML = `<b>${esc(course.file)}</b>: ` + (real.length === 1
     ? _t("{len}, {up} m of climbing, 1 checkpoint.", { len: km(v.length), up: num(v.up) })
     : _t("{len}, {up} m of climbing, {n} checkpoints.", { len: km(v.length), up: num(v.up), n: real.length }));
-  drawCourse(v.profile, v.checkpoints);
-  const ADDED = { top: _t("top of a climb"), bottom: _t("bottom of a climb"), hut: _t("hut"), village: _t("village") };
+  drawCourse(v.profile, v.checkpoints, course.parsed ? pickOwn : null);
+  const ADDED = { top: _t("top of a climb"), bottom: _t("bottom of a climb"), hut: _t("hut"), village: _t("village"), own: _t("your point") };
   const tag = (c) => (c.added ? `<span class="added-tag">${_t("added: {what}", { what: ADDED[c.added] || c.added })}</span>` : "");
   const row = (c, pick) => `<tr><td>${pick}${esc(c.name)}${pick ? "</label>" : ""}${tag(c)}</td><td class="num">${dec(c.d / 1000, 1)}</td><td class="num">${km(c.seg)}</td><td class="num">${num(c.climb)} m</td></tr>`;
   const cands = course.parsed && course.candidates;
@@ -377,6 +384,39 @@ $("courseFit").addEventListener("click", async (e) => {
   } finally {
     btn.disabled = false;
   }
+});
+
+// a point of your own: a name and where it is, typed or clicked on the chart
+function pickOwn(metres) {
+  $("ownKm").value = (Math.round(metres / 100) / 10).toFixed(1);
+  $("ownName").focus();
+  status($("addStatus"), _t("Picked km {km}. Give it a name and press Add.", { km: dec(metres / 1000, 1) }));
+}
+
+$("addOwn").addEventListener("click", () => {
+  if (!course.parsed || !course.candidates) return;
+  const st = $("addStatus");
+  const name = $("ownName").value.trim();
+  const at = Number(String($("ownKm").value).replace(",", ".")) * 1000;
+  const length = core.courseFrom(course.parsed).points.slice(-1)[0].dist;
+  if (!name) return status(st, _t("Give the point a name."), true);
+  if (!(at > 0 && at < length)) return status(st, _t("Choose a place between km 0 and km {km}.", { km: dec(length / 1000, 1) }), true);
+  const near = course.candidates.find((c) => c.on && Math.abs(c.dist - at) < 100);
+  if (near) return status(st, _t("“{name}” is already within 100 m of there.", { name: near.name }), true);
+  course.candidates = course.candidates.concat([{ name, dist: at, on: true, added: "own" }]).sort((a, b) => a.dist - b.dist);
+  course.dirty = true;
+  $("courseSaved").textContent = "";
+  $("ownName").value = "";
+  $("ownKm").value = "";
+  recomputeCourse();
+  status(st, _t("Added “{name}” at km {km}.", { name, km: dec(at / 1000, 1) }));
+});
+$("ownName").addEventListener("keydown", (e) => { if (e.key === "Enter") $("addOwn").click(); });
+$("ownKm").addEventListener("keydown", (e) => { if (e.key === "Enter") $("addOwn").click(); });
+
+$("removeOwn").addEventListener("click", () => {
+  addPoints(["own"], []);
+  status($("addStatus"), _t("Removed your points."));
 });
 
 $("removeClimbs").addEventListener("click", () => {

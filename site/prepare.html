@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=44">
+<link rel="stylesheet" href="css/site.css?v=45">
 </head>
 <body>
 
@@ -90,7 +90,7 @@
 
             <div class="add-points" id="addPoints">
               <h3>Add more points</h3>
-              <p class="small muted">HowFar will count down to these too. They appear in the list above, where you can untick any of them.</p>
+              <p class="small muted">HowFar will count down to these too: climbs and huts found for you, or any point of your own, like a spring or a viewpoint. They appear in the list above, where you can untick any of them.</p>
               <div class="add-row">
                 <button type="button" class="btn" id="addClimbs">Add climb tops and bottoms</button>
                 <label class="field inline" for="climbMin">for climbs of at least
@@ -101,6 +101,16 @@
                 <button type="button" class="btn" id="addPlaces">Add huts and villages</button>
                 <span class="small muted">From <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>: named mountain huts, shelters and villages within 200 m of the course. This is the one thing on this page that goes online: it asks OpenStreetMap's search service for what's inside a rectangle around your course. Only the rectangle's corners are sent, never your file.</span>
               </div>
+              <div class="add-row own-row">
+                <label class="field inline" for="ownName">Your own point
+                  <input id="ownName" type="text" maxlength="40" placeholder="For example: Spring" autocomplete="off">
+                </label>
+                <label class="field inline" for="ownKm">at km
+                  <input id="ownKm" type="text" inputmode="decimal" size="6" autocomplete="off">
+                </label>
+                <button type="button" class="btn" id="addOwn">Add</button>
+                <span class="small muted">Or click the course chart above to pick the place.</span>
+              </div>
               <details class="small fit-out">
                 <summary>Want your watch itself to know these points too?</summary>
                 <p class="muted">HowFar doesn't need it, but if you also want your watch's own alerts, checkpoint list and ClimbPro to show the added points, download the course with every ticked checkpoint and load it on the watch instead of the original: in Garmin Connect on a computer, <b>Training &amp; Planning → Courses → Import</b>.</p>
@@ -109,6 +119,7 @@
               <div class="add-row">
                 <button type="button" class="btn small-btn" id="removeClimbs" hidden>Remove tops and bottoms</button>
                 <button type="button" class="btn small-btn" id="removePlaces" hidden>Remove huts and villages</button>
+                <button type="button" class="btn small-btn" id="removeOwn" hidden>Remove your points</button>
               </div>
               <p class="status" id="addStatus" role="status" aria-live="polite"></p>
             </div>
@@ -202,6 +213,6 @@
   </div>
 </footer>
 
-<script type="module" src="js/prepare.js?v=16"></script>
+<script type="module" src="js/prepare.js?v=17"></script>
 </body>
 </html>

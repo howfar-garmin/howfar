@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&amp;family=Public+Sans:wght@400;500;600&amp;family=Saira+Semi+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="css/site.css?v=44" rel="stylesheet"/>
+<link href="css/site.css?v=45" rel="stylesheet"/>
 <link href="https://howfar-garmin.github.io/howfar/prepare.html" hreflang="en" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/it/prepare.html" hreflang="it" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/fr/prepare.html" hreflang="fr" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/de/prepare.html" hreflang="de" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/prepare.html" hreflang="x-default" rel="alternate"/><script>window.HOWFAR_LANG="en";window.HOWFAR_T={};
 window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\}/g,function(m,k){return k in v?v[k]:m}):x};
 (function(){try{var k="howfar.lang";document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-lang]");if(a)localStorage.setItem(k,a.getAttribute("data-lang"))});if(!localStorage.getItem(k)){var l=((navigator.languages&&navigator.languages[0])||navigator.language||"").slice(0,2).toLowerCase();if(["it", "fr", "de"].indexOf(l)>=0){localStorage.setItem(k,l);location.replace(l+"/"+location.pathname.split("/").pop()+location.hash)}}}catch(e){}})();</script></head>
@@ -86,7 +86,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <p class="step-note" hidden="" id="readOnlyNote">This course was saved before saved courses could be changed. To change its checkpoints or add points, add its course file again and save it.</p>
 <div class="add-points" id="addPoints">
 <h3>Add more points</h3>
-<p class="small muted">HowFar will count down to these too. They appear in the list above, where you can untick any of them.</p>
+<p class="small muted">HowFar will count down to these too: climbs and huts found for you, or any point of your own, like a spring or a viewpoint. They appear in the list above, where you can untick any of them.</p>
 <div class="add-row">
 <button class="btn" id="addClimbs" type="button">Add climb tops and bottoms</button>
 <label class="field inline" for="climbMin">for climbs of at least
@@ -97,6 +97,16 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <button class="btn" id="addPlaces" type="button">Add huts and villages</button>
 <span class="small muted">From <a href="https://www.openstreetmap.org/" rel="noopener" target="_blank">OpenStreetMap</a>: named mountain huts, shelters and villages within 200 m of the course. This is the one thing on this page that goes online: it asks OpenStreetMap's search service for what's inside a rectangle around your course. Only the rectangle's corners are sent, never your file.</span>
 </div>
+<div class="add-row own-row">
+<label class="field inline" for="ownName">Your own point
+                  <input autocomplete="off" id="ownName" maxlength="40" placeholder="For example: Spring" type="text"/>
+</label>
+<label class="field inline" for="ownKm">at km
+                  <input autocomplete="off" id="ownKm" inputmode="decimal" size="6" type="text"/>
+</label>
+<button class="btn" id="addOwn" type="button">Add</button>
+<span class="small muted">Or click the course chart above to pick the place.</span>
+</div>
 <details class="small fit-out">
 <summary>Want your watch itself to know these points too?</summary>
 <p class="muted">HowFar doesn't need it, but if you also want your watch's own alerts, checkpoint list and ClimbPro to show the added points, download the course with every ticked checkpoint and load it on the watch instead of the original: in Garmin Connect on a computer, <b>Training &amp; Planning → Courses → Import</b>.</p>
@@ -105,6 +115,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="add-row">
 <button class="btn small-btn" hidden="" id="removeClimbs" type="button">Remove tops and bottoms</button>
 <button class="btn small-btn" hidden="" id="removePlaces" type="button">Remove huts and villages</button>
+<button class="btn small-btn" hidden="" id="removeOwn" type="button">Remove your points</button>
 </div>
 <p aria-live="polite" class="status" id="addStatus" role="status"></p>
 </div>
@@ -192,6 +203,6 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <span class="foot-tags" translate="no">#ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning</span>
 </div>
 </footer>
-<script src="js/prepare.js?v=16" type="module"></script>
+<script src="js/prepare.js?v=17" type="module"></script>
 </body>
 </html>

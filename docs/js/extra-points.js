@@ -17,7 +17,7 @@ const PLACE_SEP = 1000; // m between two added huts or villages; the more useful
 const PLACE_RANK = { hut: 0, town: 1, village: 2, hamlet: 3 };
 const BBOX_BUFFER = 280; // m around the track to search
 
-export const ADDED_LABELS = { top: "top of a climb", bottom: "bottom of a climb", hut: "hut", village: "village" };
+export const ADDED_LABELS = { top: "top of a climb", bottom: "bottom of a climb", hut: "hut", village: "village", own: "your point" };
 
 function median(xs) {
   const s = xs.slice().sort((a, b) => a - b);
@@ -168,7 +168,7 @@ export function placePoints(data, points, project, checkpoints = [], added = [])
   return out.sort((a, b) => a.dist - b.dist).map(({ name, dist, added: kind }) => ({ name, dist, added: kind }));
 }
 
-const COURSE_POINT_TYPE = { top: "summit", bottom: "valley", hut: "shelter", village: "generic" };
+const COURSE_POINT_TYPE = { top: "summit", bottom: "valley", hut: "shelter", village: "generic", own: "generic" };
 const SEMI = 2 ** 31 / 180;
 
 /** Garmin course names hold 15 bytes of UTF-8: cut by bytes, not letters ("Géants"). */

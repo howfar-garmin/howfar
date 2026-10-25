@@ -16,7 +16,7 @@ While you follow a course, three lines:
 
 On a full-screen field, with a course profile, a fourth line shows the checkpoint after that and when you'll get there.
 
-Nothing to set up: it learns your pace on every slope while you run and keeps learning all race long, following you as your day goes. It remembers your past runs, and they count less and less as today's kilometres add up.
+Nothing to set up: it learns your pace on every slope while you run and keeps learning all race long, following you as your day goes. It remembers your past runs, and they count less and less as today's kilometres add up. It works best on trail runs of 25 km or more with real climbs and descents, where it was tested.
 
 ## Install
 

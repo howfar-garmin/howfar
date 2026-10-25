@@ -15,13 +15,13 @@
   C.forEach(function (c, i) { idx[c.id] = i; });
 
   var NOTES = {
-    cur: "The watch only uses what it has seen of you so far today, and only knows how far and how much higher the checkpoint is (~).",
-    past: "Also starts from your pace on every slope in your past races (here: the other three races in the test).",
-    ahead: "Also knows every climb and descent to the checkpoint, from the course profile (P).",
-    raceday: "Everything: also notices how your day is going compared with past races, whether you've slowed down lately, and the extra distance your watch measures. This is what HowFar? does on your watch."
+    none: "Your first race with HowFar?, with nothing pasted in its settings. It learns your pace from today's run as you go, and knows only how far away the checkpoint is and how much higher or lower (~). After a few runs with HowFar? it also remembers your past runs.",
+    pace: "You pasted your pace from past races (here: the other three races in the test), so it knows how you climb and descend from the first kilometre. It still knows only how far away the checkpoint is and how much higher or lower (~).",
+    profile: "You pasted the course profile, so it knows every climb and descent to the checkpoint (P). Your pace it learns from today's run as you go.",
+    both: "You pasted both: it knows your pace from the first kilometre and every climb and descent ahead (P). This is HowFar? with full race prep."
   };
 
-  var state = { t: tStart + 2.17 * 3600, main: "raceday", cmp: "cur", speed: 300, playing: false, last: 0 };
+  var state = { t: tStart + 2.17 * 3600, main: "both", cmp: "none", speed: 300, playing: false, last: 0 };
   var $ = function (id) { return document.getElementById(id); };
   var SVGNS = "http://www.w3.org/2000/svg";
 
@@ -248,7 +248,7 @@
   }
 
   // ---------- method pickers and results table
-  var STEPS = ["cur", "past", "ahead", "raceday"];
+  var STEPS = ["none", "pace", "profile", "both"];
   function fillPicker(sel, value) {
     STEPS.forEach(function (id) {
       var o = document.createElement("option");
@@ -257,7 +257,24 @@
     });
     sel.value = value;
   }
-  function setMain(id) { state.main = id; $("pickMain").value = id; updateSeries(); render(); }
+  // the choice under the watch: one radio button per case
+  function fillChoice(box, value) {
+    STEPS.forEach(function (id) {
+      var l = document.createElement("label");
+      var r = document.createElement("input");
+      r.type = "radio"; r.name = "prepChoice"; r.value = id; r.checked = id === value;
+      r.addEventListener("change", function () { if (r.checked) setMain(id); });
+      l.appendChild(r);
+      l.appendChild(document.createTextNode(" " + cfg(id).long));
+      box.appendChild(l);
+    });
+  }
+  function setMain(id) {
+    state.main = id;
+    var r = document.querySelector('input[name="prepChoice"][value="' + id + '"]');
+    if (r) r.checked = true;
+    updateSeries(); render();
+  }
 
   var SHORT = { S1: "TORX S1", S2: "TORX S2", AN: "Annibale", STL: "STL25" };
   function buildTable() {
@@ -283,7 +300,7 @@
     STEPS.forEach(function (id) {
       var v = mean(id, "mae_hour");
       var row = document.createElement("tr");
-      if (id === "raceday") row.className = "current";
+      if (id === "both") row.className = "current";
       row.tabIndex = 0;
       row.title = "Show on the watch";
       row.innerHTML = "<td>" + cfg(id).label + "</td>" +
@@ -401,9 +418,8 @@
     state.t = tStart + (+$("scrub").value / 1000) * (tEnd - tStart);
     render();
   });
-  fillPicker($("pickMain"), state.main);
+  fillChoice($("pickMain"), state.main);
   fillPicker($("pickCmp"), state.cmp);
-  $("pickMain").addEventListener("change", function () { setMain(this.value); });
   $("pickCmp").addEventListener("change", function () { state.cmp = this.value; updateSeries(); render(); });
 
   drawElevation();

@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=25">
+<link rel="stylesheet" href="css/site.css?v=26">
 </head>
 <body>
 
@@ -86,8 +86,8 @@
       <ol class="howto" aria-label="How to use the demo">
         <li><b>Press Play.</b> The race replays 300 times faster than real life: the whole 13½ hours in under 3 minutes. Use <b>60×</b> for a closer look or <b>900×</b> to rush through.</li>
         <li><b>Drag the slider</b> to jump to any moment, or click anywhere on the elevation chart.</li>
-        <li><b>Choose what the watch knows</b> with “Watch shows”. Start from “Only today's run” and go up to “Full HowFar?” to see how each piece of information makes the prediction better.</li>
-        <li><b>Compare</b> any two choices on the “how far off” chart with “Compare with”.</li>
+        <li><b>Choose what you prepared</b>, under the watch: nothing, your pace from past races, the course profile, or both. The watch shows what HowFar? would have said in that case. Whatever you choose, it also notices during the race how your day is going.</li>
+        <li><b>Compare</b> two of these on the “how far off” chart below, with “Compare with”.</li>
       </ol>
 
       <div class="demo-grid">
@@ -99,11 +99,9 @@
               <div class="w-arrive" id="wArrive">@ 14:05</div>
             </div>
           </div>
-          <div class="pickers">
-            <label class="picker" for="pickMain"><span class="swatch" style="background: var(--series-p)"></span>Watch shows
-              <select id="pickMain"></select>
-            </label>
-          </div>
+          <fieldset class="prep-choice" id="pickMain">
+            <legend>What did you paste into HowFar? before the race?</legend>
+          </fieldset>
           <p class="watch-caption" id="modeNote"></p>
         </div>
 
@@ -149,7 +147,7 @@
         <div class="chart-head">
           <h3>How far off the watch was</h3>
           <div class="legend">
-            <span><i style="background: var(--series-p)"></i>Watch shows: <span id="legMain"></span></span>
+            <span><i style="background: var(--series-p)"></i>You pasted: <span id="legMain"></span></span>
             <label class="picker legend-picker" for="pickCmp"><span class="swatch" style="background: var(--series-a)"></span>Compare with
               <select id="pickCmp"></select>
             </label>
@@ -189,7 +187,7 @@
       <div class="section-head">
         <p class="eyebrow">Does it work?</p>
         <h2>Tested on four real races</h2>
-        <p class="muted">Each race was replayed and the watch's prediction checked against reality at every moment. "Past races" means the other three, so no race was used to test itself. Lower minutes and a higher "less than 5 min off" are better. Click a row to show it on the demo watch.</p>
+        <p class="muted">Each race was replayed and the watch's prediction checked against reality at every moment. “Your pace” was made from the other three races, so no race was used to test itself. Lower minutes and a higher "less than 5 min off" are better. Click a row to show it on the demo watch.</p>
       </div>
       <div class="table-wrap">
         <table class="results" id="results">
@@ -330,7 +328,7 @@
   </div>
 </footer>
 
-<script src="demo/torx-s1.js?v=11"></script>
-<script src="js/demo.js?v=12"></script>
+<script src="demo/torx-s1.js?v=12"></script>
+<script src="js/demo.js?v=13"></script>
 </body>
 </html>

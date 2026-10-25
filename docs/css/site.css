@@ -287,7 +287,7 @@ table.results { border-collapse: collapse; width: 100%; min-width: 640px; font-s
 .results .num { text-align: right; }
 .results tr.group td { color: var(--ink-3); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.75rem; padding-top: 16px; background: var(--bg); }
 .results tr.current td:first-child { font-weight: 600; }
-.results tr.current td:first-child::after { content: "what you get"; margin-left: 8px; font-size: 0.72rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 8px; }
+.results tr.current td:first-child::after { content: "full race prep"; margin-left: 8px; font-size: 0.72rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 8px; }
 .results tr:hover td { background: var(--accent-soft); cursor: pointer; }
 .results tr.group:hover td { background: var(--bg); cursor: default; }
 .bar-col { width: 30%; }
@@ -414,3 +414,9 @@ label.btn { cursor: pointer; }
 .add-row .field.inline { display: inline-flex; align-items: center; gap: 8px; margin-top: 0; font-weight: 500; }
 .fit-out summary { cursor: pointer; font-weight: 600; color: var(--ink-2); }
 .fit-out p { margin: 8px 0; max-width: 70ch; }
+
+/* demo: what the runner pasted before the race */
+.prep-choice { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 10px 14px 12px; margin: 0; width: min(340px, 100%); display: grid; gap: 6px; }
+.prep-choice legend { padding: 0 6px; font-size: var(--step--1); font-weight: 600; color: var(--ink-2); }
+.prep-choice label { display: flex; align-items: center; gap: 8px; font-size: var(--step--1); color: var(--ink); cursor: pointer; }
+.prep-choice input { accent-color: var(--series-p); margin: 0; }

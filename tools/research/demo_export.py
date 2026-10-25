@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Writes docs/demo/torx-s1.js: section 1 replayed against the T1 course, with the prediction of
-each step of the algorithm at every moment, plus the benchmark scores for the site's table.
+each case of what the runner pasted into the settings at every moment, plus the benchmark scores for the site's table.
 
     python tools/research/benchmark.py --out results.json
     python tools/research/demo_export.py --results results.json
@@ -27,12 +27,14 @@ from wpeta.readers import read_course  # noqa: E402
 
 KEY = "S1"
 
-# id, label on the page, benchmark options (trail ahead decides P/~ on the watch)
+# What the runner pasted into HowFar?'s settings before the race. The field always makes its
+# race-day corrections, so every case has them. id, short label (chart, table), label next to
+# the choice, benchmark options (trail ahead decides P/~ on the watch)
 CONFIGS = [
-    ("cur", "Only today's run", dict(past=False, ahead=False, raceday=False)),
-    ("past", "+ my past races", dict(past=True, ahead=False, raceday=False)),
-    ("ahead", "+ the trail ahead (P)", dict(past=True, ahead=True, raceday=False)),
-    ("raceday", "Full HowFar?", dict(past=True, ahead=True, raceday=True)),
+    ("none", "Nothing", "Nothing (first race with HowFar?)", dict(past=False, ahead=False, raceday=True)),
+    ("pace", "Your pace", "Your pace from past races", dict(past=True, ahead=False, raceday=True)),
+    ("profile", "Course profile", "The course profile", dict(past=False, ahead=True, raceday=True)),
+    ("both", "Both", "Both (full race prep)", dict(past=True, ahead=True, raceday=True)),
 ]
 
 
@@ -43,7 +45,7 @@ def main() -> int:
     args = ap.parse_args()
 
     race = B.race(KEY)
-    preds = [(cid, o["ahead"], B.make(o, KEY)) for cid, _, o in CONFIGS]
+    preds = [(cid, o["ahead"], B.make(o, KEY)) for cid, _, _, o in CONFIGS]
     final = preds[-1][2]
 
     wps = race.waypoints
@@ -87,11 +89,11 @@ def main() -> int:
     l2 = P.layer_from_obs(P.past_observations(B.race("S2").points))
     results = json.load(open(args.results))
     scores = {cid: {r: {m: round(v, 3) for m, v in results[B.label(o)][r]["score"].items()} for r in B.RACES}
-              for cid, _, o in CONFIGS}
+              for cid, _, _, o in CONFIGS}
 
     data = dict(
         start=start,
-        configs=[dict(id=c[0], label=c[1], ahead=c[2]["ahead"]) for c in CONFIGS],
+        configs=[dict(id=c[0], label=c[1], long=c[2], ahead=c[3]["ahead"]) for c in CONFIGS],
         races=[dict(key=k, name=B.RACES[k][0]) for k in B.RACES],
         pastNames=[B.RACES[k][0] for k in B.PAST[KEY]],
         frames=frames,

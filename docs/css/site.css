@@ -289,9 +289,10 @@ table.results { border-collapse: collapse; width: 100%; min-width: 640px; font-s
 .results thead th { color: var(--ink-3); font-weight: 600; }
 .results .num { text-align: right; }
 .results tr.group td { color: var(--ink-3); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.75rem; padding-top: 16px; background: var(--bg); }
+.results tr.current td { background: var(--accent-soft); }
 .results tr.current td:first-child { font-weight: 600; }
-.results tr.current td:first-child::after { content: "recommended"; margin-left: 8px; font-size: 0.72rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 8px; }
-.results tr:hover td { background: var(--accent-soft); cursor: pointer; }
+.results tr:hover td { background: var(--bg); cursor: pointer; }
+.results tr.current:hover td { background: var(--accent-soft); }
 .results tr.group:hover td { background: var(--bg); cursor: default; }
 .results tr.baseline td { color: var(--ink-2); }
 .results tr.baseline:hover td { background: transparent; cursor: default; }
@@ -440,6 +441,11 @@ label.btn { cursor: pointer; }
 .results th .race-km { display: block; font-weight: 500; font-size: 0.72rem; }
 /* results table: headings may wrap, so the columns fit the page */
 #results thead th { white-space: normal; vertical-align: bottom; line-height: 1.25; }
-#results .bar-col { width: 14%; }
+#results .bar-col { width: 9%; min-width: 3em; }
 #results thead th .race-km { white-space: nowrap; }
-#results thead th:nth-last-child(-n+3) { min-width: 5.5em; }
+#results thead th:nth-last-child(-n+3) { min-width: 4.5em; }
+/* narrow enough to fit the page: tighter cells, row names and race names wrap */
+#results { min-width: 0; }
+#results th, #results td { padding: 8px 7px; }
+#results th:first-child, #results td:first-child { padding-left: 12px; white-space: normal; min-width: 9em; }
+#results td:last-child, #results th:last-child { padding-right: 12px; }

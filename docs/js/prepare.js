@@ -216,6 +216,38 @@ function showLoaded(kind, item, fallback) {
   state.className = "loaded-state" + (saved && !item.dirty ? " saved" : "");
 }
 
+/** The pencil next to the name: edit it in place; Enter or leaving the box keeps it, Esc doesn't. */
+function renamer(kind, item, fallback) {
+  const title = $(kind + "Title"), input = $(kind + "TitleInput"), btn = $(kind + "Rename");
+  const start = () => {
+    input.value = item.name;
+    title.hidden = btn.hidden = true;
+    input.hidden = false;
+    input.focus();
+    input.select();
+  };
+  const finish = (keep) => {
+    if (input.hidden) return;
+    const v = input.value.trim();
+    if (keep && v !== item.name) {
+      item.name = v;
+      item.dirty = true;
+      $(kind + "Saved").textContent = "";
+    }
+    input.hidden = true;
+    title.hidden = btn.hidden = false;
+    showLoaded(kind, item, fallback);
+    if (!keep) btn.focus();
+  };
+  btn.addEventListener("click", start);
+  title.addEventListener("click", start);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); finish(true); }
+    else if (e.key === "Escape") finish(false);
+  });
+  input.addEventListener("blur", () => finish(true));
+}
+
 function paceLayer() {
   const layer = new core.Layer();
   for (const a of pace.activities) layer.merge(new core.Layer(a.paces, a.weights));
@@ -236,7 +268,6 @@ function renderPace() {
     ? `Only ${num(samples)} samples so far (about ${num(samples * 25 / 1000)} km). Add more activities for a steadier curve.`
     : `${num(samples)} samples, about ${num(samples * 25 / 1000)} km of moving data.`;
   $("paceText").textContent = layer.toString();
-  $("paceName").value = pace.name;
   showLoaded("pace", pace, "Untitled pace");
 }
 
@@ -273,15 +304,11 @@ $("paceRows").addEventListener("click", (e) => {
   pace.dirty = true;
   renderPace();
 });
-$("paceName").addEventListener("input", () => {
-  pace.name = $("paceName").value;
-  pace.dirty = true;
-  showLoaded("pace", pace, "Untitled pace");
-});
+renamer("pace", pace, "Untitled pace");
 $("paceCopy").addEventListener("click", (e) => copyText($("paceText").textContent, e.currentTarget));
 $("paceSave").addEventListener("click", () => {
   pace.id = pace.id || newId();
-  pace.name = $("paceName").value.trim() || "My pace";
+  pace.name = pace.name.trim() || "My pace";
   upsert(library.paces, { id: pace.id, name: pace.name, saved: new Date().toISOString(), activities: pace.activities, text: paceLayer().toString() });
   const ok = saveLibrary();
   $("paceSaved").textContent = ok ? "Saved in your library." : "Couldn't save: this browser blocks storage. Use a backup file.";
@@ -351,7 +378,6 @@ function renderCourse() {
   $("courseWarn").textContent = warn.join(" ");
   $("courseMeta").innerHTML = `The text for the setting <b>“Course profile”</b> · one slope every ${v.step} m · ${num(v.text.length)} characters`;
   $("courseText").textContent = v.text;
-  $("courseName").value = course.name;
   showLoaded("course", course, "Untitled course");
 }
 
@@ -402,16 +428,12 @@ $("courseMax").addEventListener("change", () => {
   course.dirty = true;
   recomputeCourse();
 });
-$("courseName").addEventListener("input", () => {
-  course.name = $("courseName").value;
-  course.dirty = true;
-  showLoaded("course", course, "Untitled course");
-});
+renamer("course", course, "Untitled course");
 $("courseCopy").addEventListener("click", (e) => copyText($("courseText").textContent, e.currentTarget));
 $("courseSave").addEventListener("click", () => {
   const v = course.view;
   course.id = course.id || newId();
-  course.name = $("courseName").value.trim() || baseName(course.file);
+  course.name = course.name.trim() || baseName(course.file);
   upsert(library.courses, {
     id: course.id, name: course.name, file: course.file, saved: new Date().toISOString(), text: v.text, step: v.step,
     length: v.length, up: v.up, profile: v.profile, checkpoints: v.checkpoints, skipped: course.skipped || [],

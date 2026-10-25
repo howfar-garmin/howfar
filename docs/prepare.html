@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=16">
+<link rel="stylesheet" href="css/site.css?v=17">
 </head>
 <body>
 
@@ -62,7 +62,11 @@
           <div id="paceResult" hidden>
             <div class="loaded" aria-live="polite">
               <span class="loaded-kicker">Your pace</span>
-              <span class="loaded-name" id="paceTitle"></span>
+              <span class="loaded-title">
+                <span class="loaded-name" id="paceTitle"></span>
+                <input class="loaded-input" id="paceTitleInput" type="text" maxlength="60" hidden aria-label="Name of this pace" placeholder="For example: Mountain races 2026">
+                <button type="button" class="loaded-edit" id="paceRename" aria-label="Rename" title="Rename"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              </span>
               <span class="loaded-state" id="paceState"></span>
             </div>
             <div class="table-wrap">
@@ -82,9 +86,6 @@
             </div>
 
             <div class="output">
-              <label class="field" for="paceName">Name it, to find it again later
-                <input id="paceName" type="text" maxlength="60" placeholder="For example: Mountain races 2026">
-              </label>
               <div class="string-box">
                 <div class="chart-head"><span class="small muted">The text for the setting <b>“Your pace from past races”</b></span><button type="button" class="btn primary" id="paceCopy">Copy</button></div>
                 <pre id="paceText"></pre>
@@ -136,7 +137,11 @@
           <div id="courseResult" hidden>
             <div class="loaded" aria-live="polite">
               <span class="loaded-kicker">Course profile</span>
-              <span class="loaded-name" id="courseTitle"></span>
+              <span class="loaded-title">
+                <span class="loaded-name" id="courseTitle"></span>
+                <input class="loaded-input" id="courseTitleInput" type="text" maxlength="60" hidden aria-label="Name of this course profile" placeholder="For example: Tor des Géants 2026, stage 1">
+                <button type="button" class="loaded-edit" id="courseRename" aria-label="Rename" title="Rename"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+              </span>
               <span class="loaded-state" id="courseState"></span>
             </div>
             <p class="course-summary" id="courseSummary"></p>
@@ -157,9 +162,6 @@
             <p class="step-note" id="courseWarn" hidden></p>
 
             <div class="output">
-              <label class="field" for="courseName">Name it (race and stage)
-                <input id="courseName" type="text" maxlength="60" placeholder="For example: Tor des Géants 2026, stage 1">
-              </label>
               <details class="small">
                 <summary>Detail level</summary>
                 <p class="muted">HowFar? stores one slope value every 25 to 400 m, the finest that fits in the setting. Garmin Connect's limit on text length isn't documented; 4,000 characters works. Lower it if the app refuses the paste.</p>
@@ -247,6 +249,6 @@
   </div>
 </footer>
 
-<script type="module" src="js/prepare.js?v=4"></script>
+<script type="module" src="js/prepare.js?v=5"></script>
 </body>
 </html>

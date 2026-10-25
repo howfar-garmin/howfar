@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+"""Score the field's ETA algorithm, with each part switched on or off, on recorded runs
+against their real courses.
+
+    python tools/research/benchmark.py --out results.json
+
+Each race is predicted with all the other races as "past races", so nothing is tested on the
+data it learned from. Edit RACES to add runs.
+"""
+
+from __future__ import annotations
+
+import argparse
+import itertools
+import json
+import sys
+from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent))
+
+import predictors as P  # noqa: E402
+import scenario as S  # noqa: E402
+
+ROOT = HERE.parents[1]
+# key: (name, recorded run in samples/, course file in courses/)
+RACES = {
+    "S1": ("TORX 2026 section 1", ROOT / "samples/TORX26_Sezione_1.gpx", ROOT / "courses/TOR330-CERT-2026-T1.gpx"),
+    "S2": ("TORX 2026 section 2 (DNF)", ROOT / "samples/TORX26_Sezione_2_DNF.gpx", ROOT / "courses/TOR330-CERT-2026-T2.gpx"),
+    "AN": ("La via di Annibale skyrace", ROOT / "samples/La_via_di_Annibale_Skyrace.gpx", ROOT / "courses/La via di annibale - 42 km - 2024.gpx"),
+    "STL": ("STL25", ROOT / "samples/STL25.gpx", ROOT / "courses/STL25 def 2026 2.gpx"),
+}
+# each race learns its "past races" from all the others, so nothing is tested on what it learned from
+PAST = {k: [o for o in RACES if o != k] for k in RACES}
+
+_cache: dict = {}
+
+
+def race(key):
+    if key not in _cache:
+        name, act, course = RACES[key]
+        _cache[key] = S.load_race(name, str(act), str(course))
+    return _cache[key]
+
+
+def past_layer(key):
+    """Speed-by-grade from all the other races."""
+    obs = []
+    for k in PAST[key]:
+        obs += P.past_observations(race(k).points)
+    return P.layer_from_obs(obs)
+
+
+def make(opts, key):
+    return P.HowFar(past=past_layer(key) if opts["past"] else None, raceday=opts["raceday"])
+
+
+def label(o):
+    parts = [n for n, f in (("past", o["past"]), ("ahead", o["ahead"]), ("raceday", o["raceday"])) if f]
+    return "HowFar[" + ("+".join(parts) or "current race only") + "]"
+
+
+def specs():
+    return [dict(past=p, ahead=a, raceday=r) for p, a, r in itertools.product((False, True), repeat=3)]
+
+
+def job(args):
+    opts, key = args
+    rows = S.run(race(key), make(opts, key), trail_ahead=opts["ahead"])
+    return label(opts), key, S.score(rows)
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--out", default=str(HERE / "results.json"))
+    ap.add_argument("--jobs", type=int, default=8)
+    args = ap.parse_args()
+
+    todo = [(s, k) for s in specs() for k in RACES]
+    results = {}
+    with ProcessPoolExecutor(args.jobs) as ex:
+        for lab, key, sc in ex.map(job, todo):
+            results.setdefault(lab, {})[key] = dict(score=sc)
+            print(f"{lab:<48} {key:<4} 1h: {sc['mae_hour']:5.1f} min  2km: {sc['mae_2000']:5.1f}  1km: {sc['mae_1000']:5.1f}", flush=True)
+    json.dump(results, open(args.out, "w"))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

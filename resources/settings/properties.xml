@@ -1,0 +1,5 @@
+<properties>
+    <property id="importedSpeedModel" type="string"></property>
+    <property id="courseProfile" type="string"></property>
+    <property id="resetModel" type="boolean">false</property>
+</properties>

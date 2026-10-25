@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<iq:manifest version="3" xmlns:iq="http://www.garmin.com/xml/connectiq">
+    <iq:application id="70fe11ebc9674894b477e04dba6522a4" type="datafield" name="@Strings.AppName" entry="WaypointEtaApp" launcherIcon="@Drawables.LauncherIcon" minApiLevel="5.2.0">
+        <!-- Check these IDs against ~/Library/Application Support/Garmin/ConnectIQ/Devices after installing the SDK -->
+        <iq:products>
+            <iq:product id="fenix843mm"/>
+            <iq:product id="fenix847mm"/>
+            <iq:product id="fenix8solar47mm"/>
+            <iq:product id="fenix8solar51mm"/>
+            <iq:product id="epix2pro42mm"/>
+            <iq:product id="epix2pro47mm"/>
+            <iq:product id="epix2pro51mm"/>
+            <iq:product id="enduro3"/>
+        </iq:products>
+        <iq:permissions/>
+        <iq:languages>
+            <iq:language>eng</iq:language>
+        </iq:languages>
+        <iq:barrels/>
+    </iq:application>
+</iq:manifest>

@@ -1,0 +1,4 @@
+project.manifest = manifest.xml
+
+# (:test) functions in test/ are only compiled into test builds (monkeyc -t)
+base.sourcePath = source;test

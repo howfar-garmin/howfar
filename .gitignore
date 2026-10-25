@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+.pytest_cache/
+bin/
+gen/
+developer_key*
+samples/
+courses/
+node_modules/
+web-tests/node_modules/
+tools/research/results*.json
+.DS_Store
+.claude/
+web-tests/*.fit
+web-tests/

@@ -199,6 +199,7 @@ class WaypointEtaView extends WatchUi.DataField {
 
     const MIN_FONT_WITH_EXTRAS = 4;  // FONT_MEDIUM: smallest font the time gets when label and arrival are shown too
     const MIN_HEIGHT_WITH_THEN = 150;  // px: fields this tall also show the checkpoint after the next
+    hidden var _dotR as Float = 3.0;  // px: radius of the coloured dot before each time
     const LEARN_OBS = 160;  // ~4 km of moving: until then today's form is still a guess (grey digits)
 
     hidden function fonts() as Array<Graphics.FontDefinition> {
@@ -244,9 +245,13 @@ class WaypointEtaView extends WatchUi.DataField {
         var unit = parts[1];
         var learning = eta != null && _tracker.observations < LEARN_OBS;
         var timeColor = !learning ? fg : (bg == Graphics.COLOR_BLACK ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_DK_GRAY);
+        // a coloured dot before each time says how far off it may be
+        _dotR = w * 0.013 > 2.0 ? w * 0.013 : 2.0;
+        var dotW = eta != null ? _dotR * 6 + 2 : 0.0;  // the big number's dot is twice the size
+        var dot = eta != null ? dotColor(eta, bg) : null;
         // the unit sits next to the digits, so they get the rest of the width
         var unitW = unit.length() > 0 ? dc.getTextWidthInPixels(unit, Graphics.FONT_XTINY) + 4 : 0;
-        var digitsW = maxW - unitW;
+        var digitsW = maxW - unitW - dotW;
 
         // tall fields: the arrival beside the time, freeing two lines below it for the minor point
         // on the way (via) and the main point after the next (then), while the time can still be big
@@ -258,12 +263,12 @@ class WaypointEtaView extends WatchUi.DataField {
         var sideW = (unitW > dc.getTextWidthInPixels(arriveSide, Graphics.FONT_XTINY) + 4
             ? unitW : dc.getTextWidthInPixels(arriveSide, Graphics.FONT_XTINY) + 4);
         var withThen = eta != null && (thenName != null || viaName != null) && h >= MIN_HEIGHT_WITH_THEN
-            && fitFont(dc, main, maxW - sideW, h * 0.5) <= MIN_FONT_WITH_EXTRAS;
+            && fitFont(dc, main, maxW - sideW - dotW, h * 0.5) <= MIN_FONT_WITH_EXTRAS;
 
         // label and arrival only when the time can still be big; otherwise the time alone
-        var withExtras = fitFont(dc, main, withThen ? maxW - sideW : digitsW, h * 0.5);
+        var withExtras = fitFont(dc, main, withThen ? maxW - sideW - dotW : digitsW, h * 0.5);
         if (h < 90 || withExtras > MIN_FONT_WITH_EXTRAS) {
-            drawTime(dc, w / 2, h / 2, f[fitFont(dc, main, digitsW, h * 0.95)], main, unit, timeColor, fg, bg);
+            drawTime(dc, w / 2, h / 2, f[fitFont(dc, main, digitsW, h * 0.95)], main, unit, timeColor, fg, dot);
             return;
         }
 
@@ -280,26 +285,34 @@ class WaypointEtaView extends WatchUi.DataField {
         var arrive = eta == null ? "" : "@ " + WpUtil.formatClock(eta) + (learning ? " " + _learningWord : "");
         if (withThen) {
             var grey = bg == Graphics.COLOR_BLACK ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_DK_GRAY;
-            drawTimeWithArrival(dc, w / 2, h * 0.42, f[withExtras], main, unit, arriveSide, timeColor, fg, bg);
-            // middle line: the minor point on the way (grey) with its time to go, or else the next
-            // main point with its time to go; bottom line: the main point after that, with its arrival
+            drawTimeWithArrival(dc, w / 2, h * 0.42, f[withExtras], main, unit, arriveSide, timeColor, fg, dot);
+            // middle line: the minor point on the way (grey), or else the next main point; bottom
+            // line: the main point after that; each with its time to go (the arrival is the big number's only)
             var botW = bottomObscured ? w * 0.8 : maxW;  // a round screen is still 0.8 wide this low
             var middle = "";
             var middleGrey = false;
+            var middleSec = null;
             var bottom = "";
             var bottomGrey = false;
+            var bottomSec = null;
+            var lineW = maxW - dotW;
+            botW -= dotW;
             var then2Name = _then2Name;
             var then2Sec = _then2Sec;
             if (viaName != null && viaSec != null) {
-                middle = fitText(dc, _viaWord + " " + viaName, " " + _inWord + " " + WpUtil.etaHm(viaSec as Number), maxW);
+                middle = fitText(dc, _viaWord + " " + viaName, " " + _inWord + " " + WpUtil.etaHm(viaSec as Number), lineW);
                 middleGrey = true;
+                middleSec = viaSec;
                 if (thenName != null && thenSec != null) {
-                    bottom = fitText(dc, _thenWord + " " + thenName, " @ " + WpUtil.formatClock(thenSec as Number), botW);
+                    bottom = fitText(dc, _thenWord + " " + thenName, " " + _inWord + " " + WpUtil.etaHm(thenSec as Number), botW);
+                    bottomSec = thenSec;
                 }
             } else if (thenName != null && thenSec != null) {
-                middle = fitText(dc, _thenWord + " " + thenName, " " + _inWord + " " + WpUtil.etaHm(thenSec as Number), maxW);
+                middle = fitText(dc, _thenWord + " " + thenName, " " + _inWord + " " + WpUtil.etaHm(thenSec as Number), lineW);
+                middleSec = thenSec;
                 if (then2Name != null && then2Sec != null) {
-                    bottom = fitText(dc, _thenWord + " " + then2Name, " @ " + WpUtil.formatClock(then2Sec as Number), botW);
+                    bottom = fitText(dc, _thenWord + " " + then2Name, " " + _inWord + " " + WpUtil.etaHm(then2Sec as Number), botW);
+                    bottomSec = then2Sec;
                 }
             }
             // while learning, the word takes a free line (the grey digits say it anyway)
@@ -308,28 +321,58 @@ class WaypointEtaView extends WatchUi.DataField {
                 bottomGrey = true;
             }
             if (middle.length() > 0) {
-                dc.setColor(middleGrey ? grey : fg, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(w / 2, h * 0.67, Graphics.FONT_XTINY, middle, center);
+                drawLine(dc, w / 2, h * 0.67, middle, middleGrey ? grey : fg,
+                    middleSec != null ? dotColor(middleSec as Number, bg) : null);
             }
             if (bottom.length() > 0) {
-                dc.setColor(bottomGrey ? grey : fg, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(w / 2, h * (bottomObscured ? 0.80 : 0.84), Graphics.FONT_XTINY, bottom, center);
+                drawLine(dc, w / 2, h * (bottomObscured ? 0.80 : 0.84), bottom, bottomGrey ? grey : fg,
+                    bottomSec != null ? dotColor(bottomSec as Number, bg) : null);
             }
             dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
             return;
         }
-        drawTime(dc, w / 2, h * 0.5, f[withExtras], main, unit, timeColor, fg, bg);
+        drawTime(dc, w / 2, h * 0.5, f[withExtras], main, unit, timeColor, fg, dot);
         if (eta != null) {
             dc.drawText(w / 2, bottomY, Graphics.FONT_XTINY, arrive, center);
         }
     }
 
-    // The digits centred on x, with the unit small after them, level with their lower part
+    // Green, yellow or red for a time this far away (WpUtil.reliability), darker on white
+    hidden function dotColor(seconds as Number, bg as Graphics.ColorType) as Graphics.ColorType {
+        var r = WpUtil.reliability(seconds);
+        if (r == 0) {
+            return bg == Graphics.COLOR_BLACK ? Graphics.COLOR_GREEN : Graphics.COLOR_DK_GREEN;
+        }
+        return r == 1 ? Graphics.COLOR_YELLOW : Graphics.COLOR_RED;
+    }
+
+    // The dot of radius r, starting at x, centred on y; returns the width it takes with the gap after it
+    hidden function drawDot(dc as Graphics.Dc, x as Float, y as Number or Float, color as Graphics.ColorType?, r as Float) as Float {
+        if (color == null) {
+            return 0.0;
+        }
+        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(x + r, y, r);
+        return r * 3 + 2;
+    }
+
+    // A small line centred on x, after its dot when it has one
+    hidden function drawLine(dc as Graphics.Dc, x as Number or Float, y as Number or Float, text as String,
+            color as Graphics.ColorType, dot as Graphics.ColorType?) as Void {
+        var tw = dc.getTextWidthInPixels(text, Graphics.FONT_XTINY);
+        var left = x - (tw + (dot != null ? _dotR * 3 + 2 : 0.0)) / 2.0;
+        left += drawDot(dc, left, y, dot, _dotR);
+        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(left, y, Graphics.FONT_XTINY, text, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+    }
+
+    // The digits centred on x (after the dot), with the unit small after them, level with their lower part
     hidden function drawTime(dc as Graphics.Dc, x as Number or Float, y as Number or Float, font as Graphics.FontDefinition,
-            digits as String, unit as String, color as Graphics.ColorType, fg as Graphics.ColorType, bg as Graphics.ColorType) as Void {
+            digits as String, unit as String, color as Graphics.ColorType, fg as Graphics.ColorType, dot as Graphics.ColorType?) as Void {
         var dw = dc.getTextWidthInPixels(digits, font);
         var uw = unit.length() > 0 ? dc.getTextWidthInPixels(unit, Graphics.FONT_XTINY) + 4 : 0;
-        var left = x - (dw + uw) / 2.0;
+        var left = x - (dw + uw + (dot != null ? _dotR * 6 + 2 : 0.0)) / 2.0;
+        left += drawDot(dc, left, y, dot, _dotR * 2);
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
         dc.drawText(left, y, font, digits, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
@@ -339,15 +382,16 @@ class WaypointEtaView extends WatchUi.DataField {
         }
     }
 
-    // The digits centred on x with the unit small after them, top, and the arrival under the unit
+    // The digits centred on x (after the dot) with the unit small after them, top, and the arrival under the unit
     hidden function drawTimeWithArrival(dc as Graphics.Dc, x as Number or Float, y as Number or Float,
             font as Graphics.FontDefinition, digits as String, unit as String, arrival as String,
-            color as Graphics.ColorType, fg as Graphics.ColorType, bg as Graphics.ColorType) as Void {
+            color as Graphics.ColorType, fg as Graphics.ColorType, dot as Graphics.ColorType?) as Void {
         var dw = dc.getTextWidthInPixels(digits, font);
         var uw = dc.getTextWidthInPixels(unit, Graphics.FONT_XTINY);
         var aw = dc.getTextWidthInPixels(arrival, Graphics.FONT_XTINY);
         var sw = (uw > aw ? uw : aw) + 4;
-        var left = x - (dw + sw) / 2.0;
+        var left = x - (dw + sw + (dot != null ? _dotR * 6 + 2 : 0.0)) / 2.0;
+        left += drawDot(dc, left, y, dot, _dotR * 2);
         var fh = dc.getFontHeight(font);
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
         dc.drawText(left, y, font, digits, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);

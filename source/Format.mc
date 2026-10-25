@@ -66,6 +66,13 @@ module WpUtil {
         return (r / 3600).format("%d") + ":" + ((r % 3600) / 60).format("%02d");
     }
 
+    // How far off a time this far away may be, for the coloured dot beside it: 0 (green) under
+    // 45 minutes to go, usually within 5 minutes; 1 (yellow) up to 2 hours, usually within 15;
+    // 2 (red) beyond, often off by half an hour (tools/research/benchmark_ahead.py)
+    function reliability(seconds as Number) as Number {
+        return seconds < 2700 ? 0 : (seconds < 7200 ? 1 : 2);
+    }
+
     function formatClock(seconds as Number) as String {
         var info = Gregorian.info(Time.now().add(new Time.Duration(seconds)), Time.FORMAT_SHORT);
         var step = etaStep(seconds) >= 300 ? etaStep(seconds) / 60 : 1;

@@ -116,6 +116,20 @@
     return { main: m, via: via, then: then, then2: then2 };
   }
 
+  // the dot before each time on the watch: green under 45 minutes to go, yellow to 2 hours,
+  // red beyond (WpUtil.reliability)
+  function dotClass(s) { return s < 2700 ? "g" : s < 7200 ? "y" : "r"; }
+  function setLine(node, line) {
+    node.replaceChildren();
+    if (!line) return;
+    if (line[1] != null) {
+      var d = document.createElement("span");
+      d.className = "dot " + dotClass(line[1]);
+      node.appendChild(d);
+    }
+    node.appendChild(document.createTextNode(line[0]));
+  }
+
   // ---------- watch + readout
   function render() {
     var f = frameAt(state.t);
@@ -126,18 +140,17 @@
 
     $("wLabel").textContent = marker + wp.name;
     var shown = etaText(e), learning = f[CD] < 4000; // the watch greys the time for its first ~4 km
-    $("wTime").innerHTML = shown[0] + '<span class="w-side"><span class="w-unit">' + shown[1] + '</span><span class="w-arr">@' + arrival(f[T], e) + "</span></span>";
+    $("wTime").innerHTML = '<span class="dot ' + dotClass(e) + '"></span>' + shown[0] + '<span class="w-side"><span class="w-unit">' + shown[1] + '</span><span class="w-arr">@' + arrival(f[T], e) + "</span></span>";
     $("wTime").classList.toggle("learning", learning);
     // the lines under the time, as on a full-screen field: the minor point on the way (grey) or
     // else the next main point, with the time to go; then the main point after that, with its
     // arrival; "(learning)" in a free line
-    var at = function (word, j) { return word + " " + WP[j].name + " @ " + arrival(f[T], shownSec(timeTo(f, j))); };
-    var inn = function (word, j) { return word + " " + WP[j].name + " " + _t("in") + " " + etaHm(timeTo(f, j)); };
-    var mid = pts.via != null ? inn(_t("via"), pts.via) : pts.then != null ? inn(_t("then"), pts.then) : "";
-    var low = pts.via != null ? (pts.then != null ? at(_t("then"), pts.then) : "") : (pts.then2 != null ? at(_t("then"), pts.then2) : "");
-    $("wVia").textContent = mid;
+    var inn = function (word, j) { return [word + " " + WP[j].name + " " + _t("in") + " " + etaHm(timeTo(f, j)), timeTo(f, j)]; };
+    var mid = pts.via != null ? inn(_t("via"), pts.via) : pts.then != null ? inn(_t("then"), pts.then) : null;
+    var low = pts.via != null ? (pts.then != null ? inn(_t("then"), pts.then) : null) : (pts.then2 != null ? inn(_t("then"), pts.then2) : null);
+    setLine($("wVia"), mid);
     $("wVia").classList.toggle("main", pts.via == null);
-    $("wThen").textContent = low || (learning ? _t("(learning)") : "");
+    setLine($("wThen"), low || (learning ? [_t("(learning)"), null] : null));
     $("wThen").classList.toggle("note", !low);
 
     $("raceClock").textContent = dur(f[T]);

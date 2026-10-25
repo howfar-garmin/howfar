@@ -41,6 +41,8 @@ function testFormatDuration(logger as Test.Logger) as Boolean {
     Test.assert(a[0].equals("1:50") && a[1].equals("h"));
     Test.assert(WpUtil.etaHm(10000).equals("2:45"));
     Test.assert(WpUtil.etaHm(16000).equals("4:30"));  // 30-minute steps from four hours out
+    Test.assert(WpUtil.reliability(2699) == 0 && WpUtil.reliability(2700) == 1);  // the dot: green, yellow
+    Test.assert(WpUtil.reliability(7199) == 1 && WpUtil.reliability(7200) == 2);  // yellow, red
     Test.assert(WpUtil.etaHm(2700).equals("0:45"));
     Test.assert(WpUtil.etaHm(4740).equals("1:20"));  // 1:19 rounds to 5 minutes from an hour out
     a = WpUtil.etaText(3449);  // just under: whole minutes

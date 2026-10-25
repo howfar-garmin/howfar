@@ -31,12 +31,12 @@
     <div class="wrap">
       <p class="eyebrow">Race prep</p>
       <h1>Get HowFar ready for your next race</h1>
-      <p class="lede">HowFar learns your pace on every slope while you run. What it can't learn on its own is the course ahead. Give it the course profile, with every climb and descent between checkpoints, and it knows what's coming before you get there. Only with the profile can it also show the points before and after the checkpoint, including points you add. Make it here, then paste it into the Garmin Connect app. It's optional: without it, HowFar still counts down to your watch's checkpoints.</p>
+      <p class="lede">HowFar learns your pace on every slope as you run. What it can't learn on its own is the course ahead. Give it the course profile, with every climb and descent between checkpoints, and it knows what's coming. The profile also lets it show the points before and after the checkpoint, including points you add. Make it here, then paste it into the Garmin Connect app. It's optional: without it, HowFar still counts down to your watch's checkpoints.</p>
       <ol class="howto prep-overview" aria-label="The two steps">
-        <li><b>Your checkpoints.</b> Add the course file of the race you'll run, and any points you want to add.</li>
+        <li><b>Your checkpoints.</b> Add your race's course file, and any extra points you want.</li>
         <li><b>Paste on the watch.</b> Copy the text into HowFar's settings in Garmin Connect.</li>
       </ol>
-      <p class="small muted privacy-note">Everything happens in this browser. Your files are not uploaded anywhere, and what you save stays on this device. The only exception is the optional “Add huts and villages” button, which asks OpenStreetMap what's around your course.</p>
+      <p class="small muted privacy-note">Everything happens in this browser. Your files aren't uploaded anywhere, and what you save stays on this device. The only exception is the optional “Add huts and villages” button, which asks OpenStreetMap what's around your course.</p>
     </div>
   </section>
 
@@ -45,8 +45,8 @@
       <div class="section-head">
         <p class="eyebrow">Step 1</p>
         <h2>Your checkpoints</h2>
-        <p class="muted">The race's course file, the same one you load on the watch. HowFar finds its checkpoints and notes the slope of every stretch between them, so it knows every climb and descent ahead (the <span class="pill">P</span> on the watch).</p>
-        <p class="muted">Your watch tells HowFar only about the checkpoints in the course you load. Here you can add more: the top and bottom of every big climb, huts and villages along the way. HowFar shows them too, without changing the course on your watch. Your watch's own alerts and checkpoint list stay as they are: only HowFar knows the points you add.</p>
+        <p class="muted">Use the race's course file, the same one you load on the watch. HowFar finds its checkpoints and the slope of every stretch between them, so it knows every climb and descent ahead (the <span class="pill">P</span> on the watch).</p>
+        <p class="muted">Your watch tells HowFar only about the checkpoints in the course you load. Here you can add more: tops and bottoms of big climbs, huts and villages along the way. HowFar shows them too. The course on your watch, with its alerts and checkpoint list, stays as it is: only HowFar knows the points you add.</p>
       </div>
 
       <div class="prep-grid">
@@ -73,11 +73,11 @@
             <div class="chart-block">
               <div class="chart-head">
                 <h3>Course and checkpoints</h3>
-                <span class="small muted">Big dots: the main checkpoints HowFar counts down to. Small dots: minor points.</span>
+                <span class="small muted">Big dots: main checkpoints, which HowFar counts down to. Small dots: minor points.</span>
               </div>
               <div class="chart-box" id="courseChartBox"><svg id="courseChart" class="wide" viewBox="0 0 1000 280" role="img" aria-label="Elevation profile of the course with its checkpoints"></svg></div>
             </div>
-            <p class="small muted" id="coursePickNote" hidden>Untick a checkpoint that isn't part of this race: the text below updates. <b>Main</b> points are what the big number counts down to; <b>minor</b> ones (the points you add, at first) show above the checkpoint's name on a field of its own, as in <i>Col d'Arp in 0:35</i>. Press Main or Minor to switch a point.</p>
+            <p class="small muted" id="coursePickNote" hidden>Untick a checkpoint that isn't part of this race; the text below updates. HowFar counts down to <b>main</b> points. <b>Minor</b> points are shown on the way, above the checkpoint's name on a full screen, as in <i>Col d'Arp in 0:35</i>. Points you add start as minor. Press Main or Minor to switch a point.</p>
             <div class="table-wrap">
               <table class="results prep-table">
                 <thead><tr><th scope="col">Checkpoint</th><th scope="col" class="num">At km</th><th scope="col" class="num">From the previous</th><th scope="col" class="num">Climb on the way</th><th scope="col">Main or minor</th></tr></thead>
@@ -86,11 +86,11 @@
             </div>
             <p class="step-note" id="courseWarn" hidden></p>
 
-            <p class="step-note" id="readOnlyNote" hidden>This course was saved before saved courses could be changed. To change its checkpoints or add points, add its course file again and save it.</p>
+            <p class="step-note" id="readOnlyNote" hidden>This course was saved by an older version and can't be changed. To change its checkpoints or add points, add its course file again and save it.</p>
 
             <div class="add-points" id="addPoints">
               <h3>Add more points</h3>
-              <p class="small muted">HowFar shows these too: climbs and huts found for you, or any point of your own, like a spring or a viewpoint. They start as minor points, shown on the way; make one main to count down to it. They appear in the list above, where you can switch or untick any of them.</p>
+              <p class="small muted">HowFar shows these too: climbs and huts found for you, or any point of your own, like a spring or a viewpoint. They start as minor points, shown on the way. Make one main to count down to it. They appear in the list above, where you can switch or untick them.</p>
               <div class="add-row">
                 <button type="button" class="btn" id="addClimbs">Add climb tops and bottoms</button>
                 <label class="field inline" for="climbMin">for climbs of at least
@@ -99,7 +99,7 @@
               </div>
               <div class="add-row">
                 <button type="button" class="btn" id="addPlaces">Add huts and villages</button>
-                <span class="small muted">From <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>: named mountain huts, shelters and villages within 200 m of the course. This is the one thing on this page that goes online: it asks OpenStreetMap's search service for what's inside a rectangle around your course. Only the rectangle's corners are sent, never your file.</span>
+                <span class="small muted">From <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>: named mountain huts, shelters and villages within 200 m of the course. This is the only thing on this page that goes online. It asks OpenStreetMap what's inside a rectangle around your course. Only the rectangle's corners are sent, never your file.</span>
               </div>
               <div class="add-row own-row">
                 <label class="field inline" for="ownName">Your own point
@@ -113,7 +113,7 @@
               </div>
               <details class="small fit-out">
                 <summary>Want your watch itself to know these points too?</summary>
-                <p class="muted">HowFar doesn't need it, but if you also want your watch's own alerts, checkpoint list and ClimbPro to show the added points, download the course with every ticked checkpoint and load it on the watch instead of the original: in Garmin Connect on a computer, <b>Training &amp; Planning → Courses → Import</b>.</p>
+                <p class="muted">HowFar doesn't need this. But if you want your watch's own alerts, checkpoint list and ClimbPro to show the added points, download the course with every ticked checkpoint. Load it on the watch instead of the original: in Garmin Connect on a computer, <b>Training &amp; Planning → Courses → Import</b>.</p>
                 <button type="button" class="btn small-btn" id="courseFit">Download the course (FIT)</button>
               </details>
               <div class="add-row">
@@ -127,7 +127,7 @@
             <div class="output">
               <details class="small">
                 <summary>Detail level</summary>
-                <p class="muted">HowFar stores one slope value every 25 to 400 m, the finest that fits in the setting. Garmin Connect's limit on text length isn't documented; 4,000 characters works. Lower it if the app refuses the paste.</p>
+                <p class="muted">HowFar stores one slope value every 25 to 400 m, as fine as fits in the setting. Garmin Connect's text length limit isn't documented; 4,000 characters works. If the app refuses the paste, choose a lower value.</p>
                 <label class="field inline" for="courseMax">Longest text
                   <select id="courseMax"><option value="2000">2,000 characters</option><option value="4000" selected>4,000 characters</option><option value="8000">8,000 characters</option></select>
                 </label>
@@ -148,15 +148,15 @@
           <details open>
             <summary>Where do I get the course file?</summary>
             <ol class="steps">
-              <li>From the <b>race website</b>: most races publish the official GPX, often per stage.</li>
+              <li>From the <b>race website</b>: most races publish the official GPX, often one per stage.</li>
               <li>From <b>Garmin Connect</b>: open the course, then <b>Export</b> as GPX or FIT.</li>
-              <li>Even better: once the course is in Garmin Connect, <b>export it again as FIT</b>. That file has exactly the checkpoints your watch will show, so nothing has to be guessed.</li>
-              <li>Best is the <b>same file</b> you load on the watch. If the two list different checkpoints, or one is a slightly different version of the course, HowFar still works out where each checkpoint is on the profile.</li>
+              <li>Better: once the course is in Garmin Connect, <b>export it again as FIT</b>. That file has exactly the checkpoints your watch will show.</li>
+              <li>Best: the <b>same file</b> you load on the watch. If the two files differ a little, HowFar still finds where each checkpoint is on the profile.</li>
             </ol>
           </details>
           <details>
             <summary>A race in stages?</summary>
-            <p class="small muted">Make one profile per stage and save them all. At each life base, paste the next stage's text and load the next course on the watch. Race files often carry every checkpoint of the whole race; HowFar keeps only the ones on this stage.</p>
+            <p class="small muted">Make one profile per stage and save them all. At each life base, paste the next stage's text and load the next course on the watch. Race files often list every checkpoint of the whole race; HowFar keeps only the ones on this stage.</p>
           </details>
         </aside>
       </div>
@@ -168,22 +168,22 @@
       <div class="section-head">
         <p class="eyebrow">Step 2</p>
         <h2>Paste the text on the watch</h2>
-        <p class="muted">HowFar's settings are in the Garmin Connect app on your phone, with HowFar installed from the Connect IQ Store. Made the text on a computer? See below for the easiest ways to get it there.</p>
+        <p class="muted">HowFar's settings are in the Garmin Connect app on your phone (if you installed HowFar from the Connect IQ Store). Made the text on a computer? See below for easy ways to get it there.</p>
       </div>
       <ol class="howto">
         <li>Open the <b>Garmin Connect</b> app and go to your watch.</li>
         <li>Open <b>Connect IQ apps</b> (or <b>Activities &amp; apps</b>), then <b>HowFar</b>, then <b>Settings</b>.</li>
         <li>Paste the text into <b>“Course profile”</b>. Tap <b>Save</b>.</li>
-        <li>Sync the watch. On the next run with that course, the watch shows <span class="pill">P</span> next to the checkpoint.</li>
+        <li>Sync the watch. On your next run with that course, the watch shows <span class="pill">P</span> next to the checkpoint.</li>
       </ol>
       <div class="tip-box">
         <h3>Made it on a computer?</h3>
-        <p class="small muted">Your library stays in the browser where you made it, so the text has to travel to where the settings are. Easiest first:</p>
+        <p class="small muted">Your library stays in the browser where you made it, so the text has to get to where the settings are. Easiest first:</p>
         <ol class="steps">
-          <li><b>Garmin Express, no phone needed.</b> Connect the watch to the computer with its cable and open Garmin Express. Choose your watch, then the HowFar app and its <b>Settings</b>, and paste the text there.</li>
+          <li><b>Garmin Express, no phone needed.</b> Connect the watch to the computer with its cable and open Garmin Express. Choose your watch, then HowFar and its <b>Settings</b>, and paste the text there.</li>
           <li><b>Mac and iPhone.</b> With the same Apple ID on both and Handoff on, press <b>Copy</b> on this page and paste straight into the Garmin Connect app on the iPhone.</li>
           <li><b>Any phone.</b> Paste the text into a note, an email or a message to yourself, then copy it from there on the phone.</li>
-          <li><b>Your whole library.</b> Press <b>Save a backup file</b> below, open this page on the phone, <b>Load a backup file</b>, and copy from there.</li>
+          <li><b>Your whole library.</b> Press <b>Save a backup file</b> below. Open this page on the phone, press <b>Load a backup file</b>, and copy from there.</li>
         </ol>
       </div>
     </div>
@@ -194,7 +194,7 @@
       <div class="section-head">
         <p class="eyebrow">Your library</p>
         <h2>Saved course profiles</h2>
-        <p class="muted">Kept in this browser on this device. Clearing the browser's data deletes them, so keep a backup file, which also moves your library to another device.</p>
+        <p class="muted">Kept in this browser, on this device. Clearing the browser's data deletes them, so keep a backup file. A backup also moves your library to another device.</p>
       </div>
       <ul class="lib-list" id="libCourses"></ul>
       <div class="actions backup">
@@ -213,6 +213,6 @@
   </div>
 </footer>
 
-<script type="module" src="js/prepare.js?v=18"></script>
+<script type="module" src="js/prepare.js?v=19"></script>
 </body>
 </html>

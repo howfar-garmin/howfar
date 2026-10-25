@@ -296,8 +296,8 @@ function renderCourse() {
   if (!real.length) warn.push(_t("This course has no checkpoints, so HowFar will only count down to the finish. If the race publishes a file with checkpoints, use that one."));
   const offTrack = course.candidates ? course.offTrack : (course.skipped || []).length;
   if (offTrack) warn.push(offTrack === 1
-    ? _t("1 checkpoint was left out because it isn't on this course's track (race files often list the whole race's).")
-    : _t("{n} checkpoints were left out because they aren't on this course's track (race files often list the whole race's).", { n: offTrack }));
+    ? _t("1 checkpoint was left out because it isn't on this course's track (race files often list every checkpoint of the whole race).")
+    : _t("{n} checkpoints were left out because they aren't on this course's track (race files often list every checkpoint of the whole race).", { n: offTrack }));
   const finishes = (cands || []).filter((c) => c.finish && !c.on);
   if (finishes.length) warn.push(_t("Unticked: {names}, a finish line the course passes by but doesn't end at, probably another race's. Tick it if it's a checkpoint of this race.", { names: finishes.map((c) => "“" + c.name + "”").join(", ") }));
   $("courseWarn").hidden = !warn.length;

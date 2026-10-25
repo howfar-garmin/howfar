@@ -388,9 +388,9 @@
       RACES.map(function (r) { return '<th scope="col" class="num" title="' + _t("{race}: average minutes off", { race: r.name }) + '"><span class="race-name">' + (SHORT[r.key] || r.name) + "</span>" +
         (r.km ? ' <span class="race-km">(' + r.km.toLocaleString(LANG, { maximumFractionDigits: 1 }) + " km)</span>" : "") + "</th>"; }).join("") +
       '<th scope="col" class="num" title="' + _t("Average of the races") + '">' + _t("Average") + "</th>" +
-      '<th scope="col" class="num" title="' + _t("Out of every 100 times the watch showed a time, how many were less than 5 minutes off") + '">' + _t("Less than 5 min off") + "</th>" +
-      '<th scope="col" class="num" title="' + _t("Out of every 100 times the watch showed a time, how many were less than 15 minutes off") + '">' + _t("Less than 15 min off") + "</th>" +
-      '<th scope="col" class="num" title="' + _t("How far off the watch was when you were 2 km from each checkpoint") + '">' + _t("Off by, 2 km before") + "</th>";
+      '<th scope="col" class="num" title="' + _t("Out of every 100 times HowFar showed a time, how many were less than 5 minutes off") + '">' + _t("Less than 5 min off") + "</th>" +
+      '<th scope="col" class="num" title="' + _t("Out of every 100 times HowFar showed a time, how many were less than 15 minutes off") + '">' + _t("Less than 15 min off") + "</th>" +
+      '<th scope="col" class="num" title="' + _t("How far off HowFar was 2 km before each checkpoint") + '">' + _t("Off by, 2 km before") + "</th>";
     var body = table.querySelector("tbody");
     STEPS.forEach(function (id) {
       var v = mean(id, "mae_hour");
@@ -414,7 +414,7 @@
     if (entry) {
       var parts = entry.split("|"), grades = parts[2].split(",").slice(0, 6);
       $("decodeTitle").innerHTML = _t("How to read one entry:") + " <code>" + parts[0] + "|" + parts[1] + "|" + grades.join(",") + ",…</code>";
-      var chips = ["<span>" + parts[0] + "</span>", "<span>" + _t("{dist} from the previous waypoint", { dist: km(+parts[1]) }) + "</span>"];
+      var chips = ["<span>" + parts[0] + "</span>", "<span>" + _t("{dist} from the previous checkpoint", { dist: km(+parts[1]) }) + "</span>"];
       grades.forEach(function (g) { chips.push("<span>" + _t("{step} m at {grade}%", { step: D.profileStep, grade: (g >= 0 ? "+" : "") + dec(g / 10, 1) }) + "</span>"); });
       chips.push("<span>…</span>");
       $("decode").innerHTML = chips.join("");

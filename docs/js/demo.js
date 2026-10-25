@@ -264,7 +264,7 @@
   }
 
   // ---------- error chart
-  var R = { W: 1000, H: 288, l: 72, r: 62, t: 14, b: 50, y0: -45, y1: 25 };
+  var R = { W: 1000, H: 236, l: 72, r: 62, t: 14, b: 50, y0: -45, y1: 25 };
   function rx(t) { return R.l + ((t - tStart) / (tEnd - tStart)) * (R.W - R.l - R.r); }
   function ry(m) { m = Math.max(R.y0, Math.min(R.y1, m)); return R.t + ((R.y1 - m) / (R.y1 - R.y0)) * (R.H - R.t - R.b); }
   var errCursor;

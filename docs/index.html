@@ -126,18 +126,18 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 <div class="chart-block">
 <div class="chart-head">
+<h3>How far off HowFar was</h3>
+<div class="legend" id="errLegend"></div>
+</div>
+<div class="chart-box" id="errBox"><svg aria-label="How far off each prediction was during the race" class="wide" id="err" role="img" viewbox="0 0 1000 236"></svg></div>
+<p class="small muted">For every moment of the race: the time HowFar predicted (before the watch rounds it for display), minus the time it really took to reach the next checkpoint (stops left out). Above zero, you arrived earlier than the watch said; below zero, later. The green band is ±5 minutes. Notice how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead.</p>
+</div>
+<div class="chart-block">
+<div class="chart-head">
 <h3>Where you are on the course</h3>
 <span class="small muted">Green: the trail to the next checkpoint. Click to jump there.</span>
 </div>
 <div class="chart-box" id="elevBox"><svg aria-label="Elevation profile of the course with checkpoints and current position" class="wide" id="elev" role="img" viewbox="0 0 1000 318"></svg></div>
-</div>
-<div class="chart-block">
-<div class="chart-head">
-<h3>How far off HowFar was</h3>
-<div class="legend" id="errLegend"></div>
-</div>
-<p class="small muted">For every moment of the race: the time HowFar predicted (before the watch rounds it for display), minus the time it really took to reach the next checkpoint (stops left out). Above zero, you arrived earlier than the watch said; below zero, later. The green band is ±5 minutes. Notice how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead.</p>
-<div class="chart-box" id="errBox"><svg aria-label="How far off each prediction was during the race" class="wide" id="err" role="img" viewbox="0 0 1000 288"></svg></div>
 </div>
 </div>
 </section>
@@ -310,6 +310,6 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 </footer>
 <script src="demo/torx-s1.js?v=21"></script>
-<script src="js/demo.js?v=34"></script>
+<script src="js/demo.js?v=35"></script>
 </body>
 </html>

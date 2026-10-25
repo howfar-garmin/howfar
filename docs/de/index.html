@@ -126,18 +126,18 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 <div class="chart-block">
 <div class="chart-head">
+<h3>Wie weit HowFar danebenlag</h3>
+<div class="legend" id="errLegend"></div>
+</div>
+<div class="chart-box" id="errBox"><svg aria-label="How far off each prediction was during the race" class="wide" id="err" role="img" viewbox="0 0 1000 236"></svg></div>
+<p class="small muted">Für jeden Moment des Rennens: die von HowFar vorhergesagte Zeit (bevor die Uhr sie für die Anzeige rundet) minus der Zeit, die du tatsächlich bis zum nächsten Checkpoint gebraucht hast (ohne Pausen). Über null warst du früher da, als die Uhr sagte; unter null später. Das grüne Band ist ±5 Minuten. Achte darauf, wie der Fehler schrumpft, je näher ein Checkpoint kommt, und wie viel näher HowFar bleibt als das Durchschnittstempo, das nichts von den kommenden Anstiegen weiß.</p>
+</div>
+<div class="chart-block">
+<div class="chart-head">
 <h3>Wo du auf der Strecke bist</h3>
 <span class="small muted">Grün: der Weg bis zum nächsten Kontrollpunkt. Klick, um dorthin zu springen.</span>
 </div>
 <div class="chart-box" id="elevBox"><svg aria-label="Elevation profile of the course with checkpoints and current position" class="wide" id="elev" role="img" viewbox="0 0 1000 318"></svg></div>
-</div>
-<div class="chart-block">
-<div class="chart-head">
-<h3>Wie weit HowFar danebenlag</h3>
-<div class="legend" id="errLegend"></div>
-</div>
-<p class="small muted">Für jeden Moment des Rennens: die von HowFar vorhergesagte Zeit (bevor die Uhr sie für die Anzeige rundet) minus der Zeit, die du tatsächlich bis zum nächsten Checkpoint gebraucht hast (ohne Pausen). Über null warst du früher da, als die Uhr sagte; unter null später. Das grüne Band ist ±5 Minuten. Achte darauf, wie der Fehler schrumpft, je näher ein Checkpoint kommt, und wie viel näher HowFar bleibt als das Durchschnittstempo, das nichts von den kommenden Anstiegen weiß.</p>
-<div class="chart-box" id="errBox"><svg aria-label="How far off each prediction was during the race" class="wide" id="err" role="img" viewbox="0 0 1000 288"></svg></div>
 </div>
 </div>
 </section>
@@ -310,6 +310,6 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 </footer>
 <script src="../demo/torx-s1.js?v=21"></script>
-<script src="../js/demo.js?v=34"></script>
+<script src="../js/demo.js?v=35"></script>
 </body>
 </html>

@@ -329,3 +329,6 @@ table.results { border-collapse: collapse; width: 100%; min-width: 640px; font-s
 .explain-note { margin-top: 20px; }
 .column-notes { padding-left: 1.2em; display: grid; gap: 4px; }
 .step-note { margin: 4px 0 0; font-size: var(--step--1); color: var(--ink-2); background: var(--bg); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 8px 12px; }
+.alt-install { margin-top: 20px; }
+.alt-install .steps { margin-top: 10px; }
+.alt-install .step-note { margin-top: 10px; }

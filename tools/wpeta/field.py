@@ -6,6 +6,14 @@ from .model import CourseScale, EtaEstimator, GradeTracker, Layer, SpeedGradeMod
 from .profile import ProfileMatcher
 
 MIN_OBS_TO_COMMIT = 20
+
+
+def shown_seconds(s: float) -> int:
+    """The time as the watch shows it (WpUtil.etaText): 5-minute steps from an hour out, whole
+    minutes from 5 minutes out, seconds in the last 5 minutes."""
+    s = max(0, int(round(s)))
+    step = 300 if s >= 3450 else 60 if s >= 300 else 1
+    return (s + step // 2) // step * step
 SMOOTHING = 0.2
 
 

@@ -35,9 +35,12 @@
   // the countdown as the watch shows it (WpUtil.etaText): h:mm in 5-minute steps from an hour
   // out, whole minutes from 5 minutes out, m:ss in the last 5 minutes
   function etaStep(s) { return s >= 3450 ? 300 : s >= 300 ? 60 : 1; }
-  function etaText(s) {
+  function shownSec(s) {
     s = Math.max(0, Math.round(s));
-    var r = Math.round(s / etaStep(s)) * etaStep(s);
+    return Math.round(s / etaStep(s)) * etaStep(s);
+  }
+  function etaText(s) {
+    var r = shownSec(s);
     if (r >= 3600) return [Math.floor(r / 3600) + ":" + pad(Math.floor((r % 3600) / 60)), "h"];
     if (r >= 300) return [String(Math.round(r / 60)), "min"];
     return [Math.floor(r / 60) + ":" + pad(r % 60), "min"];
@@ -61,7 +64,8 @@
     var m = s / 60;
     return (m >= 0 ? "+" : "−") + Math.abs(m).toFixed(1) + " min";
   }
-  function eta(f, id) { return f[ETA0 + idx[id]]; }
+  // the time as the watch shows it, rounded: the errors on the page are of what the runner sees
+  function eta(f, id) { return shownSec(f[ETA0 + idx[id]]); }
   function err(f, id) { return eta(f, id) - (f[ACT] - f[STOPA]); }
   function cfg(id) { return C[idx[id]]; }
 

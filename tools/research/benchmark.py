@@ -23,6 +23,7 @@ sys.path.insert(0, str(HERE.parent))
 
 import predictors as P  # noqa: E402
 import scenario as S  # noqa: E402
+from wpeta.field import shown_seconds  # noqa: E402
 
 ROOT = HERE.parents[1]
 # key: (name, recorded run in samples/, course file in courses/)
@@ -67,8 +68,10 @@ def specs():
 
 
 def job(args):
-    opts, key = args
+    opts, key, shown = args
     rows = S.run(race(key), make(opts, key), trail_ahead=opts["ahead"])
+    if shown:  # score what the runner sees: the time rounded as on the watch
+        rows = [(t, k, dn, shown_seconds(eta), act, am) for t, k, dn, eta, act, am in rows]
     return label(opts), key, S.score(rows)
 
 
@@ -76,9 +79,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default=str(HERE / "results.json"))
     ap.add_argument("--jobs", type=int, default=8)
+    ap.add_argument("--shown", action="store_true", help="score the times rounded as the watch shows them (for the site)")
     args = ap.parse_args()
 
-    todo = [(s, k) for s in specs() for k in RACES]
+    todo = [(s, k, args.shown) for s in specs() for k in RACES]
     results = {}
     with ProcessPoolExecutor(args.jobs) as ex:
         for lab, key, sc in ex.map(job, todo):

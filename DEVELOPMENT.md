@@ -83,8 +83,9 @@ The three must agree: the watch reads the texts the Python tools and the race pr
 `tools/research/` replays recorded races against their course files and scores the prediction with each part switched on or off. Each race learns its "past races" from the others. The score is the average error of all predictions made while the course point was at most an hour away, with stops left out.
 
 ```bash
-.venv/bin/python tools/research/benchmark.py --out results.json
-.venv/bin/python tools/research/demo_export.py --results results.json   # refreshes the site's demo data
+.venv/bin/python tools/research/benchmark.py --out results.json            # exact times, for comparing methods
+.venv/bin/python tools/research/benchmark.py --shown --out results.json    # rounded as the watch shows them, for the site
+.venv/bin/python tools/research/demo_export.py --results results.json      # refreshes the site's demo data
 ```
 
 On four races (two TORX 2026 sections, La via di Annibale, STL25):

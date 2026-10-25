@@ -2,7 +2,7 @@
 """Writes docs/demo/torx-s1.js: section 1 replayed against the T1 course, with the prediction of
 each case of what the runner pasted into the settings at every moment, plus the benchmark scores for the site's table.
 
-    python tools/research/benchmark.py --out results.json
+    python tools/research/benchmark.py --shown --out results.json
     python tools/research/demo_export.py --results results.json
 """
 

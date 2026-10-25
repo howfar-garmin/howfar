@@ -12,6 +12,7 @@ export const PROFILE_PREFIX = "p1";
 export const FINISH_NAME = "*";
 export const STEPS = [25, 50, 100, 200, 400];
 export const MAX_WAYPOINT_OFFSET = 200; // metres: farther waypoints aren't on this course
+const FINISH_WORDS = /(^|[^\p{L}\p{N}_])(finish|arrivo|arriv[ée]e|ziel|llegada)(?![\p{L}\p{N}_])/iu;
 
 const EARTH_RADIUS = 6371008.8;
 const SEMICIRCLE_TO_DEG = 180 / 2 ** 31;
@@ -160,12 +161,21 @@ export function readFitMessages(messages) {
 }
 
 /** Course points sorted by distance; waypoints placed at the nearest track point, dropped when
- *  more than MAX_WAYPOINT_OFFSET metres off the track (race files often carry the whole race's). */
+ *  more than MAX_WAYPOINT_OFFSET metres off the track (race files often carry the whole race's).
+ *  So is a finish that isn't at the end of the track (another race's finish the course passes
+ *  by); a finish near both the start and the end of a loop is put at the end. */
 export function courseFrom(parsed, maxOffset = MAX_WAYPOINT_OFFSET) {
   const cps = parsed.coursePoints.slice();
   const skipped = [];
+  const pts = parsed.points;
+  const length = pts.length ? pts[pts.length - 1].dist : 0;
   for (const w of parsed.waypoints) {
-    const { dist, offset } = project(parsed.points, w.lat, w.lon);
+    let { dist, offset } = project(pts, w.lat, w.lon);
+    if (offset <= maxOffset && FINISH_WORDS.test(w.name) && dist < length - 1000) {
+      const end = pts[pts.length - 1];
+      if (end.lat != null && haversine(w.lat, w.lon, end.lat, end.lon) <= maxOffset) dist = length;
+      else offset = Infinity;
+    }
     if (offset <= maxOffset) cps.push({ name: w.name, dist });
     else skipped.push(w.name);
   }

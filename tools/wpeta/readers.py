@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from datetime import datetime
@@ -11,6 +12,7 @@ from pathlib import Path
 SEMICIRCLE_TO_DEG = 180.0 / 2**31
 EARTH_RADIUS = 6371008.8
 MAX_WAYPOINT_OFFSET = 200.0  # metres: farther waypoints aren't on this course
+FINISH_WORDS = re.compile(r"\b(finish|arrivo|arriv[ée]e|ziel|llegada)\b", re.IGNORECASE)
 
 
 @dataclass
@@ -179,7 +181,10 @@ def read_course(
 
     Waypoints without a distance (GPX <wpt>) are placed at the nearest track point.
     Those more than max_offset metres off the track are dropped (their names go into
-    `skipped`): race GPX files often carry every waypoint of the whole race.
+    `skipped`): race GPX files often carry every waypoint of the whole race. So is a finish
+    that isn't at the end of the track: another race's finish the course passes by (the TORX
+    finish line, a few hundred metres into the Tor's first stage). A finish near both the
+    start and the end of a loop is put at the end.
     """
     path = Path(path)
     if path.suffix.lower() == ".gpx":
@@ -187,8 +192,15 @@ def read_course(
         cps: list[CoursePoint] = []
     else:
         points, cps, unplaced = _read_fit(path)
+    length = points[-1].dist if points else 0.0
     for name, lat, lon in unplaced:
         dist, offset = _project(points, lat, lon)
+        if offset <= max_offset and FINISH_WORDS.search(name) and dist < length - 1000:
+            end = points[-1]
+            if end.lat is not None and haversine(lat, lon, end.lat, end.lon) <= max_offset:
+                dist = length
+            else:
+                offset = math.inf
         if offset <= max_offset:
             cps.append(CoursePoint(name, dist))
         elif skipped is not None:

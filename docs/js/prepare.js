@@ -1,6 +1,6 @@
 // HowFar? race prep page: pace from past activities, course profile, library. Everything runs
 // in the browser; files are never uploaded. The calculations are in howfar-core.js.
-import * as core from "./howfar-core.js?v=2";
+import * as core from "./howfar-core.js?v=3";
 
 const FIT_SDK = "https://cdn.jsdelivr.net/npm/@garmin/fitsdk@21.217.0/+esm";
 const JSZIP = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
@@ -309,7 +309,7 @@ function renderCourse() {
   $("courseRows").innerHTML = v.checkpoints.map((c) => `<tr><td>${esc(c.name)}</td><td class="num">${(c.d / 1000).toFixed(1)}</td><td class="num">${km(c.seg)}</td><td class="num">${num(c.climb)} m</td></tr>`).join("");
   const warn = [];
   if (!real.length) warn.push("This course has no checkpoints, so HowFar? will only count down to the finish. If the race publishes a file with checkpoints, use that one.");
-  if (course.skipped && course.skipped.length) warn.push(`${course.skipped.length} checkpoint${course.skipped.length === 1 ? " was" : "s were"} left out because ${course.skipped.length === 1 ? "it isn't" : "they aren't"} on this course's track (race files often list the whole race's).`);
+  if (course.skipped && course.skipped.length) warn.push(`${course.skipped.length} checkpoint${course.skipped.length === 1 ? " was" : "s were"} left out because ${course.skipped.length === 1 ? "it isn't" : "they aren't"} on this course (race files often list the whole race's, and another race's finish the course passes by).`);
   $("courseWarn").hidden = !warn.length;
   $("courseWarn").textContent = warn.join(" ");
   $("courseMeta").innerHTML = `The text for the setting <b>“Course profile”</b> · one slope every ${v.step} m · ${num(v.text.length)} characters`;

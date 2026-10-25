@@ -378,6 +378,18 @@ def test_gpx_waypoints_off_the_track_are_dropped(tmp_path):
     assert skipped == ["Other stage"]
 
 
+def test_gpx_finish_of_another_race_is_dropped(tmp_path):
+    # the Tor's first stage passes the TORX finish line a few hundred metres in
+    p = tmp_path / "course.gpx"
+    recs = samples(COURSE)
+    write_gpx(p, recs, POINTS + [("TORX Finish Line", 100.0), ("Arrivo", recs[-1]["dist"])])
+    skipped = []
+    pts, cps = read_course(p, skipped=skipped)
+    assert recs[-1]["dist"] > 1100
+    assert skipped == ["TORX Finish Line"]
+    assert cps[-1].name == "Arrivo"
+
+
 def test_course_scale():
     from wpeta.model import CourseScale
 

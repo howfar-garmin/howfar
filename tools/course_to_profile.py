@@ -30,7 +30,7 @@ def main() -> int:
     skipped: list[str] = []
     points, cps = read_course(args.course, skipped=skipped)
     if skipped and not args.quiet:
-        print(f"Skipped {len(skipped)} waypoints more than 200 m off the track.", file=sys.stderr)
+        print(f"Skipped {len(skipped)} waypoints more than 200 m off the track or another race's finish.", file=sys.stderr)
     if not cps:
         print("Warning: the course has no course points/waypoints; only the finish segment is included.", file=sys.stderr)
     try:

@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=43">
+<link rel="stylesheet" href="css/site.css?v=44">
 </head>
 <body>
 
@@ -55,18 +55,19 @@
         <p class="muted">Add HowFar to one of your activity's data screens, load a course with checkpoints, and run. It shows three lines, four on a full-screen field.</p>
       </div>
       <div class="explain-grid">
-        <div class="watch watch-small" role="img" aria-label="Example: P Rifugio Deffeyes, 1:20 h, @ 19:10">
-          <div class="screen" translate="no">
-            <div class="w-label">P Rif. Deffeyes</div>
-            <div class="w-time">1:20<span class="w-unit">h</span></div>
-            <div class="w-arrive">@ 19:10</div>
+        <div class="watch watch-small" role="img" aria-label="Example on a full-screen field: P Rifugio Deffeyes, 1:20 h, @ 19:10, then Col Passo Alto @ 20:40">
+          <div class="screen with-then">
+            <div class="w-label" translate="no">P Rif. Deffeyes</div>
+            <div class="w-time" translate="no">1:20<span class="w-unit">h</span></div>
+            <div class="w-arrive" translate="no">@ 19:10</div>
+            <div class="w-then">then Col Passo Alto @ 20:40</div>
           </div>
         </div>
         <ol class="callouts">
           <li><b>Top line: the next checkpoint.</b> The name comes from your course, or from a point you added on the <a href="prepare.html">race prep page</a>, such as the top of a climb or a hut. The letter in front tells you how much the watch knows about the trail ahead: <span class="pill">P</span> it knows every climb and descent to the checkpoint (you gave it the course profile, see <a href="#prepare">Prepare a race</a>); <span class="pill">~</span> it only knows how far away and how much higher or lower the checkpoint is.</li>
-          <li><b>Big number: time to get there</b> while you keep moving, only as precisely as it can be known: hours and minutes in 5-minute steps from an hour out (<i>2:15 h</i>), whole minutes closer in (<i>42 min</i>), minutes and seconds in the last 5 minutes. For the first few kilometres the number is grey: it's still learning how you're moving today. Time spent stopped at an aid station is not included, because nobody can guess how long you'll stay.</li>
+          <li><b>Big number: time to get there</b> while you keep moving, only as precisely as it can be known: hours and minutes in 5-minute steps from an hour out (<i>2:15 h</i>), whole minutes closer in (<i>42 min</i>), minutes and seconds in the last 5 minutes. For the first 4 km or so the number is grey and the bottom line ends with <i>(learning)</i>: it's only a rough guess, because HowFar is still learning how you're moving today. When it turns white, it has seen enough of your running. Time spent stopped at an aid station is not included, because nobody can guess how long you'll stay.</li>
           <li><b>Bottom line: arrival time.</b> The time of day you'll get there, in your watch's 12 or 24 hour format.</li>
-          <li><b>On a full-screen field, only with the course profile: the checkpoint after that.</b> Its name and when you'll get there, for example <i>then Baite Youlaz @ 15:25</i>. Your watch tells a data field only about the next checkpoint, so without the profile this line stays empty.</li>
+          <li><b>On a full-screen field, only with the course profile: the checkpoint after that.</b> Its name and when you'll get there, for example <i>then Col Passo Alto @ 20:40</i>. Your watch tells a data field only about the next checkpoint, so without the profile this line stays empty.</li>
         </ol>
       </div>
       <p class="small muted explain-note">Without a course, or between courses, the field shows <b>--</b>. On a screen with many fields it shows just the big number.</p>
@@ -158,7 +159,7 @@
       <div class="cols-3">
         <div>
           <h3>Your pace on every slope</h3>
-          <p class="muted">Every 25 m it notes how steep the trail is and how fast you're going, from steep descents to steep climbs. Slopes you haven't met yet today it fills in from the nearest ones you have, the way pace usually changes with steepness. What it remembers from earlier runs gives it a start, and counts less and less as today's kilometres add up.</p>
+          <p class="muted">Every 25 m it notes how steep the trail is and how fast you're going, from steep descents to steep climbs. Slopes you haven't met yet today it fills in from the nearest ones you have, the way pace usually changes with steepness. It needs no practice run: on your first race it adapts within the first few kilometres. What it remembers from earlier runs helps a little later in the race, and counts less and less as today's kilometres add up.</p>
         </div>
         <div>
           <h3>The trail ahead</h3>
@@ -240,7 +241,7 @@
           <ol class="steps">
             <li>Load the race course on the watch as usual (<b>Navigate</b> → <b>Courses</b>), ideally one with the checkpoints marked.</li>
             <li>Start the activity. HowFar shows the next checkpoint and counts down.</li>
-            <li>For the first few kilometres the time is grey and only a rough guess. It settles as it sees how you're moving.</li>
+            <li>For the first 4 km or so the time is grey, with <i>(learning)</i> after the arrival time: a rough guess while HowFar learns how you're moving today. Then it turns white. No practice run is needed beforehand.</li>
             <li>Save the activity at the end: HowFar remembers what it learned for your next race.</li>
           </ol>
         </div>
@@ -305,7 +306,8 @@
         <details><summary>What if my watch's course has checkpoints the course profile doesn't?</summary><p>No problem. HowFar works out where each checkpoint is on the profile from how far the finish is, so it still knows every climb and descent to it. It also copes with checkpoints the profile has and the watch doesn't, and with a course file that is a slightly different version of the race.</p></details>
         <details><summary>What if I slow down, or speed up, during the race?</summary><p>It follows you. It keeps comparing how you're moving on each slope with what it expected over the last couple of kilometres. If you're, say, 10% slower than that, it assumes you'll keep that pace on everything ahead, and the time to the next checkpoint gets about 10% longer. When you pick up again, it follows you back within a kilometre or two. A single slow minute, like tying a shoe, doesn't change it.</p></details>
         <details><summary>Does it keep up as my fitness changes?</summary><p>Yes. At the end of every activity with HowFar on a data screen, it adds what it learned to what it remembers, and older activities count a little less each time: after five more activities an old one counts less than half, after ten about a fifth. During a race, what it remembers counts less and less as today's kilometres add up, so today's running soon takes over.</p></details>
-        <details><summary>Why is it off at the start of a race?</summary><p>It's still learning how you're moving today, which is why the time is grey for the first 4 km or so. What it remembers from earlier runs gives it a start.</p></details>
+        <details><summary>Why is it off at the start of a race?</summary><p>It's still learning how you're moving today. That's why, for the first 4 km or so, the time is grey and the arrival time ends with <i>(learning)</i>: take it as a rough guess. When the time turns white, it has seen enough of your running.</p></details>
+        <details><summary>Should I run with HowFar before a race?</summary><p>No need. In tests, a first race with HowFar was as accurate as one where it remembered earlier runs: in the first half hour a little more, after that a little less. It adapts within the first few kilometres. What it remembers helps only a little, later in the race.</p></details>
         <details><summary>Can I give it my pace from past races?</summary><p>Not any more. Early versions had a setting for it, and in tests it helped only in the first hours of races like the ones it was made from, and made things worse when they were different. Learning on the run catches up within a few kilometres, and HowFar already remembers your runs on its own.</p></details>
         <details><summary>Where does my data go?</summary><p>Nowhere. The watch keeps what it learns, and the race files you use to prepare stay on your own computer or phone. The one exception is optional: on the <a href="prepare.html">race prep page</a>, “Add huts and villages” asks OpenStreetMap what's around your course, sending only the corners of a rectangle around it.</p></details>
         <details><summary>Which watches does it work on?</summary><p>Garmin Enduro 3, fēnix 8 (43 and 47 mm, Solar 47 and 51 mm) and epix Pro (Gen 2) 42, 47 and 51 mm. More models can be added.</p></details>

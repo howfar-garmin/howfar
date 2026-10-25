@@ -359,6 +359,7 @@ function renderCourse() {
   $("courseDrop").classList.add("compact");
   $("courseDropTitle").textContent = "Replace the course";
   $("addPoints").hidden = !course.parsed;
+  $("readOnlyNote").hidden = !!course.parsed;
   const has = (kinds) => (course.candidates || []).some((c) => kinds.includes(c.added));
   $("removeClimbs").hidden = !has(["top", "bottom"]);
   $("removePlaces").hidden = !has(["hut", "village"]);
@@ -381,7 +382,7 @@ function renderCourse() {
   }
   const warn = [];
   if (!real.length) warn.push("This course has no checkpoints, so HowFar? will only count down to the finish. If the race publishes a file with checkpoints, use that one.");
-  const offTrack = course.parsed ? course.offTrack : (course.skipped || []).length;
+  const offTrack = course.candidates ? course.offTrack : (course.skipped || []).length;
   if (offTrack) warn.push(`${offTrack} checkpoint${offTrack === 1 ? " was" : "s were"} left out because ${offTrack === 1 ? "it isn't" : "they aren't"} on this course's track (race files often list the whole race's).`);
   const finishes = (cands || []).filter((c) => c.finish && !c.on);
   if (finishes.length) warn.push(`Unticked: ${finishes.map((c) => "“" + c.name + "”").join(", ")}, a finish line the course passes by but doesn't end at, probably another race's. Tick it if it's a checkpoint of this race.`);
@@ -399,9 +400,8 @@ function recomputeCourse() {
     course.candidates = c.coursePoints.map((p) => ({ name: p.name, dist: p.dist, on: true }))
       .concat(c.otherFinishes.map((p) => ({ name: p.name, dist: p.dist, on: false, finish: true })))
       .sort((a, b) => a.dist - b.dist);
+    course.offTrack = c.skipped.length - c.otherFinishes.length;
   }
-  course.offTrack = c.skipped.length - c.otherFinishes.length;
-  course.skipped = c.skipped.filter((n) => !course.candidates.some((p) => p.name === n && p.on));
   const picked = course.candidates.filter((p) => p.on);
   course.view = courseView(c.points, picked.map((p) => ({ name: p.name, dist: p.dist })), Number($("courseMax").value));
   let k = 0;
@@ -523,13 +523,34 @@ $("courseMax").addEventListener("change", () => {
 });
 renamer("course", course, "Untitled course");
 $("courseCopy").addEventListener("click", (e) => copyText($("courseText").textContent, e.currentTarget));
+/** The course's track, thinned to a point every 10 m or more and rounded, so a saved course
+ *  can be opened and changed again without its file: [[dist, alt, lat, lon], ...]. */
+function compactTrack(points) {
+  const out = [];
+  let last = -Infinity;
+  points.forEach((p, i) => {
+    if (p.dist - last < 10 && i < points.length - 1) return;
+    last = p.dist;
+    const r = (x, n) => (x == null ? null : Number(x.toFixed(n)));
+    out.push([r(p.dist, 1), r(p.alt, 1), r(p.lat, 6), r(p.lon, 6)]);
+  });
+  return out;
+}
+
+const expandTrack = (track) => track.map(([dist, alt, lat, lon]) => ({ dist, alt, lat, lon }));
+
 $("courseSave").addEventListener("click", () => {
   const v = course.view;
   course.id = course.id || newId();
   course.name = course.name.trim() || baseName(course.file);
+  const before = library.courses.find((x) => x.id === course.id) || {};
   upsert(library.courses, {
     id: course.id, name: course.name, file: course.file, saved: new Date().toISOString(), text: v.text, step: v.step,
-    length: v.length, up: v.up, profile: v.profile, checkpoints: v.checkpoints, skipped: course.skipped || [],
+    length: v.length, up: v.up, profile: v.profile, checkpoints: v.checkpoints,
+    skipped: course.candidates ? [] : before.skipped || [], offTrack: course.offTrack || 0,
+    // what's needed to change it later
+    track: course.parsed ? compactTrack(core.courseFrom(course.parsed).points) : before.track,
+    candidates: course.candidates || before.candidates,
   });
   const ok = saveLibrary();
   $("courseSaved").textContent = ok ? "Saved in your library." : "Couldn't save: this browser blocks storage. Use a backup file.";
@@ -586,9 +607,14 @@ $("library").addEventListener("click", (e) => {
     renderPace();
     $("pace").scrollIntoView({ behavior: "smooth" });
   } else {
-    Object.assign(course, { id: item.id, name: item.name, file: item.file, parsed: null, skipped: item.skipped, dirty: false,
-      view: { step: item.step, text: item.text, profile: item.profile, checkpoints: item.checkpoints, length: item.length, up: item.up } });
-    $("courseSaved").textContent = "Opened from your library. To change the checkpoints or the detail level, add the course file again.";
+    const editable = !!(item.track && item.candidates);
+    Object.assign(course, {
+      id: item.id, name: item.name, file: item.file, skipped: item.skipped, dirty: false,
+      parsed: editable ? { points: expandTrack(item.track), waypoints: [], coursePoints: [] } : null,
+      candidates: editable ? item.candidates.map((c) => ({ ...c })) : null, offTrack: item.offTrack || 0,
+      view: { step: item.step, text: item.text, profile: item.profile, checkpoints: item.checkpoints, length: item.length, up: item.up },
+    });
+    $("courseSaved").textContent = "Opened from your library.";
     renderCourse();
     $("course").scrollIntoView({ behavior: "smooth" });
   }

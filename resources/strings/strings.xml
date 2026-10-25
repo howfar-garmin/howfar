@@ -4,4 +4,7 @@
     <string id="ImportedSpeedModelTitle">Your pace from past races</string>
     <string id="CourseProfileTitle">Course profile</string>
     <string id="ResetModelTitle">Forget what was learned from past runs</string>
+    <!-- on the field: "then <checkpoint> @ 15:25" and "@ 14:45 (learning)" -->
+    <string id="Then">then</string>
+    <string id="Learning">(learning)</string>
 </strings>

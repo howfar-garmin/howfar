@@ -491,3 +491,13 @@ def test_fatigue_factor_tracks_recent_slowdown(monkeypatch):
         m.observe(0, 2.4)
     assert est.fatigue < 0.97  # still slower than the (lagging) model says
     assert est.time_for_grade(1000, 0) > 1000 / m.predict(0)
+
+
+# --- the website in every language ---------------------------------------------------
+
+def test_site_is_built_and_fully_translated():
+    """docs/ matches site/ and every text has its Italian, French and German translation
+    (run tools/build_site.py after editing site/*.html or a script's messages)."""
+    root = Path(__file__).resolve().parents[2]
+    r = subprocess.run([sys.executable, str(root / "tools" / "build_site.py"), "--check"], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr

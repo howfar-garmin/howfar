@@ -1,294 +1,278 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <title>Race prep · HowFar</title>
-<meta name="description" content="Prepare HowFar for a race: learn your pace on every slope from past activities and make the course profile, right in your browser. #ultratrail #trailrunning">
-<meta property="og:title" content="Race prep · HowFar">
-<meta property="og:description" content="Turn your past races and the race course into two texts for the HowFar Garmin data field. Runs in your browser; your files never leave your device.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=30">
-</head>
+<meta content="Prepare HowFar for a race: learn your pace on every slope from past activities and make the course profile, right in your browser. #ultratrail #trailrunning" name="description"/>
+<meta content="Race prep · HowFar" property="og:title"/>
+<meta content="Turn your past races and the race course into two texts for the HowFar Garmin data field. Runs in your browser; your files never leave your device." property="og:description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&amp;family=Public+Sans:wght@400;500;600&amp;family=Saira+Semi+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="css/site.css?v=31" rel="stylesheet"/>
+<link href="https://howfar-garmin.github.io/howfar/prepare.html" hreflang="en" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/it/prepare.html" hreflang="it" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/fr/prepare.html" hreflang="fr" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/de/prepare.html" hreflang="de" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/prepare.html" hreflang="x-default" rel="alternate"/><script>window.HOWFAR_LANG="en";window.HOWFAR_T={};
+window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\}/g,function(m,k){return k in v?v[k]:m}):x};
+(function(){try{var k="howfar.lang";document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-lang]");if(a)localStorage.setItem(k,a.getAttribute("data-lang"))});if(!localStorage.getItem(k)){var l=((navigator.languages&&navigator.languages[0])||navigator.language||"").slice(0,2).toLowerCase();if(["it", "fr", "de"].indexOf(l)>=0){localStorage.setItem(k,l);location.replace(l+"/"+location.pathname.split("/").pop()+location.hash)}}}catch(e){}})();</script></head>
 <body>
-
 <header class="site-head">
-  <div class="wrap">
-    <a class="wordmark" href="./">HowFar<span>?</span></a>
-    <nav class="site-nav" aria-label="Sections">
-      <a href="#pace">Your pace</a>
-      <a href="#course">Your checkpoints</a>
-      <a href="#paste">Paste on the watch</a>
-      <a href="#library">Your library</a>
-      <a href="./">Back to HowFar</a>
-    </nav>
-  </div>
+<div class="wrap">
+<a class="wordmark" href="./" translate="no">HowFar<span>?</span></a>
+<nav aria-label="Sections" class="site-nav">
+<a href="#pace">Your pace</a>
+<a href="#course">Your checkpoints</a>
+<a href="#paste">Paste on the watch</a>
+<a href="#library">Your library</a>
+<a href="./">Back to HowFar</a>
+</nav>
+<nav aria-label="Language" class="lang-switch" translate="no"><a aria-current="true" data-lang="en" href="prepare.html" hreflang="en" lang="en" title="English">EN</a><a data-lang="it" href="it/prepare.html" hreflang="it" lang="it" title="Italiano">IT</a><a data-lang="fr" href="fr/prepare.html" hreflang="fr" lang="fr" title="Français">FR</a><a data-lang="de" href="de/prepare.html" hreflang="de" lang="de" title="Deutsch">DE</a></nav></div>
 </header>
-
 <main>
-  <section class="hero prep-hero">
-    <div class="wrap">
-      <p class="eyebrow">Race prep</p>
-      <h1>Get HowFar ready for your next race</h1>
-      <p class="lede">Two optional texts make HowFar accurate from the first kilometre: your pace from past races, and the course profile with every climb and descent between checkpoints. Make them here, then paste them into the Garmin Connect app.</p>
-      <ol class="howto prep-overview" aria-label="The three steps">
-        <li><b>Your pace.</b> Add a few of your past races or long mountain runs.</li>
-        <li><b>Your checkpoints.</b> Add the course file of the race you'll run, and any points you want to add.</li>
-        <li><b>Paste on the watch.</b> Copy each text into HowFar's settings in Garmin Connect.</li>
-      </ol>
-      <p class="small muted privacy-note">Everything happens in this browser. Your files are not uploaded anywhere, and what you save stays on this device. The only exception is the optional “Add huts and villages” button, which asks OpenStreetMap what's around your course.</p>
-    </div>
-  </section>
-
-  <section id="pace">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">Step 1</p>
-        <h2>Your pace from past races</h2>
-        <p class="muted">HowFar learns how fast you go on every slope, from steep descents to steep climbs. Give it a few activities like the race you're preparing: mountain races or long trail runs. Three to ten is plenty.</p>
-      </div>
-
-      <div class="prep-grid">
-        <div class="prep-main">
-          <label class="drop" id="paceDrop" for="paceFiles">
-            <input id="paceFiles" type="file" accept=".gpx,.fit,.zip" multiple>
-            <span class="drop-title">Add activities</span>
-            <span class="small muted">Choose or drop GPX, FIT or ZIP files. You can add more at any time.</span>
-          </label>
-          <p class="status" id="paceStatus" role="status" aria-live="polite"></p>
-
-          <div id="paceResult" hidden>
-            <div class="loaded" aria-live="polite">
-              <span class="loaded-kicker">Your pace</span>
-              <span class="loaded-title">
-                <span class="loaded-name" id="paceTitle"></span>
-                <input class="loaded-input" id="paceTitleInput" type="text" maxlength="60" hidden aria-label="Name of this pace" placeholder="For example: Mountain races 2026">
-                <button type="button" class="loaded-edit" id="paceRename" aria-label="Rename" title="Rename"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
-              </span>
-              <span class="loaded-state" id="paceState"></span>
-              <button type="button" class="btn primary loaded-save" id="paceSaveTop" hidden>Save in my library</button>
-            </div>
-            <div class="table-wrap">
-              <table class="results prep-table">
-                <thead><tr><th scope="col">Activity</th><th scope="col" class="num">Date</th><th scope="col" class="num">Distance</th><th scope="col" class="num">Climb</th><th scope="col" class="num">Moving time</th><th scope="col"><span class="sr-only">Remove</span></th></tr></thead>
-                <tbody id="paceRows"></tbody>
-              </table>
-            </div>
-
-            <div class="chart-block">
-              <div class="chart-head">
-                <h3>Your speed on every slope</h3>
-                <span class="small muted">Hover or tap the chart for your pace at each slope.</span>
-              </div>
-              <div class="chart-box" id="paceChartBox"><svg id="paceChart" viewBox="0 0 640 300" role="img" aria-label="Speed by slope learned from your activities"></svg></div>
-              <p class="small muted" id="paceNote"></p>
-            </div>
-
-            <div class="output">
-              <div class="string-box">
-                <div class="chart-head"><span class="small muted">The text for the setting <b>“Your pace from past races”</b></span><button type="button" class="btn primary" id="paceCopy">Copy</button></div>
-                <pre id="paceText"></pre>
-              </div>
-              <div class="actions">
-                <button type="button" class="btn" id="paceSave">Save in my library</button>
-                <button type="button" class="btn" id="paceNew">Start a new one</button>
-                <span class="small muted" id="paceSaved" role="status" aria-live="polite"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="prep-help">
-          <details open>
-            <summary>How do I get these files?</summary>
-            <ol class="steps">
-              <li><b>Garmin Connect (on a computer):</b> open the activity, click the <b>gear</b> icon at the top right, then <b>Export Original</b>. You get a ZIP file; add it as it is.</li>
-              <li><b>Strava (on a computer):</b> open the activity, click <b>⋯</b>, then <b>Export Original</b> or <b>Export GPX</b>.</li>
-              <li>Files recorded by the watch (FIT) are best: they have the barometric altitude. GPX files work too.</li>
-            </ol>
-          </details>
-          <details>
-            <summary>Which activities should I use?</summary>
-            <p class="small muted">Ones that look like the race: similar terrain, similar length, run at race effort. A short fast race and a 100-mile ultra teach different paces. Stops are left out automatically.</p>
-          </details>
-        </aside>
-      </div>
-    </div>
-  </section>
-
-  <section id="course">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">Step 2</p>
-        <h2>Your checkpoints</h2>
-        <p class="muted">The race's course file, the same one you load on the watch. HowFar finds its checkpoints and notes the slope of every stretch between them, so it knows every climb and descent ahead (the <span class="pill">P</span> on the watch).</p>
-        <p class="muted">Your watch tells HowFar only about the checkpoints in the course you load. Here you can add more: the top and bottom of every big climb, huts and villages along the way. HowFar counts down to them too, without changing the course on your watch. Your watch's own alerts and checkpoint list stay as they are: only HowFar knows the points you add.</p>
-      </div>
-
-      <div class="prep-grid">
-        <div class="prep-main">
-          <label class="drop" id="courseDrop" for="courseFile">
-            <input id="courseFile" type="file" accept=".gpx,.fit,.zip">
-            <span class="drop-title" id="courseDropTitle">Add the course</span>
-            <span class="small muted drop-hint">Choose or drop one GPX, FIT or ZIP file.</span>
-          </label>
-          <p class="status" id="courseStatus" role="status" aria-live="polite"></p>
-
-          <div id="courseResult" hidden>
-            <div class="loaded" aria-live="polite">
-              <span class="loaded-kicker">Course profile</span>
-              <span class="loaded-title">
-                <span class="loaded-name" id="courseTitle"></span>
-                <input class="loaded-input" id="courseTitleInput" type="text" maxlength="60" hidden aria-label="Name of this course profile" placeholder="For example: Tor des Géants 2026, stage 1">
-                <button type="button" class="loaded-edit" id="courseRename" aria-label="Rename" title="Rename"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
-              </span>
-              <span class="loaded-state" id="courseState"></span>
-              <button type="button" class="btn primary loaded-save" id="courseSaveTop" hidden>Save in my library</button>
-            </div>
-            <p class="course-summary" id="courseSummary"></p>
-            <div class="chart-block">
-              <div class="chart-head">
-                <h3>Course and checkpoints</h3>
-                <span class="small muted">The dots are the checkpoints HowFar will count down to.</span>
-              </div>
-              <div class="chart-box" id="courseChartBox"><svg id="courseChart" class="wide" viewBox="0 0 1000 280" role="img" aria-label="Elevation profile of the course with its checkpoints"></svg></div>
-            </div>
-            <p class="small muted" id="coursePickNote" hidden>Untick a checkpoint that isn't part of this race: the text below updates.</p>
-            <div class="table-wrap">
-              <table class="results prep-table">
-                <thead><tr><th scope="col">Checkpoint</th><th scope="col" class="num">At km</th><th scope="col" class="num">From the previous</th><th scope="col" class="num">Climb on the way</th></tr></thead>
-                <tbody id="courseRows"></tbody>
-              </table>
-            </div>
-            <p class="step-note" id="courseWarn" hidden></p>
-
-            <p class="step-note" id="readOnlyNote" hidden>This course was saved before saved courses could be changed. To change its checkpoints or add points, add its course file again and save it.</p>
-
-            <div class="add-points" id="addPoints">
-              <h3>Add more points</h3>
-              <p class="small muted">HowFar will count down to these too. They appear in the list above, where you can untick any of them.</p>
-              <div class="add-row">
-                <button type="button" class="btn" id="addClimbs">Add climb tops and bottoms</button>
-                <label class="field inline" for="climbMin">for climbs of at least
-                  <select id="climbMin"><option value="100">100 m D+</option><option value="200" selected>200 m D+</option><option value="300">300 m D+</option><option value="500">500 m D+</option></select>
-                </label>
-              </div>
-              <div class="add-row">
-                <button type="button" class="btn" id="addPlaces">Add huts and villages</button>
-                <span class="small muted">From <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>: named mountain huts, shelters and villages within 200 m of the course. This is the one thing on this page that goes online: it asks OpenStreetMap's search service for what's inside a rectangle around your course. Only the rectangle's corners are sent, never your file.</span>
-              </div>
-              <details class="small fit-out">
-                <summary>Want your watch itself to know these points too?</summary>
-                <p class="muted">HowFar doesn't need it, but if you also want your watch's own alerts, checkpoint list and ClimbPro to show the added points, download the course with every ticked checkpoint and load it on the watch instead of the original: in Garmin Connect on a computer, <b>Training &amp; Planning → Courses → Import</b>.</p>
-                <button type="button" class="btn small-btn" id="courseFit">Download the course (FIT)</button>
-              </details>
-              <div class="add-row">
-                <button type="button" class="btn small-btn" id="removeClimbs" hidden>Remove tops and bottoms</button>
-                <button type="button" class="btn small-btn" id="removePlaces" hidden>Remove huts and villages</button>
-              </div>
-              <p class="status" id="addStatus" role="status" aria-live="polite"></p>
-            </div>
-
-            <div class="output">
-              <details class="small">
-                <summary>Detail level</summary>
-                <p class="muted">HowFar stores one slope value every 25 to 400 m, the finest that fits in the setting. Garmin Connect's limit on text length isn't documented; 4,000 characters works. Lower it if the app refuses the paste.</p>
-                <label class="field inline" for="courseMax">Longest text
-                  <select id="courseMax"><option value="2000">2,000 characters</option><option value="4000" selected>4,000 characters</option><option value="8000">8,000 characters</option></select>
-                </label>
-              </details>
-              <div class="string-box">
-                <div class="chart-head"><span class="small muted" id="courseMeta">The text for the setting <b>“Course profile”</b></span><button type="button" class="btn primary" id="courseCopy">Copy</button></div>
-                <pre id="courseText"></pre>
-              </div>
-              <div class="actions">
-                <button type="button" class="btn" id="courseSave">Save in my library</button>
-                <span class="small muted" id="courseSaved" role="status" aria-live="polite"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="prep-help">
-          <details open>
-            <summary>Where do I get the course file?</summary>
-            <ol class="steps">
-              <li>From the <b>race website</b>: most races publish the official GPX, often per stage.</li>
-              <li>From <b>Garmin Connect</b>: open the course, then <b>Export</b> as GPX or FIT.</li>
-              <li>Even better: once the course is in Garmin Connect, <b>export it again as FIT</b>. That file has exactly the checkpoints your watch will show, so nothing has to be guessed.</li>
-              <li>Best is the <b>same file</b> you load on the watch. If the two list different checkpoints, or one is a slightly different version of the course, HowFar still works out where each checkpoint is on the profile.</li>
-            </ol>
-          </details>
-          <details>
-            <summary>A race in stages?</summary>
-            <p class="small muted">Make one profile per stage and save them all. At each life base, paste the next stage's text and load the next course on the watch. Race files often carry every checkpoint of the whole race; HowFar keeps only the ones on this stage.</p>
-          </details>
-        </aside>
-      </div>
-    </div>
-  </section>
-
-  <section id="paste">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">Step 3</p>
-        <h2>Paste the texts on the watch</h2>
-        <p class="muted">HowFar's settings are in the Garmin Connect app on your phone, with HowFar installed from the Connect IQ Store. Made the texts on a computer? See below for the easiest ways to get them there.</p>
-      </div>
-      <ol class="howto">
-        <li>Open the <b>Garmin Connect</b> app and go to your watch.</li>
-        <li>Open <b>Connect IQ apps</b> (or <b>Activities &amp; apps</b>), then <b>HowFar</b>, then <b>Settings</b>.</li>
-        <li>Paste the pace text into <b>“Your pace from past races”</b> and the course text into <b>“Course profile”</b>. Tap <b>Save</b>.</li>
-        <li>Sync the watch. On the next run with that course, the watch shows <span class="pill">P</span> next to the checkpoint.</li>
-      </ol>
-      <div class="tip-box">
-        <h3>Made it on a computer?</h3>
-        <p class="small muted">Your library stays in the browser where you made it, so the texts have to travel to where the settings are. Easiest first:</p>
-        <ol class="steps">
-          <li><b>Garmin Express, no phone needed.</b> Connect the watch to the computer with its cable and open Garmin Express. Choose your watch, then the HowFar app and its <b>Settings</b>, and paste the texts there.</li>
-          <li><b>Mac and iPhone.</b> With the same Apple ID on both and Handoff on, press <b>Copy</b> on this page and paste straight into the Garmin Connect app on the iPhone.</li>
-          <li><b>Any phone.</b> Paste the text into a note, an email or a message to yourself, then copy it from there on the phone.</li>
-          <li><b>Your whole library.</b> Press <b>Save a backup file</b> below, open this page on the phone, <b>Load a backup file</b>, and copy from there.</li>
-        </ol>
-      </div>
-    </div>
-  </section>
-
-  <section id="library">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">Your library</p>
-        <h2>Saved paces and course profiles</h2>
-        <p class="muted">Kept in this browser on this device. Clearing the browser's data deletes them, so keep a backup file, which also moves your library to another device.</p>
-      </div>
-      <div class="lib-grid">
-        <div>
-          <h3>Pace from past races</h3>
-          <ul class="lib-list" id="libPaces"></ul>
-        </div>
-        <div>
-          <h3>Course profiles</h3>
-          <ul class="lib-list" id="libCourses"></ul>
-        </div>
-      </div>
-      <div class="actions backup">
-        <button type="button" class="btn" id="backupSave">Save a backup file</button>
-        <label class="btn" for="backupLoad">Load a backup file<input id="backupLoad" type="file" accept=".json,application/json" hidden></label>
-        <span class="small muted" id="backupStatus" role="status" aria-live="polite"></span>
-      </div>
-    </div>
-  </section>
+<section class="hero prep-hero">
+<div class="wrap">
+<p class="eyebrow">Race prep</p>
+<h1>Get HowFar ready for your next race</h1>
+<p class="lede">Two optional texts make HowFar accurate from the first kilometre: your pace from past races, and the course profile with every climb and descent between checkpoints. Make them here, then paste them into the Garmin Connect app.</p>
+<ol aria-label="The three steps" class="howto prep-overview">
+<li><b>Your pace.</b> Add a few of your past races or long mountain runs.</li>
+<li><b>Your checkpoints.</b> Add the course file of the race you'll run, and any points you want to add.</li>
+<li><b>Paste on the watch.</b> Copy each text into HowFar's settings in Garmin Connect.</li>
+</ol>
+<p class="small muted privacy-note">Everything happens in this browser. Your files are not uploaded anywhere, and what you save stays on this device. The only exception is the optional “Add huts and villages” button, which asks OpenStreetMap what's around your course.</p>
+</div>
+</section>
+<section id="pace">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Step 1</p>
+<h2>Your pace from past races</h2>
+<p class="muted">HowFar learns how fast you go on every slope, from steep descents to steep climbs. Give it a few activities like the race you're preparing: mountain races or long trail runs. Three to ten is plenty.</p>
+</div>
+<div class="prep-grid">
+<div class="prep-main">
+<label class="drop" for="paceFiles" id="paceDrop">
+<input accept=".gpx,.fit,.zip" id="paceFiles" multiple="" type="file"/>
+<span class="drop-title">Add activities</span>
+<span class="small muted">Choose or drop GPX, FIT or ZIP files. You can add more at any time.</span>
+</label>
+<p aria-live="polite" class="status" id="paceStatus" role="status"></p>
+<div hidden="" id="paceResult">
+<div aria-live="polite" class="loaded">
+<span class="loaded-kicker">Your pace</span>
+<span class="loaded-title">
+<span class="loaded-name" id="paceTitle"></span>
+<input aria-label="Name of this pace" class="loaded-input" hidden="" id="paceTitleInput" maxlength="60" placeholder="For example: Mountain races 2026" type="text"/>
+<button aria-label="Rename" class="loaded-edit" id="paceRename" title="Rename" type="button"><svg aria-hidden="true" height="18" viewbox="0 0 24 24" width="18"><path d="M4 20h4L19 9l-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"></path><path d="M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.8"></path></svg></button>
+</span>
+<span class="loaded-state" id="paceState"></span>
+<button class="btn primary loaded-save" hidden="" id="paceSaveTop" type="button">Save in my library</button>
+</div>
+<div class="table-wrap">
+<table class="results prep-table">
+<thead><tr><th scope="col">Activity</th><th class="num" scope="col">Date</th><th class="num" scope="col">Distance</th><th class="num" scope="col">Climb</th><th class="num" scope="col">Moving time</th><th scope="col"><span class="sr-only">Remove</span></th></tr></thead>
+<tbody id="paceRows"></tbody>
+</table>
+</div>
+<div class="chart-block">
+<div class="chart-head">
+<h3>Your speed on every slope</h3>
+<span class="small muted">Hover or tap the chart for your pace at each slope.</span>
+</div>
+<div class="chart-box" id="paceChartBox"><svg aria-label="Speed by slope learned from your activities" id="paceChart" role="img" viewbox="0 0 640 300"></svg></div>
+<p class="small muted" id="paceNote"></p>
+</div>
+<div class="output">
+<div class="string-box">
+<div class="chart-head"><span class="small muted">The text for the setting <b>“Your pace from past races”</b></span><button class="btn primary" id="paceCopy" type="button">Copy</button></div>
+<pre id="paceText"></pre>
+</div>
+<div class="actions">
+<button class="btn" id="paceSave" type="button">Save in my library</button>
+<button class="btn" id="paceNew" type="button">Start a new one</button>
+<span aria-live="polite" class="small muted" id="paceSaved" role="status"></span>
+</div>
+</div>
+</div>
+</div>
+<aside class="prep-help">
+<details open="">
+<summary>How do I get these files?</summary>
+<ol class="steps">
+<li><b>Garmin Connect (on a computer):</b> open the activity, click the <b>gear</b> icon at the top right, then <b>Export Original</b>. You get a ZIP file; add it as it is.</li>
+<li><b>Strava (on a computer):</b> open the activity, click <b>⋯</b>, then <b>Export Original</b> or <b>Export GPX</b>.</li>
+<li>Files recorded by the watch (FIT) are best: they have the barometric altitude. GPX files work too.</li>
+</ol>
+</details>
+<details>
+<summary>Which activities should I use?</summary>
+<p class="small muted">Ones that look like the race: similar terrain, similar length, run at race effort. A short fast race and a 100-mile ultra teach different paces. Stops are left out automatically.</p>
+</details>
+</aside>
+</div>
+</div>
+</section>
+<section id="course">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Step 2</p>
+<h2>Your checkpoints</h2>
+<p class="muted">The race's course file, the same one you load on the watch. HowFar finds its checkpoints and notes the slope of every stretch between them, so it knows every climb and descent ahead (the <span class="pill">P</span> on the watch).</p>
+<p class="muted">Your watch tells HowFar only about the checkpoints in the course you load. Here you can add more: the top and bottom of every big climb, huts and villages along the way. HowFar counts down to them too, without changing the course on your watch. Your watch's own alerts and checkpoint list stay as they are: only HowFar knows the points you add.</p>
+</div>
+<div class="prep-grid">
+<div class="prep-main">
+<label class="drop" for="courseFile" id="courseDrop">
+<input accept=".gpx,.fit,.zip" id="courseFile" type="file"/>
+<span class="drop-title" id="courseDropTitle">Add the course</span>
+<span class="small muted drop-hint">Choose or drop one GPX, FIT or ZIP file.</span>
+</label>
+<p aria-live="polite" class="status" id="courseStatus" role="status"></p>
+<div hidden="" id="courseResult">
+<div aria-live="polite" class="loaded">
+<span class="loaded-kicker">Course profile</span>
+<span class="loaded-title">
+<span class="loaded-name" id="courseTitle"></span>
+<input aria-label="Name of this course profile" class="loaded-input" hidden="" id="courseTitleInput" maxlength="60" placeholder="For example: Tor des Géants 2026, stage 1" type="text"/>
+<button aria-label="Rename" class="loaded-edit" id="courseRename" title="Rename" type="button"><svg aria-hidden="true" height="18" viewbox="0 0 24 24" width="18"><path d="M4 20h4L19 9l-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"></path><path d="M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.8"></path></svg></button>
+</span>
+<span class="loaded-state" id="courseState"></span>
+<button class="btn primary loaded-save" hidden="" id="courseSaveTop" type="button">Save in my library</button>
+</div>
+<p class="course-summary" id="courseSummary"></p>
+<div class="chart-block">
+<div class="chart-head">
+<h3>Course and checkpoints</h3>
+<span class="small muted">The dots are the checkpoints HowFar will count down to.</span>
+</div>
+<div class="chart-box" id="courseChartBox"><svg aria-label="Elevation profile of the course with its checkpoints" class="wide" id="courseChart" role="img" viewbox="0 0 1000 280"></svg></div>
+</div>
+<p class="small muted" hidden="" id="coursePickNote">Untick a checkpoint that isn't part of this race: the text below updates.</p>
+<div class="table-wrap">
+<table class="results prep-table">
+<thead><tr><th scope="col">Checkpoint</th><th class="num" scope="col">At km</th><th class="num" scope="col">From the previous</th><th class="num" scope="col">Climb on the way</th></tr></thead>
+<tbody id="courseRows"></tbody>
+</table>
+</div>
+<p class="step-note" hidden="" id="courseWarn"></p>
+<p class="step-note" hidden="" id="readOnlyNote">This course was saved before saved courses could be changed. To change its checkpoints or add points, add its course file again and save it.</p>
+<div class="add-points" id="addPoints">
+<h3>Add more points</h3>
+<p class="small muted">HowFar will count down to these too. They appear in the list above, where you can untick any of them.</p>
+<div class="add-row">
+<button class="btn" id="addClimbs" type="button">Add climb tops and bottoms</button>
+<label class="field inline" for="climbMin">for climbs of at least
+                  <select id="climbMin"><option value="100">100 m D+</option><option selected="" value="200">200 m D+</option><option value="300">300 m D+</option><option value="500">500 m D+</option></select>
+</label>
+</div>
+<div class="add-row">
+<button class="btn" id="addPlaces" type="button">Add huts and villages</button>
+<span class="small muted">From <a href="https://www.openstreetmap.org/" rel="noopener" target="_blank">OpenStreetMap</a>: named mountain huts, shelters and villages within 200 m of the course. This is the one thing on this page that goes online: it asks OpenStreetMap's search service for what's inside a rectangle around your course. Only the rectangle's corners are sent, never your file.</span>
+</div>
+<details class="small fit-out">
+<summary>Want your watch itself to know these points too?</summary>
+<p class="muted">HowFar doesn't need it, but if you also want your watch's own alerts, checkpoint list and ClimbPro to show the added points, download the course with every ticked checkpoint and load it on the watch instead of the original: in Garmin Connect on a computer, <b>Training &amp; Planning → Courses → Import</b>.</p>
+<button class="btn small-btn" id="courseFit" type="button">Download the course (FIT)</button>
+</details>
+<div class="add-row">
+<button class="btn small-btn" hidden="" id="removeClimbs" type="button">Remove tops and bottoms</button>
+<button class="btn small-btn" hidden="" id="removePlaces" type="button">Remove huts and villages</button>
+</div>
+<p aria-live="polite" class="status" id="addStatus" role="status"></p>
+</div>
+<div class="output">
+<details class="small">
+<summary>Detail level</summary>
+<p class="muted">HowFar stores one slope value every 25 to 400 m, the finest that fits in the setting. Garmin Connect's limit on text length isn't documented; 4,000 characters works. Lower it if the app refuses the paste.</p>
+<label class="field inline" for="courseMax">Longest text
+                  <select id="courseMax"><option value="2000">2,000 characters</option><option selected="" value="4000">4,000 characters</option><option value="8000">8,000 characters</option></select>
+</label>
+</details>
+<div class="string-box">
+<div class="chart-head"><span class="small muted" id="courseMeta">The text for the setting <b>“Course profile”</b></span><button class="btn primary" id="courseCopy" type="button">Copy</button></div>
+<pre id="courseText"></pre>
+</div>
+<div class="actions">
+<button class="btn" id="courseSave" type="button">Save in my library</button>
+<span aria-live="polite" class="small muted" id="courseSaved" role="status"></span>
+</div>
+</div>
+</div>
+</div>
+<aside class="prep-help">
+<details open="">
+<summary>Where do I get the course file?</summary>
+<ol class="steps">
+<li>From the <b>race website</b>: most races publish the official GPX, often per stage.</li>
+<li>From <b>Garmin Connect</b>: open the course, then <b>Export</b> as GPX or FIT.</li>
+<li>Even better: once the course is in Garmin Connect, <b>export it again as FIT</b>. That file has exactly the checkpoints your watch will show, so nothing has to be guessed.</li>
+<li>Best is the <b>same file</b> you load on the watch. If the two list different checkpoints, or one is a slightly different version of the course, HowFar still works out where each checkpoint is on the profile.</li>
+</ol>
+</details>
+<details>
+<summary>A race in stages?</summary>
+<p class="small muted">Make one profile per stage and save them all. At each life base, paste the next stage's text and load the next course on the watch. Race files often carry every checkpoint of the whole race; HowFar keeps only the ones on this stage.</p>
+</details>
+</aside>
+</div>
+</div>
+</section>
+<section id="paste">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Step 3</p>
+<h2>Paste the texts on the watch</h2>
+<p class="muted">HowFar's settings are in the Garmin Connect app on your phone, with HowFar installed from the Connect IQ Store. Made the texts on a computer? See below for the easiest ways to get them there.</p>
+</div>
+<ol class="howto">
+<li>Open the <b>Garmin Connect</b> app and go to your watch.</li>
+<li>Open <b>Connect IQ apps</b> (or <b>Activities &amp; apps</b>), then <b>HowFar</b>, then <b>Settings</b>.</li>
+<li>Paste the pace text into <b>“Your pace from past races”</b> and the course text into <b>“Course profile”</b>. Tap <b>Save</b>.</li>
+<li>Sync the watch. On the next run with that course, the watch shows <span class="pill">P</span> next to the checkpoint.</li>
+</ol>
+<div class="tip-box">
+<h3>Made it on a computer?</h3>
+<p class="small muted">Your library stays in the browser where you made it, so the texts have to travel to where the settings are. Easiest first:</p>
+<ol class="steps">
+<li><b>Garmin Express, no phone needed.</b> Connect the watch to the computer with its cable and open Garmin Express. Choose your watch, then the HowFar app and its <b>Settings</b>, and paste the texts there.</li>
+<li><b>Mac and iPhone.</b> With the same Apple ID on both and Handoff on, press <b>Copy</b> on this page and paste straight into the Garmin Connect app on the iPhone.</li>
+<li><b>Any phone.</b> Paste the text into a note, an email or a message to yourself, then copy it from there on the phone.</li>
+<li><b>Your whole library.</b> Press <b>Save a backup file</b> below, open this page on the phone, <b>Load a backup file</b>, and copy from there.</li>
+</ol>
+</div>
+</div>
+</section>
+<section id="library">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Your library</p>
+<h2>Saved paces and course profiles</h2>
+<p class="muted">Kept in this browser on this device. Clearing the browser's data deletes them, so keep a backup file, which also moves your library to another device.</p>
+</div>
+<div class="lib-grid">
+<div>
+<h3>Pace from past races</h3>
+<ul class="lib-list" id="libPaces"></ul>
+</div>
+<div>
+<h3>Course profiles</h3>
+<ul class="lib-list" id="libCourses"></ul>
+</div>
+</div>
+<div class="actions backup">
+<button class="btn" id="backupSave" type="button">Save a backup file</button>
+<label class="btn" for="backupLoad">Load a backup file<input accept=".json,application/json" hidden="" id="backupLoad" type="file"/></label>
+<span aria-live="polite" class="small muted" id="backupStatus" role="status"></span>
+</div>
+</div>
+</section>
 </main>
-
 <footer class="site-foot">
-  <div class="wrap">
-    <span>HowFar · free and <a href="https://github.com/howfar-garmin/howfar">open source</a> (MIT) · not affiliated with Garmin</span>
-    <span class="foot-tags">#ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning</span>
-  </div>
+<div class="wrap">
+<span>HowFar · free and <a href="https://github.com/howfar-garmin/howfar">open source</a> (MIT) · not affiliated with Garmin</span>
+<span class="foot-tags" translate="no">#ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning</span>
+</div>
 </footer>
-
-<script type="module" src="js/prepare.js?v=14"></script>
+<script src="js/prepare.js?v=15" type="module"></script>
 </body>
 </html>

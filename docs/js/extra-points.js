@@ -95,8 +95,9 @@ function farFrom(dist, checkpoints, added) {
 }
 
 /** The tops and bottoms of the climbs with at least minClimb metres of climbing, as
- *  { name, dist, added: "top" | "bottom" }, leaving out those next to the given points. */
-export function climbPoints(points, minClimb, checkpoints = [], added = []) {
+ *  { name, dist, added: "top" | "bottom" }, leaving out those next to the given points. The
+ *  names are words.top or words.bottom (in the page's language) and the altitude. */
+export function climbPoints(points, minClimb, checkpoints = [], added = [], words = { top: "Top", bottom: "Bottom" }) {
   const withAlt = points.filter((p) => p.alt != null);
   const prof = resample(withAlt);
   if (prof.length < 3) return [];
@@ -115,7 +116,7 @@ export function climbPoints(points, minClimb, checkpoints = [], added = []) {
   return spaced(tops).concat(spaced(bottoms))
     .filter((p) => p.dist >= EDGE && p.dist <= total - EDGE && farFrom(p.dist, checkpoints, added))
     .sort((a, b) => a.dist - b.dist)
-    .map((p) => ({ name: `${p.added === "top" ? "Top" : "Bottom"} ${Math.round(altAt(withAlt, p.dist))}m`, dist: p.dist, added: p.added }));
+    .map((p) => ({ name: `${p.added === "top" ? words.top : words.bottom} ${Math.round(altAt(withAlt, p.dist))}m`, dist: p.dist, added: p.added }));
 }
 
 /** The Overpass question for named huts, shelters and villages around the track. Only the

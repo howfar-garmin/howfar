@@ -14,11 +14,15 @@
   var idx = {};
   C.forEach(function (c, i) { idx[c.id] = i; });
 
+  // the page's language (tools/build_site.py): translated messages and numbers
+  var LANG = window.HOWFAR_LANG || "en";
+  var _t = window._t || function (s, v) { return v ? s.replace(/\{(\w+)\}/g, function (m, k) { return k in v ? v[k] : m; }) : s; };
+
   var NOTES = {
-    none: "Your first race with HowFar, with nothing pasted in its settings. It learns your pace from today's run as you go, and knows only how far away the checkpoint is and how much higher or lower (~). After a few runs with HowFar it also remembers your past runs.",
-    pace: "You pasted your pace from past races (here: the other three races in the test), so it knows how you climb and descend from the first kilometre. It still knows only how far away the checkpoint is and how much higher or lower (~).",
-    profile: "You pasted the course profile, so it knows every climb and descent to the checkpoint (P). Your pace it learns from today's run as you go.",
-    both: "You pasted both: it knows your pace from the first kilometre and every climb and descent ahead (P). This is HowFar with full race prep."
+    none: _t("Your first race with HowFar, with nothing pasted in its settings. It learns your pace from today's run as you go, and knows only how far away the checkpoint is and how much higher or lower (~). After a few runs with HowFar it also remembers your past runs."),
+    pace: _t("You pasted your pace from past races (here: the other three races in the test), so it knows how you climb and descend from the first kilometre. It still knows only how far away the checkpoint is and how much higher or lower (~)."),
+    profile: _t("You pasted the course profile, so it knows every climb and descent to the checkpoint (P). Your pace it learns from today's run as you go."),
+    both: _t("You pasted both: it knows your pace from the first kilometre and every climb and descent ahead (P). This is HowFar with full race prep.")
   };
 
   var state = { t: tStart + 2.17 * 3600, main: "both", cmp: "none", speed: 300, playing: false, last: 0 };
@@ -58,11 +62,12 @@
   try { clockFmt = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" }); }
   catch (e) { clockFmt = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit" }); }
   function clock(raceSec) { return clockFmt.format(new Date(startMs + raceSec * 1000)); }
-  function km(m) { return (m / 1000).toFixed(1) + " km"; }
-  function num(n) { return Math.round(n).toLocaleString("en-US"); }
+  function dec(x, n) { return x.toLocaleString(LANG, { minimumFractionDigits: n, maximumFractionDigits: n }); }
+  function km(m) { return dec(m / 1000, 1) + " km"; }
+  function num(n) { return Math.round(n).toLocaleString(LANG); }
   function signedMin(s) {
     var m = s / 60;
-    return (m >= 0 ? "+" : "−") + Math.abs(m).toFixed(1) + " min";
+    return (m >= 0 ? "+" : "−") + dec(Math.abs(m), 1) + " min";
   }
   // the prediction before rounding (the chart), and as the watch shows it (watch and readout)
   function eta(f, id) { return f[ETA0 + idx[id]]; }
@@ -70,6 +75,14 @@
   function shownEta(f, id) { return shownSec(eta(f, id)); }
   function shownErr(f, id) { return shownEta(f, id) - (f[ACT] - f[STOPA]); }
   function cfg(id) { return C[idx[id]]; }
+  // the cases' names, short (chart, table) and next to the choice
+  var LABELS = {
+    none: [_t("No race prep"), _t("Nothing: no race prep")],
+    pace: [_t("Pace only"), _t("Only my pace from past races")],
+    profile: [_t("Course profile only"), _t("Only the course profile")],
+    both: [_t("Full race prep"), _t("Both: full race prep")]
+  };
+  function label(id) { return LABELS[id] ? LABELS[id][0] : cfg(id).label; }
 
   function frameAt(t) {
     var lo = 0, hi = F.length - 1;
@@ -91,32 +104,37 @@
     var shown = etaText(e), learning = f[CD] < 4000; // the watch greys the time for its first ~4 km
     $("wTime").innerHTML = shown[0] + '<span class="w-unit">' + shown[1] + "</span>";
     $("wTime").classList.toggle("learning", learning);
-    $("wArrive").textContent = "@ " + arrival(f[T], e) + (learning ? " (learning)" : "");
+    $("wArrive").textContent = "@ " + arrival(f[T], e) + (learning ? " " + _t("(learning)") : "");
 
     $("raceClock").textContent = dur(f[T]);
-    $("rTime").innerHTML = "<b>" + hm(f[T]) + "</b> · " + clock(f[T]) + " local time" +
-      (f[STOPNOW] ? ' <span class="chip quiet">Standing still</span>' : "");
-    $("rPos").innerHTML = "<b>" + km(f[CD]) + "</b> of " + km(WP[WP.length - 1].d) + " · " + num(f[ALT]) + " m";
+    $("rTime").innerHTML = _t("<b>{time}</b> · {clock} local time", { time: hm(f[T]), clock: clock(f[T]) }) +
+      (f[STOPNOW] ? ' <span class="chip quiet">' + _t("Standing still") + "</span>" : "");
+    $("rPos").innerHTML = _t("<b>{done}</b> of {total} · {alt} m", { done: km(f[CD]), total: km(WP[WP.length - 1].d), alt: num(f[ALT]) });
     var climb = wp.alt - f[ALT];
-    $("rNext").innerHTML = "<b>" + wp.name + "</b> · " + km(f[DN]) + " ahead, " +
-      (climb >= 0 ? num(climb) + " m higher" : num(-climb) + " m lower");
-    $("rSays").innerHTML = "<b>" + shown[0] + " " + shown[1] + "</b>, arriving at " + arrival(f[T], e);
-    $("rActual").innerHTML = "<b>" + dur(f[ACT]) + "</b>, arrived at " + clock(f[T] + f[ACT]) +
-      (f[STOPA] >= 60 ? ", including " + Math.round(f[STOPA] / 60) + " min stopped" : "");
+    $("rNext").innerHTML = "<b>" + wp.name + "</b> · " + (climb >= 0
+      ? _t("{dist} ahead, {m} m higher", { dist: km(f[DN]), m: num(climb) })
+      : _t("{dist} ahead, {m} m lower", { dist: km(f[DN]), m: num(-climb) }));
+    $("rSays").innerHTML = _t("<b>{time}</b>, arriving at {clock}", { time: shown[0] + " " + shown[1], clock: arrival(f[T], e) });
+    $("rActual").innerHTML = (f[STOPA] >= 60
+      ? _t("<b>{time}</b>, arrived at {clock}, including {stop} min stopped", { time: dur(f[ACT]), clock: clock(f[T] + f[ACT]), stop: Math.round(f[STOPA] / 60) })
+      : _t("<b>{time}</b>, arrived at {clock}", { time: dur(f[ACT]), clock: clock(f[T] + f[ACT]) }));
     var x = shownErr(f, state.main);
     var ok = Math.abs(x) <= 300;
-    $("rErr").innerHTML = "<b>" + signedMin(x) + "</b> (not counting stops) " +
-      (ok ? '<span class="chip good">✓ Within 5 min</span>'
-          : '<span class="chip warn">! ' + (x < 0 ? "You got there later" : "You got there sooner") + "</span>");
+    $("rErr").innerHTML = _t("<b>{err}</b> (not counting stops)", { err: signedMin(x) }) + " " +
+      (ok ? '<span class="chip good">✓ ' + _t("Within 5 min") + "</span>"
+          : '<span class="chip warn">! ' + (x < 0 ? _t("You got there later") : _t("You got there sooner")) + "</span>");
 
     var sc = f[SCALE], fo = f[FORM], fa = f[FAT];
     var pct = function (r) { return Math.round(Math.abs(r - 1) * 100) + "%"; };
-    $("lScale").innerHTML = "<b>Distance:</b> your watch measures " + (sc >= 1 ? "<b>" + pct(sc) + " more</b>" : "<b>" + pct(sc) + " less</b>") +
-      " than the course map (switchbacks, GPS wobble), so it adjusts the distance left.";
-    $("lForm").innerHTML = "<b>Today vs. past races:</b> " + (Math.abs(fo - 1) < 0.01 ? "about the same as usual."
-      : "<b>" + pct(fo) + (fo > 1 ? " faster" : " slower") + "</b> than usual.");
-    $("lFatigue").innerHTML = "<b>Last couple of km:</b> " + (Math.abs(fa - 1) < 0.01 ? "on the pace it expected."
-      : "<b>" + pct(fa) + (fa > 1 ? " faster" : " slower") + "</b> than it expected.");
+    $("lScale").innerHTML = sc >= 1
+      ? _t("<b>Distance:</b> your watch measures <b>{pct} more</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.", { pct: pct(sc) })
+      : _t("<b>Distance:</b> your watch measures <b>{pct} less</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.", { pct: pct(sc) });
+    $("lForm").innerHTML = Math.abs(fo - 1) < 0.01 ? _t("<b>Today vs. past races:</b> about the same as usual.")
+      : fo > 1 ? _t("<b>Today vs. past races:</b> <b>{pct} faster</b> than usual.", { pct: pct(fo) })
+      : _t("<b>Today vs. past races:</b> <b>{pct} slower</b> than usual.", { pct: pct(fo) });
+    $("lFatigue").innerHTML = Math.abs(fa - 1) < 0.01 ? _t("<b>Last couple of km:</b> on the pace it expected.")
+      : fa > 1 ? _t("<b>Last couple of km:</b> <b>{pct} faster</b> than it expected.", { pct: pct(fa) })
+      : _t("<b>Last couple of km:</b> <b>{pct} slower</b> than it expected.", { pct: pct(fa) });
 
     $("scrub").value = Math.round(((f[T] - tStart) / (tEnd - tStart)) * 1000);
     moveCursors(f);
@@ -241,9 +259,9 @@
     svg.addEventListener("mousemove", function (evt) {
       var p = svgPoint(svg, evt);
       var f = frameAt(tStart + ((p.x - R.l) / (R.W - R.l - R.r)) * (tEnd - tStart));
-      tipShow(box, "<b>" + hm(f[T]) + "</b> · to " + WP[f[K]].name +
-        '<br><i style="background:var(--series-p)"></i>' + cfg(state.main).label + " " + signedMin(err(f, state.main)) +
-        '<br><i style="background:var(--series-a)"></i>' + cfg(state.cmp).label + " " + signedMin(err(f, state.cmp)), p.px, p.py);
+      tipShow(box, _t("<b>{time}</b> · to {name}", { time: hm(f[T]), name: WP[f[K]].name }) +
+        '<br><i style="background:var(--series-p)"></i>' + label(state.main) + " " + signedMin(err(f, state.main)) +
+        '<br><i style="background:var(--series-a)"></i>' + label(state.cmp) + " " + signedMin(err(f, state.cmp)), p.px, p.py);
     });
     svg.addEventListener("mouseleave", function () { tipHide(box); });
     svg.addEventListener("click", function (evt) {
@@ -255,7 +273,7 @@
   function updateSeries() {
     lineMain.setAttribute("points", seriesPoints(state.main));
     lineCmp.setAttribute("points", seriesPoints(state.cmp));
-    $("legMain").textContent = cfg(state.main).label;
+    $("legMain").textContent = label(state.main);
     $("modeNote").textContent = NOTES[state.main] || "";
   }
 
@@ -275,7 +293,7 @@
   function fillPicker(sel, value) {
     STEPS.forEach(function (id) {
       var o = document.createElement("option");
-      o.value = id; o.textContent = cfg(id).label;
+      o.value = id; o.textContent = label(id);
       sel.appendChild(o);
     });
     sel.value = value;
@@ -288,7 +306,7 @@
       r.type = "radio"; r.name = "prepChoice"; r.value = id; r.checked = id === value;
       r.addEventListener("change", function () { if (r.checked) setMain(id); });
       l.appendChild(r);
-      l.appendChild(document.createTextNode(" " + cfg(id).long));
+      l.appendChild(document.createTextNode(" " + (LABELS[id] ? LABELS[id][1] : cfg(id).long)));
       box.appendChild(l);
     });
   }
@@ -309,11 +327,11 @@
       return t / RACES.length;
     };
     var head = table.querySelector("thead tr");
-    head.innerHTML = '<th scope="col">What the watch knows</th>' +
-      RACES.map(function (r) { return '<th scope="col" class="num" title="' + r.name + ': average minutes off">' + (SHORT[r.key] || r.name) + "</th>"; }).join("") +
-      '<th scope="col" class="num" title="Average of the four races">Average</th><th scope="col" class="bar-col"><span class="sr-only">Average, as a bar</span></th>' +
-      '<th scope="col" class="num" title="Out of every 100 times the watch showed a time, how many were less than 5 minutes off">Less than 5 min off</th>' +
-      '<th scope="col" class="num" title="How far off the watch was when you were 2 km from each checkpoint">Off by, 2 km before</th>';
+    head.innerHTML = '<th scope="col">' + _t("What you prepared") + "</th>" +
+      RACES.map(function (r) { return '<th scope="col" class="num" title="' + _t("{race}: average minutes off", { race: r.name }) + '">' + (SHORT[r.key] || r.name) + "</th>"; }).join("") +
+      '<th scope="col" class="num" title="' + _t("Average of the four races") + '">' + _t("Average") + '</th><th scope="col" class="bar-col"><span class="sr-only">' + _t("Average, as a bar") + "</span></th>" +
+      '<th scope="col" class="num" title="' + _t("Out of every 100 times the watch showed a time, how many were less than 5 minutes off") + '">' + _t("Less than 5 min off") + "</th>" +
+      '<th scope="col" class="num" title="' + _t("How far off the watch was when you were 2 km from each checkpoint") + '">' + _t("Off by, 2 km before") + "</th>";
     var max = 0, best = STEPS[0];
     STEPS.forEach(function (id) {
       max = Math.max(max, mean(id, "mae_hour"));
@@ -325,13 +343,13 @@
       var row = document.createElement("tr");
       if (id === "both") row.className = "current";
       row.tabIndex = 0;
-      row.title = "Show on the watch";
-      row.innerHTML = "<td>" + cfg(id).label + "</td>" +
-        RACES.map(function (r) { return '<td class="num">' + S[id][r.key].mae_hour.toFixed(1) + " min</td>"; }).join("") +
-        '<td class="num"><b>' + v.toFixed(1) + " min</b></td>" +
+      row.title = _t("Show on the watch");
+      row.innerHTML = "<td>" + label(id) + "</td>" +
+        RACES.map(function (r) { return '<td class="num">' + dec(S[id][r.key].mae_hour, 1) + " min</td>"; }).join("") +
+        '<td class="num"><b>' + dec(v, 1) + " min</b></td>" +
         '<td><div class="bar' + (id === best ? " best" : "") + '" style="width:' + (v / max * 100).toFixed(1) + '%"></div></td>' +
         '<td class="num">' + Math.round(mean(id, "within5_hour") * 100) + "%</td>" +
-        '<td class="num">' + mean(id, "mae_2000").toFixed(1) + " min</td>";
+        '<td class="num">' + dec(mean(id, "mae_2000"), 1) + " min</td>";
       var pick = function () { setMain(id); $("demo").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); };
       row.addEventListener("click", pick);
       row.addEventListener("keydown", function (e) { if (e.key === "Enter") pick(); });
@@ -351,7 +369,7 @@
     });
     [-40, -20, 0, 20, 40].forEach(function (g) { txt(svg, mx(g), M.H - 12, (g > 0 ? "+" : "") + g + "%", { "text-anchor": "middle" }); });
     txt(svg, M.l + 4, M.t + 8, "m/s", { "text-anchor": "start" });
-    var series = [[1, 2, "var(--series-s1)", "Section 1"], [3, 4, "var(--series-s2)", "Section 2"]];
+    var series = [[1, 2, "var(--series-s1)", _t("Section 1")], [3, 4, "var(--series-s2)", _t("Section 2")]];
     var labels = [];
     series.forEach(function (s) {
       var pts = [], last = null;
@@ -371,12 +389,12 @@
       var b = D.model[Math.max(0, Math.min(40, Math.round((g + 40) / 2)))];
       cross.setAttribute("x1", mx(b[0])); cross.setAttribute("x2", mx(b[0])); cross.setAttribute("visibility", "visible");
       function line(i, w, color, label) {
-        if (b[w] < 3) return '<br><i style="background:' + color + '"></i>' + label + ": too few samples";
+        if (b[w] < 3) return '<br><i style="background:' + color + '"></i>' + _t("{name}: too few samples", { name: label });
         var pace = 1000 / b[i];
-        return '<br><i style="background:' + color + '"></i>' + label + ": " + b[i].toFixed(2) + " m/s · " +
+        return '<br><i style="background:' + color + '"></i>' + label + ": " + dec(b[i], 2) + " m/s · " +
           Math.floor(pace / 60) + ":" + pad(Math.round(pace % 60)) + "/km";
       }
-      tipShow(box, "<b>" + (b[0] > 0 ? "+" : "") + b[0] + "% grade</b>" + line(1, 2, "var(--series-s1)", "Section 1") + line(3, 4, "var(--series-s2)", "Section 2"), p.px, p.py);
+      tipShow(box, _t("<b>{grade}% grade</b>", { grade: (b[0] > 0 ? "+" : "") + b[0] }) + line(1, 2, "var(--series-s1)", _t("Section 1")) + line(3, 4, "var(--series-s2)", _t("Section 2")), p.px, p.py);
     });
     svg.addEventListener("mouseleave", function () { tipHide(box); cross.setAttribute("visibility", "hidden"); });
   }
@@ -384,20 +402,20 @@
   function fillTools() {
     $("modelString").textContent = D.modelString;
     $("profileString").textContent = D.profileString;
-    $("profileMeta").textContent = "T1 course profile, one value per " + D.profileStep + " m · " + num(D.profileString.length) + " characters";
+    $("profileMeta").textContent = _t("T1 course profile, one value per {step} m · {n} characters", { step: D.profileStep, n: num(D.profileString.length) });
     var entry = D.profileString.split(";").filter(function (e) { return e.indexOf("Col d'Arp|") === 0; })[0];
     if (entry) {
       var parts = entry.split("|"), grades = parts[2].split(",").slice(0, 6);
-      $("decodeTitle").innerHTML = "How to read one entry: <code>" + parts[0] + "|" + parts[1] + "|" + grades.join(",") + ",…</code>";
-      var chips = ["<span>" + parts[0] + "</span>", "<span>" + km(+parts[1]) + " from the previous waypoint</span>"];
-      grades.forEach(function (g) { chips.push("<span>" + D.profileStep + " m at " + (g >= 0 ? "+" : "") + (g / 10).toFixed(1) + "%</span>"); });
+      $("decodeTitle").innerHTML = _t("How to read one entry:") + " <code>" + parts[0] + "|" + parts[1] + "|" + grades.join(",") + ",…</code>";
+      var chips = ["<span>" + parts[0] + "</span>", "<span>" + _t("{dist} from the previous waypoint", { dist: km(+parts[1]) }) + "</span>"];
+      grades.forEach(function (g) { chips.push("<span>" + _t("{step} m at {grade}%", { step: D.profileStep, grade: (g >= 0 ? "+" : "") + dec(g / 10, 1) }) + "</span>"); });
       chips.push("<span>…</span>");
       $("decode").innerHTML = chips.join("");
     }
     document.querySelectorAll("[data-copy]").forEach(function (b) {
       b.addEventListener("click", function () {
         var pre = $(b.getAttribute("data-copy"));
-        var done = function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1500); };
+        var done = function () { b.textContent = _t("Copied"); setTimeout(function () { b.textContent = _t("Copy"); }, 1500); };
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(pre.textContent).then(done, function () { selectText(pre); });
         } else selectText(pre);
@@ -422,8 +440,8 @@
   function setPlaying(on) {
     state.playing = on;
     state.last = 0;
-    $("play").textContent = on ? "❚❚ Pause" : "▶ Play";
-    $("play").setAttribute("aria-label", on ? "Pause" : "Play");
+    $("play").textContent = on ? "❚❚ " + _t("Pause") : "▶ " + _t("Play");
+    $("play").setAttribute("aria-label", on ? _t("Pause") : _t("Play"));
     if (on) {
       if (state.t >= tEnd) state.t = tStart;
       requestAnimationFrame(tick);

@@ -63,7 +63,8 @@ The three must agree: the watch reads the texts the Python tools and the race pr
   - A recorded run: *Simulation → Activity Data*, source *FIT/GPX Playable File*, *Load File*, *Start*, play.
   - Field sizes: *Data Fields → Layout*, then run the field again.
   - Store screenshots: *File → Save Screen Capture*.
-- **Website:** `docs/` is served as-is by GitHub Pages. Locally: `python3 -m http.server 8781 --directory docs`.
+- **Website:** the pages are written in English in `site/` and built into `docs/` in English, Italian, French and German by `.venv/bin/python tools/build_site.py`; GitHub Pages serves `docs/` as it is. Every piece of text is found automatically and looked up, by its English, in `site/i18n/{it,fr,de}.json`; the scripts' messages are written `_t("English", {name: value})` and looked up the same way. After changing any text, run the build: it lists what has no translation yet (`--missing it` prints it as JSON to fill in), and the tests fail until `docs/` is rebuilt and complete. Mark text that must stay as it is with `translate="no"`. Locally: `python3 -m http.server 8781 --directory docs`.
+- **Watch languages:** the field's few words and its settings' titles are in `resources/strings` (English) and `resources-ita`, `resources-fre`, `resources-deu`; the watch picks its own language.
 
 ## Command-line tools
 

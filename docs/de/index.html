@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>HowFar</title>
+<meta content="Ein kostenloses Datenfeld für Garmin-Uhren, das dir sagt, wie lange du bis zum nächsten Kontrollpunkt brauchst, nach deinem eigenen Tempo bergauf und bergab. #ultratrail #trailrunning" name="description"/>
+<meta content="Ultratrail, Trailrunning, Ultralauf, Skyrunning, Berglauf, Garmin, Connect IQ, Datenfeld, Kontrollpunkt, Verpflegungsstation, Ankunftszeit, Enduro 3, fenix 8, epix" name="keywords"/>
+<meta content="HowFar: Wie lange noch bis zum nächsten Kontrollpunkt?" property="og:title"/>
+<meta content="Ein kostenloses Garmin-Datenfeld für Trail- und Ultraläufer: die Zeit bis zum nächsten Kontrollpunkt, gelernt aus deinem eigenen Tempo bergauf und bergab. #ultratrail #trailrunning #ultrarunning #skyrunning" property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="summary" name="twitter:card"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&amp;family=Public+Sans:wght@400;500;600&amp;family=Saira+Semi+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="../css/site.css?v=31" rel="stylesheet"/>
+<link href="https://howfar-garmin.github.io/howfar/" hreflang="en" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/it/" hreflang="it" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/fr/" hreflang="fr" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/de/" hreflang="de" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/" hreflang="x-default" rel="alternate"/><script>window.HOWFAR_LANG="de";window.HOWFAR_T={"(learning)": "(lernt)", "1 activity · saved {date}": "1 Aktivität · gespeichert am {date}", "1 checkpoint was left out because it isn't on this course's track (race files often list the whole race's).": "1 Kontrollpunkt wurde weggelassen, weil er nicht auf dem Track dieser Strecke liegt (Renndateien enthalten oft die des ganzen Rennens).", "<b>Distance:</b> your watch measures <b>{pct} less</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.": "<b>Distanz:</b> Deine Uhr misst <b>{pct} weniger</b> als die Streckenkarte (Serpentinen, GPS-Ungenauigkeit), deshalb passt sie die verbleibende Distanz an.", "<b>Distance:</b> your watch measures <b>{pct} more</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.": "<b>Distanz:</b> Deine Uhr misst <b>{pct} mehr</b> als die Streckenkarte (Serpentinen, GPS-Ungenauigkeit), deshalb passt sie die verbleibende Distanz an.", "<b>Last couple of km:</b> <b>{pct} faster</b> than it expected.": "<b>Letzte zwei km:</b> <b>{pct} schneller</b> als erwartet.", "<b>Last couple of km:</b> <b>{pct} slower</b> than it expected.": "<b>Letzte zwei km:</b> <b>{pct} langsamer</b> als erwartet.", "<b>Last couple of km:</b> on the pace it expected.": "<b>Letzte zwei km:</b> im erwarteten Tempo.", "<b>Today vs. past races:</b> <b>{pct} faster</b> than usual.": "<b>Heute im Vergleich zu früheren Rennen:</b> <b>{pct} schneller</b> als sonst.", "<b>Today vs. past races:</b> <b>{pct} slower</b> than usual.": "<b>Heute im Vergleich zu früheren Rennen:</b> <b>{pct} langsamer</b> als sonst.", "<b>Today vs. past races:</b> about the same as usual.": "<b>Heute im Vergleich zu früheren Rennen:</b> etwa wie immer.", "<b>{done}</b> of {total} · {alt} m": "<b>{done}</b> von {total} · {alt} m", "<b>{err}</b> (not counting stops)": "<b>{err}</b> (ohne Pausen)", "<b>{grade}% grade</b>": "<b>{grade} % Steigung</b>", "<b>{grade}% slope</b>": "<b>{grade} % Steigung</b>", "<b>{time}</b> · to {name}": "<b>{time}</b> · nach {name}", "<b>{time}</b> · {clock} local time": "<b>{time}</b> · {clock} Ortszeit", "<b>{time}</b>, arrived at {clock}": "<b>{time}</b>, angekommen um {clock}", "<b>{time}</b>, arrived at {clock}, including {stop} min stopped": "<b>{time}</b>, angekommen um {clock}, davon {stop} min Pause", "<b>{time}</b>, arriving at {clock}": "<b>{time}</b>, Ankunft um {clock}", "Added {n} climb tops and bottoms.": "{n} Hoch- und Tiefpunkte von Anstiegen hinzugefügt.", "Added {n} huts and villages.": "{n} Hütten und Dörfer hinzugefügt.", "Added {n} items from the backup.": "{n} Einträge aus der Sicherung hinzugefügt.", "Asking OpenStreetMap…": "Frage OpenStreetMap…", "Average": "Durchschnitt", "Average of the four races": "Durchschnitt der vier Rennen", "Average, as a bar": "Durchschnitt als Balken", "Backup file saved to your downloads.": "Sicherungsdatei in deinen Downloads gespeichert.", "Both: full race prep": "Beides: volle Vorbereitung", "Bottom": "Tiefpunkt", "Changed since you saved it": "Seit dem Speichern geändert", "Copied": "Kopiert", "Copy": "Kopieren", "Copy text": "Text kopieren", "Couldn't load {src}. Check your internet connection.": "{src} konnte nicht geladen werden. Prüfe deine Internetverbindung.", "Couldn't make the FIT file: {why}": "Die FIT-Datei konnte nicht erstellt werden: {why}", "Couldn't reach OpenStreetMap. Check your connection and try again.": "OpenStreetMap ist nicht erreichbar. Prüfe deine Verbindung und versuch es noch einmal.", "Couldn't save: this browser blocks storage. Use a backup file.": "Speichern nicht möglich: Dieser Browser blockiert den Speicher. Nutze eine Sicherungsdatei.", "Course profile only": "Nur Streckenprofil", "Delete": "Löschen", "Everything in that backup is already here.": "Alles aus dieser Sicherung ist schon hier.", "Finish": "Ziel", "Full race prep": "Volle Vorbereitung", "How far off the watch was when you were 2 km from each checkpoint": "Wie weit die Uhr danebenlag, als du 2 km vor jedem Kontrollpunkt warst", "How to read one entry:": "So liest du einen Eintrag:", "Less than 5 min off": "Unter 5 min daneben", "My pace": "Mein Tempo", "My pace, {date}": "Mein Tempo, {date}", "No climbs that big on this course, away from its checkpoints. Try a smaller size.": "Keine so großen Anstiege auf dieser Strecke, abseits ihrer Kontrollpunkte. Versuch eine kleinere Größe.", "No race prep": "Keine Vorbereitung", "Not saved yet": "Noch nicht gespeichert", "Nothing saved yet. Make one in step 1 and press “Save in my library”.": "Noch nichts gespeichert. Erstelle eines in Schritt 1 und drück auf „In meiner Bibliothek speichern“.", "Nothing saved yet. Make one in step 2 and press “Save in my library”.": "Noch nichts gespeichert. Erstelle eines in Schritt 2 und drück auf „In meiner Bibliothek speichern“.", "Nothing: no race prep": "Nichts: keine Vorbereitung", "Off by, 2 km before": "Abweichung 2 km davor", "Only my pace from past races": "Nur mein Tempo aus früheren Rennen", "Only the course profile": "Nur das Streckenprofil", "Only {n} samples so far (about {km} km). Add more activities for a steadier curve.": "Erst {n} Messwerte (etwa {km} km). Füge weitere Aktivitäten hinzu für eine stabilere Kurve.", "Open": "Öffnen", "Open it to copy": "Öffne es zum Kopieren", "OpenStreetMap answered with an error ({code}).": "OpenStreetMap hat mit einem Fehler geantwortet ({code}).", "OpenStreetMap didn't answer in time. Try again later.": "OpenStreetMap hat nicht rechtzeitig geantwortet. Versuch es später noch einmal.", "OpenStreetMap has no named huts or villages along this course, away from its checkpoints.": "OpenStreetMap kennt entlang dieser Strecke keine Hütten oder Dörfer mit Namen, abseits ihrer Kontrollpunkte.", "OpenStreetMap is busy right now. Try again in a minute.": "OpenStreetMap ist gerade ausgelastet. Versuch es in einer Minute noch einmal.", "Opened from your library.": "Aus deiner Bibliothek geöffnet.", "Opening files…": "Dateien werden geöffnet…", "Opening the course…": "Strecke wird geöffnet…", "Out of every 100 times the watch showed a time, how many were less than 5 minutes off": "Von je 100 Malen, die die Uhr eine Zeit zeigte, wie viele weniger als 5 Minuten danebenlagen", "Pace only": "Nur Tempo", "Pause": "Pause", "Play": "Play", "Reading {file}…": "{file} wird gelesen…", "Remove": "Entfernen", "Remove {file}": "{file} entfernen", "Removed the climb tops and bottoms.": "Hoch- und Tiefpunkte der Anstiege entfernt.", "Removed the huts and villages.": "Hütten und Dörfer entfernt.", "Replace the course": "Strecke ersetzen", "Saved in your library": "In deiner Bibliothek gespeichert", "Saved in your library.": "In deiner Bibliothek gespeichert.", "Section 1": "Abschnitt 1", "Section 2": "Abschnitt 2", "Selected: press Copy": "Markiert: drück auf Kopieren", "Show on the watch": "Auf der Uhr zeigen", "Standing still": "Steht", "Sure? Delete": "Sicher? Löschen", "T1 course profile, one value per {step} m · {n} characters": "Streckenprofil T1, ein Wert alle {step} m · {n} Zeichen", "That file isn't a HowFar backup.": "Diese Datei ist keine HowFar-Sicherung.", "The text for the setting <b>“Course profile”</b> · one slope every {step} m · {n} characters": "Der Text für die Einstellung <b>„Streckenprofil“</b> · eine Steigung alle {step} m · {n} Zeichen", "This course has no checkpoints, so HowFar will only count down to the finish. If the race publishes a file with checkpoints, use that one.": "Diese Strecke hat keine Kontrollpunkte, HowFar zählt also nur bis zum Ziel herunter. Wenn das Rennen eine Datei mit Kontrollpunkten veröffentlicht, nimm diese.", "Top": "Hochpunkt", "Unticked: {names}, a finish line the course passes by but doesn't end at, probably another race's. Tick it if it's a checkpoint of this race.": "Ohne Haken: {names}, ein Ziel, an dem die Strecke vorbeiführt, ohne dort zu enden, vermutlich das eines anderen Rennens. Setz den Haken, wenn es ein Kontrollpunkt dieses Rennens ist.", "Untitled course": "Strecke ohne Namen", "Untitled pace": "Tempo ohne Namen", "What you prepared": "Was du vorbereitet hast", "Within 5 min": "Unter 5 min", "You got there later": "Du warst später dort", "You got there sooner": "Du warst früher dort", "You pasted both: it knows your pace from the first kilometre and every climb and descent ahead (P). This is HowFar with full race prep.": "Du hast beides eingefügt: Es kennt dein Tempo ab dem ersten Kilometer und jeden Anstieg und jede Abfahrt vor dir (P). Das ist HowFar mit voller Vorbereitung.", "You pasted the course profile, so it knows every climb and descent to the checkpoint (P). Your pace it learns from today's run as you go.": "Du hast das Streckenprofil eingefügt, also kennt es jeden Anstieg und jede Abfahrt bis zum Kontrollpunkt (P). Dein Tempo lernt es unterwegs aus dem heutigen Lauf.", "You pasted your pace from past races (here: the other three races in the test), so it knows how you climb and descend from the first kilometre. It still knows only how far away the checkpoint is and how much higher or lower (~).": "Du hast dein Tempo aus früheren Rennen eingefügt (hier: die anderen drei Rennen des Tests), also weiß es ab dem ersten Kilometer, wie du bergauf und bergab läufst. Es weiß weiterhin nur, wie weit der Kontrollpunkt entfernt ist und wie viel höher oder tiefer er liegt (~).", "Your first race with HowFar, with nothing pasted in its settings. It learns your pace from today's run as you go, and knows only how far away the checkpoint is and how much higher or lower (~). After a few runs with HowFar it also remembers your past runs.": "Dein erstes Rennen mit HowFar, ohne etwas in den Einstellungen. Es lernt dein Tempo unterwegs aus dem heutigen Lauf und weiß nur, wie weit der Kontrollpunkt entfernt ist und wie viel höher oder tiefer er liegt (~). Nach ein paar Läufen mit HowFar erinnert es sich auch an deine früheren Läufe.", "added: {what}": "hinzugefügt: {what}", "bottom of a climb": "Tiefpunkt eines Anstiegs", "hut": "Hütte", "not enough data here": "hier zu wenige Daten", "top of a climb": "Hochpunkt eines Anstiegs", "village": "Dorf", "{dist} ahead, {m} m higher": "{dist} voraus, {m} m höher", "{dist} ahead, {m} m lower": "{dist} voraus, {m} m tiefer", "{dist} from the previous waypoint": "{dist} vom vorigen Wegpunkt", "{file} has no GPX or FIT file inside.": "{file} enthält keine GPX- oder FIT-Datei.", "{file} has no elevation data, so no profile can be made from it.": "{file} hat keine Höhendaten, daraus lässt sich kein Profil erstellen.", "{file} has no times or altitude, so no pace can be learned from it.": "{file} hat keine Zeiten oder Höhen, daraus lässt sich kein Tempo lernen.", "{file} has no track in it.": "{file} enthält keinen Track.", "{file} isn't a GPX, FIT or ZIP file.": "{file} ist keine GPX-, FIT- oder ZIP-Datei.", "{file} isn't a valid FIT file.": "{file} ist keine gültige FIT-Datei.", "{len} · {n} checkpoints · saved {date}": "{len} · {n} Kontrollpunkte · gespeichert am {date}", "{len}, {up} m of climbing, 1 checkpoint.": "{len}, {up} Hm, 1 Kontrollpunkt.", "{len}, {up} m of climbing, {n} checkpoints.": "{len}, {up} Hm, {n} Kontrollpunkte.", "{name}: too few samples": "{name}: zu wenige Daten", "{n} activities · saved {date}": "{n} Aktivitäten · gespeichert am {date}", "{n} checkpoints were left out because they aren't on this course's track (race files often list the whole race's).": "{n} Kontrollpunkte wurden weggelassen, weil sie nicht auf dem Track dieser Strecke liegen (Renndateien enthalten oft die des ganzen Rennens).", "{n} samples": "{n} Messwerte", "{n} samples, about {km} km of moving data.": "{n} Messwerte, etwa {km} km in Bewegung.", "{race}: average minutes off": "{race}: Minuten daneben im Schnitt", "{speed} m/s · {pace} per km": "{speed} m/s · {pace} pro km", "{step} m at {grade}%": "{step} m mit {grade} %"};
+window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\}/g,function(m,k){return k in v?v[k]:m}):x};
+(function(){try{var k="howfar.lang";document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-lang]");if(a)localStorage.setItem(k,a.getAttribute("data-lang"))});}catch(e){}})();</script></head>
+<body>
+<header class="site-head">
+<div class="wrap">
+<a class="wordmark" href="./" translate="no">HowFar<span>?</span></a>
+<nav aria-label="Abschnitte" class="site-nav">
+<a href="#watch">Auf deiner Uhr</a>
+<a href="#demo">Demo ausprobieren</a>
+<a href="#install">Installieren</a>
+<a href="#prepare">Ein Rennen vorbereiten</a>
+<a href="prepare.html">Vorbereitungs-App</a>
+<a href="#faq">Fragen</a>
+</nav>
+<nav aria-label="Sprache" class="lang-switch" translate="no"><a data-lang="en" href="../" hreflang="en" lang="en" title="English">EN</a><a data-lang="it" href="../it/" hreflang="it" lang="it" title="Italiano">IT</a><a data-lang="fr" href="../fr/" hreflang="fr" lang="fr" title="Français">FR</a><a aria-current="true" data-lang="de" href="./" hreflang="de" lang="de" title="Deutsch">DE</a></nav></div>
+</header>
+<main>
+<section class="hero">
+<div class="wrap">
+<p class="eyebrow">Ein kostenloses Datenfeld für Garmin-Uhren</p>
+<h1>Wie oft wolltest du schon wissen, wie lange es noch bis zum nächsten Kontrollpunkt dauert?</h1>
+<p class="lede">Du hast einen Helfer gefragt und dich dann geärgert, wie weit er danebenlag. HowFar bringt dir die Antwort ans Handgelenk: die Zeit bis zum nächsten Kontrollpunkt deiner Strecke, berechnet daraus, wie <em>du</em> bergauf und bergab läufst, und jede Sekunde aktualisiert.</p>
+<div class="hero-actions">
+<a class="btn primary" href="#demo">▶ An einem echten Rennen ansehen</a>
+<a class="btn" href="#install">Auf meine Uhr bringen</a>
+</div>
+<ul aria-label="Hashtags" class="tags" translate="no">
+<li>#ultratrail</li><li>#trailrunning</li><li>#ultrarunning</li><li>#skyrunning</li><li>#mountainrunning</li><li>#garmin</li><li>#connectiq</li><li>#enduro3</li><li>#fenix8</li>
+</ul>
+</div>
+</section>
+<section id="watch">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Auf deiner Uhr</p>
+<h2>Was das Feld zeigt</h2>
+<p class="muted">Füge HowFar einer Datenseite deiner Aktivität hinzu, lade eine Strecke mit Kontrollpunkten und lauf los. Es zeigt drei Zeilen, auf einem Feld im Vollbild vier.</p>
+</div>
+<div class="explain-grid">
+<div aria-label="Beispiel: P Rifugio Deffeyes, 1:20 h, @ 19:10" class="watch watch-small" role="img">
+<div class="screen" translate="no">
+<div class="w-label">P Rif. Deffeyes</div>
+<div class="w-time">1:20<span class="w-unit">h</span></div>
+<div class="w-arrive">@ 19:10</div>
+</div>
+</div>
+<ol class="callouts">
+<li><b>Obere Zeile: der nächste Kontrollpunkt.</b> Der Name kommt aus deiner Strecke oder von einem Punkt, den du auf der Vorbereitungsseite hinzugefügt hast, etwa dem höchsten Punkt eines Anstiegs oder einer Hütte. Der Buchstabe davor sagt dir, wie viel die Uhr über den Weg vor dir weiß: <span class="pill">P</span> sie kennt jeden Anstieg und jede Abfahrt bis zum Kontrollpunkt (du hast ihr das Streckenprofil gegeben, siehe <a href="#prepare">Ein Rennen vorbereiten</a>); <span class="pill">~</span> sie weiß nur, wie weit der Kontrollpunkt entfernt ist und wie viel höher oder tiefer er liegt.</li>
+<li><b>Große Zahl: die Zeit bis dorthin</b>, solange du in Bewegung bleibst, nur so genau, wie man es wissen kann: Stunden und Minuten in 5-Minuten-Schritten ab einer Stunde Entfernung (<i>2:15 h</i>), ganze Minuten näher dran (<i>42 min</i>), Minuten und Sekunden in den letzten 5 Minuten. Auf den ersten Kilometern ist die Zahl grau: Sie lernt noch, wie du dich heute bewegst. Die Zeit, die du an einer Verpflegungsstation stehst, ist nicht enthalten, denn niemand kann erraten, wie lange du bleibst.</li>
+<li><b>Untere Zeile: die Ankunftszeit.</b> Die Uhrzeit, zu der du dort sein wirst, im 12- oder 24-Stunden-Format deiner Uhr.</li>
+<li><b>Auf einem Feld im Vollbild: der Kontrollpunkt danach.</b> Sein Name und wann du dort sein wirst, zum Beispiel <i>dann Baite Youlaz @ 15:25</i>. Dafür braucht es das Streckenprofil, denn deine Uhr nennt einem Datenfeld nur den nächsten Kontrollpunkt.</li>
+</ol>
+</div>
+<p class="small muted explain-note">Ohne Strecke oder zwischen zwei Strecken zeigt das Feld <b>--</b>. Auf einer Seite mit vielen Feldern zeigt es nur die große Zahl.</p>
+</div>
+</section>
+<section id="demo">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Demo ausprobieren</p>
+<h2>Ein echtes Rennen, im Zeitraffer</h2>
+<p class="muted">Tor des Géants 2026 (TORX), Abschnitt 1: von Courmayeur nach Valgrisenche, 48,5 km und 3.800 Hm, gelaufen in 13½ Stunden. Die Uhr unten zeigt, was HowFar in jedem Moment dieses Rennens angezeigt hätte, berechnet aus dem aufgezeichneten Lauf.</p>
+</div>
+<ol aria-label="So benutzt du die Demo" class="howto">
+<li><b>Drück auf Play.</b> Das Rennen läuft 300-mal schneller ab als in Wirklichkeit: die ganzen 13½ Stunden in weniger als 3 Minuten. Nimm <b>60×</b>, um genauer hinzusehen, oder <b>900×</b>, um durchzurauschen.</li>
+<li><b>Zieh den Regler</b>, um zu einem beliebigen Moment zu springen, oder klick irgendwo auf das Höhenprofil.</li>
+<li><b>Wähle, was du vorbereitet hast</b>, unter der Uhr: nichts, dein Tempo aus früheren Rennen, das Streckenprofil oder beides. Die Uhr zeigt, was HowFar in diesem Fall gesagt hätte. Was du auch wählst, sie merkt während des Rennens außerdem, wie dein Tag läuft.</li>
+<li><b>Vergleiche</b> zwei davon im Diagramm „Wie weit danebenlag“ unten, mit „Vergleichen mit“.</li>
+</ol>
+<div class="demo-grid">
+<div class="watch-col">
+<div aria-label="Uhr, die das HowFar-Feld während des Rennens zeigt" class="watch" role="img">
+<div class="screen" translate="no">
+<div class="w-label" id="wLabel">P Col d'Arp</div>
+<div class="w-time" id="wTime">1:10<span class="w-unit">h</span></div>
+<div class="w-arrive" id="wArrive">@ 14:05</div>
+</div>
+</div>
+<fieldset class="prep-choice" id="pickMain">
+<legend>Was hast du vor dem Rennen in die Einstellungen von HowFar eingefügt?</legend>
+</fieldset>
+<p class="watch-caption" id="modeNote"></p>
+</div>
+<div class="panel">
+<div class="controls">
+<button aria-label="Play" class="btn primary" id="play" type="button">▶ Play</button>
+<div aria-label="Wiedergabegeschwindigkeit" class="seg" role="group">
+<button aria-pressed="false" data-speed="60" type="button">60×</button>
+<button aria-pressed="true" data-speed="300" type="button">300×</button>
+<button aria-pressed="false" data-speed="900" type="button">900×</button>
+</div>
+<span aria-live="off" class="race-clock" id="raceClock" translate="no">2:10:00</span>
+</div>
+<input aria-label="Moment des Rennens" class="scrub" id="scrub" max="1000" min="0" type="range" value="160"/>
+<dl class="readout">
+<dt>Rennzeit</dt><dd id="rTime"></dd>
+<dt>Wo</dt><dd id="rPos"></dd>
+<dt>Nächster Kontrollpunkt</dt><dd id="rNext"></dd>
+<dt>Die Uhr sagt</dt><dd id="rSays"></dd>
+<dt>Tatsächlich gebraucht</dt><dd id="rActual"></dd>
+<dt>Die Uhr lag daneben um</dt><dd id="rErr"></dd>
+</dl>
+<div aria-live="off" class="learned">
+<span class="eyebrow">Was die Uhr heute bemerkt hat</span>
+<span id="lScale"></span>
+<span id="lForm"></span>
+<span id="lFatigue"></span>
+</div>
+</div>
+</div>
+<div class="chart-block">
+<div class="chart-head">
+<h3>Wo du auf der Strecke bist</h3>
+<span class="small muted">Grün: der Weg bis zum nächsten Kontrollpunkt. Klick, um dorthin zu springen.</span>
+</div>
+<div class="chart-box" id="elevBox"><svg aria-label="Elevation profile of the course with checkpoints and current position" class="wide" id="elev" role="img" viewbox="0 0 1000 300"></svg></div>
+</div>
+<div class="chart-block">
+<div class="chart-head">
+<h3>Wie weit die Uhr danebenlag</h3>
+<div class="legend">
+<span><i style="background: var(--series-p)"></i><span id="legMain"></span></span>
+<label class="picker legend-picker" for="pickCmp"><span class="swatch" style="background: var(--series-a)"></span>Vergleichen mit
+              <select id="pickCmp"></select>
+</label>
+</div>
+</div>
+<p class="small muted">Für jeden Moment des Rennens: die von HowFar vorhergesagte Zeit (bevor die Uhr sie zur Anzeige rundet) minus die Zeit, die es tatsächlich bis zum nächsten Kontrollpunkt gedauert hat (ohne Pausen). Über null warst du früher dort, als die Uhr sagte; unter null später. Das grüne Band ist ±5 Minuten. Achte darauf, wie der Fehler kleiner wird, je näher der Kontrollpunkt kommt, und wie viel besser die Linie des vollständigen HowFar ist.</p>
+<div class="chart-box" id="errBox"><svg aria-label="How far off the two chosen predictions were during the race" class="wide" id="err" role="img" viewbox="0 0 1000 270"></svg></div>
+</div>
+</div>
+</section>
+<section id="how">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">So funktioniert es</p>
+<h2>Es lernt, wie du dich in den Bergen bewegst</h2>
+</div>
+<div class="cols-3">
+<div>
+<h3>Dein Tempo auf jeder Steigung</h3>
+<p class="muted">Alle 25 m notiert es, wie steil der Weg ist und wie schnell du bist, von steilen Abstiegen bis zu steilen Anstiegen. Deine früheren Rennen geben ihm einen Vorsprung; die heutigen Kilometer zählen im Lauf des Rennens immer mehr.</p>
+</div>
+<div>
+<h3>Der Weg vor dir</h3>
+<p class="muted">Wenn du ihm das Streckenprofil gibst, kennt es jeden Anstieg und jede Abfahrt bis zum Kontrollpunkt und addiert dein Tempo auf jedem Stück. Ohne Profil kennt es nur den gesamten Höhenunterschied, was auf welligen Wegen ungenauer ist.</p>
+</div>
+<div>
+<h3>Wie dein Tag läuft</h3>
+<p class="muted">Es merkt, ob du schneller oder langsamer bist als in früheren Rennen und ob du auf den letzten Kilometern langsamer geworden bist. Es gleicht auch aus, dass deine Uhr mehr Strecke misst als die Streckenkarte: Serpentinen und GPS-Ungenauigkeit machen beim Tor etwa 15 % aus.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="compare">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Funktioniert es?</p>
+<h2>Getestet an vier echten Rennen</h2>
+<p class="muted">Jedes Rennen wurde nachgespielt und die Vorhersage der Uhr in jedem Moment mit der Wirklichkeit verglichen. Für „Nur Tempo“ und „Volle Vorbereitung“ wurde das Tempo aus den anderen drei Rennen gebildet, damit kein Rennen sich selbst testet. Weniger Minuten und ein höherer Anteil „unter 5 min daneben“ sind besser. Klick auf eine Zeile, um sie auf der Demo-Uhr zu zeigen.</p>
+</div>
+<div class="table-wrap">
+<table class="results" id="results">
+<thead><tr></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<ul class="small muted caveat column-notes">
+<li><b>Rennspalten und Durchschnitt:</b> wie viele Minuten die Uhr im Schnitt danebenlag, wann immer der nächste Kontrollpunkt weniger als eine Stunde entfernt war.</li>
+<li><b>Unter 5 min daneben:</b> von je 100 Malen, die die Uhr eine Zeit zeigte, wie viele weniger als 5 Minuten danebenlagen.</li>
+<li><b>Abweichung 2 km davor:</b> wie weit die Uhr danebenlag, als du 2 km vor jedem Kontrollpunkt warst, dem Moment, in dem du oft entscheidest, ob du jetzt isst oder trinkst.</li>
+<li>Die Strecke des STL25 hatte keine Kontrollpunkte, deshalb wurde sie in zwei Abschnitte von 13 km geteilt.</li>
+</ul>
+<details class="sources">
+<summary>Was sonst noch ausprobiert wurde</summary>
+<p class="muted">Dieselben Rennen dienten dazu, andere Vorhersagemethoden zu testen: klassische Wanderregeln (Naismith, Tobler), die km-effort der ITRA, ein Modell der Energiekosten beim Laufen bergauf und bergab, ein Machine-Learning-Modell, eine Korrektur für das Langsamerwerden mit der Distanz und eine Korrektur alle paar Kilometer anhand des letzten Abschnitts. Keine war besser, deshalb verwendet HowFar sie nicht.</p>
+<ul>
+<li>Minetti A.E. et al. (2002), <a href="https://iris.unibs.it/retrieve/ddc633e4-3c03-4e2e-e053-3705fe0a4c80/Minetti%20JAP%202002.pdf">Energy cost of walking and running at extreme uphill and downhill slopes</a>.</li>
+<li>Die <a href="https://en.wikipedia.org/wiki/Naismith%27s_rule">Naismith-Regel</a> und Toblers Wanderfunktion in <a href="https://www.biorxiv.org/content/10.1101/188417.full.pdf">einer Neubewertung mit Crowdsourcing-Daten</a>.</li>
+<li>ITRA, <a href="https://itra.run/About/DiscoverTrailRunning">km-effort</a>.</li>
+<li>Tempoverlust bei einem 173-km-Trailrennen, <a href="https://peerj.com/articles/2591.pdf">PeerJ 2016</a>.</li>
+<li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12656631/">Real-time performance prediction in long-distance trail running</a>, Sports 2025.</li>
+</ul>
+</details>
+</div>
+</section>
+<section id="install">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Installieren</p>
+<h2>Bring es auf deine Uhr</h2>
+<p class="muted">HowFar ist kostenlos im Garmin Connect IQ Store, für Enduro 3, fēnix 8 und epix Pro (Gen 2). Du installierst es vom Handy aus; nichts zu kopieren, kein Computer nötig.</p>
+</div>
+<div class="steps-grid">
+<div class="step-card">
+<h3>1. Aus dem Store installieren</h3>
+<ol class="steps">
+<li>Öffne auf dem Handy den <b>Connect IQ Store</b>: In der <b>Garmin Connect</b> App findest du ihn im Menü deiner Uhr, oder du nimmst die eigene <b>Connect IQ</b> App.</li>
+<li>Suche nach <b>HowFar</b> und öffne es.</li>
+<li>Tippe auf <b>Installieren</b> und wähle deine Uhr, falls gefragt.</li>
+<li>Synchronisiere die Uhr mit dem Handy. HowFar kommt bei der nächsten Synchronisierung auf die Uhr.</li>
+</ol>
+</div>
+<div class="step-card">
+<h3>2. Zu einer Datenseite hinzufügen</h3>
+<ol class="steps">
+<li>Öffne auf der Uhr die Aktivität, mit der du Rennen läufst, zum Beispiel <b>Trailrun</b>, aber starte sie nicht.</li>
+<li>Halte die Taste <b>MENU</b> (links in der Mitte) gedrückt und öffne die Einstellungen der Aktivität, dann <b>Datenseiten</b>.</li>
+<li>Wähle eine Seite, das zu ersetzende Feld, dann <b>Connect IQ</b> → <b>HowFar</b>.</li>
+<li>Tipp: Gib ihm eine Seite mit einem oder zwei Feldern, damit Name des Kontrollpunkts und Ankunftszeit hineinpassen. Auf einer eigenen Seite zeigt es auch den Kontrollpunkt danach.</li>
+</ol>
+</div>
+<div class="step-card">
+<h3>3. Mit einer Strecke laufen</h3>
+<ol class="steps">
+<li>Lade die Rennstrecke wie gewohnt auf die Uhr (<b>Navigation</b> → <b>Strecken</b>), am besten eine mit eingetragenen Kontrollpunkten.</li>
+<li>Starte die Aktivität. HowFar zeigt den nächsten Kontrollpunkt und zählt herunter.</li>
+<li>Auf den ersten Kilometern ist die Zeit grau und nur eine grobe Schätzung. Sie pendelt sich ein, sobald es sieht, wie du dich bewegst.</li>
+<li>Speichere die Aktivität am Ende: HowFar merkt sich, was es gelernt hat, für dein nächstes Rennen.</li>
+</ol>
+</div>
+</div>
+<details class="sources alt-install">
+<summary>Kein Handy zur Hand? Dann per Kabel kopieren</summary>
+<ol class="steps">
+<li>Lade die Datei für dein Uhrmodell aus der <a href="https://github.com/howfar-garmin/howfar/releases/latest">neuesten Version auf GitHub</a> herunter, zum Beispiel <b>HowFar-enduro3.prg</b> für eine Enduro 3.</li>
+<li>Verbinde die Uhr mit dem Ladekabel mit deinem Computer.</li>
+<li><b>Windows:</b> Öffne den Datei-Explorer; die Uhr erscheint wie ein Handy. <b>Mac:</b> Installiere die kostenlose App <a href="https://openmtp.ganeshrvel.com/">OpenMTP</a> und öffne sie (schließ vorher Garmin Express, falls es läuft).</li>
+<li>Öffne den Ordner <b>GARMIN</b>, dann <b>Apps</b>, und zieh die heruntergeladene Datei hinein. Trenn die Uhr: Nach ein paar Sekunden ist HowFar installiert.</li>
+</ol>
+<p class="step-note"><b>Gut zu wissen:</b> So kopiert funktioniert HowFar vollständig, hat aber keine Einstellungen, du kannst also weder dein Tempo aus früheren Rennen noch das Streckenprofil einfügen. Um später auf die Store-Version zu wechseln, lösche zuerst die Datei aus <b>GARMIN → Apps</b>, damit du nicht zwei Kopien hast.</p>
+</details>
+</div>
+</section>
+<section id="prepare">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Ein Rennen vorbereiten (optional)</p>
+<h2>Genau ab dem ersten Kilometer</h2>
+<p class="muted">HowFar funktioniert ohne jede Vorbereitung. Zwei optionale Extras, eingefügt in die Einstellungen des Felds in der Garmin Connect App auf deinem Handy, machen es besser. (Ein per Kabel kopiertes Feld hat keine Einstellungen.)</p>
+<p class="muted">Dort kannst du auch eigene Punkte hinzufügen, auf die heruntergezählt wird: den höchsten und den tiefsten Punkt jedes großen Anstiegs, Hütten und Dörfer am Weg. Die Strecke auf deiner Uhr bleibt, wie sie ist.</p>
+<p class="prep-cta"><a class="btn primary" href="prepare.html">Vorbereitung öffnen</a> <span class="small muted">Erstelle beide Texte aus deinen eigenen Dateien, direkt im Browser.</span></p>
+</div>
+<div class="tools-grid">
+<article class="tool">
+<h3>Dein Tempo aus früheren Rennen</h3>
+<p class="muted small">Damit HowFar schon vor dem Start weiß, wie du bergauf und bergab läufst. Du erstellst es aus einem oder mehreren deiner früheren Rennen: Öffne in Garmin Connect die Aktivität, klick auf das Zahnrad-Symbol und wähle <b>Original exportieren</b> (oder <b>In GPX exportieren</b>). Unten: was es aus den beiden Tor-Abschnitten gelernt hat. Fahr mit der Maus über das Diagramm, um dein Tempo auf jeder Steigung zu sehen.</p>
+<div class="chart-box" id="modelBox"><svg aria-label="Speed by slope learned from section 1 and section 2" id="model" role="img" viewbox="0 0 640 300"></svg></div>
+<div class="string-box">
+<div class="chart-head"><span class="small muted">Was du in die Einstellung „Dein Tempo aus früheren Rennen“ einfügst</span><button class="btn" data-copy="modelString" type="button">Kopieren</button></div>
+<pre id="modelString"></pre>
+</div>
+</article>
+<article class="tool">
+<h3>Das Streckenprofil</h3>
+<p class="muted small">Damit HowFar jeden Anstieg und jede Abfahrt zwischen den Kontrollpunkten kennt (das <span class="pill">P</span> auf der Uhr). Du erstellst es aus der Streckendatei des Rennens, derselben GPX-Datei, die du auf die Uhr lädst. Bei einem Etappenrennen wie dem Tor machst du eines pro Etappe und fügst an jeder Base Vita das richtige ein.</p>
+<div class="string-box">
+<div class="chart-head"><span class="small muted" id="profileMeta">Streckenprofil</span><button class="btn" data-copy="profileString" type="button">Kopieren</button></div>
+<pre id="profileString"></pre>
+</div>
+<div class="string-box">
+<span class="small muted" id="decodeTitle">So liest du es</span>
+<div class="decode" id="decode"></div>
+</div>
+<p class="muted small">Wo einfügen: Garmin Connect App → deine Uhr → <b>Connect IQ Apps</b> → <b>HowFar</b> → <b>Einstellungen</b>. Die Uhr übernimmt es bei der nächsten Synchronisierung.</p>
+</article>
+</div>
+<p class="prep-cta"><a class="btn primary" href="prepare.html">Erstelle deines in der Vorbereitung</a> <span class="small muted">Sie führt auch eine Bibliothek deiner Tempos und Rennprofile. Deine Dateien verlassen nie dein Gerät.</span></p>
+</div>
+</section>
+<section id="faq">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Fragen</p>
+<h2>Gut zu wissen</h2>
+</div>
+<div class="faq">
+<details><summary>Braucht es während des Rennens ein Handy oder Empfang?</summary><p>Nein. Alles passiert auf der Uhr. Das Handy brauchst du nur vor dem Rennen, um die optionalen Einstellungen einzufügen.</p></details>
+<details><summary>Braucht es mehr Akku?</summary><p>Es nutzt keine eigenen Sensoren: Es liest die Distanz, die Höhe und die Streckeninformationen, die deine Uhr ohnehin aufzeichnet, und rechnet einmal pro Sekunde ein bisschen. GPS und Display der Uhr verbrauchen viel mehr.</p></details>
+<details><summary>Und die Zeit an den Verpflegungsstationen?</summary><p>HowFar zählt nur die Zeit, in der du in Bewegung bist. Es kann nicht wissen, ob du zwei Minuten oder zwanzig stehen bleibst, deshalb sind Pausen nie enthalten: weder im Countdown noch in der Ankunftszeit. Wenn du unterwegs eine Pause planst, rechne sie im Kopf dazu: mit 1:10 h auf der Uhr und 15 Minuten Pause an einer Verpflegungsstation vor dem Kontrollpunkt bist du in etwa 1:25 h dort. Solange du stehst, wartet der Countdown, und wenn du weiterläufst, macht er dort weiter, wo er war.</p></details>
+<details><summary>Und wenn ich von der Strecke abkomme?</summary><p>HowFar nutzt die Distanz zum nächsten Kontrollpunkt, die ihm die Navigation deiner Uhr gibt. Solange du neben der Strecke bist, ist die Schätzung ungenauer; sobald du wieder darauf bist, pendelt sie sich wieder ein.</p></details>
+<details><summary>Und wenn die Strecke auf meiner Uhr Kontrollpunkte hat, die das Streckenprofil nicht hat?</summary><p>Kein Problem. HowFar ermittelt anhand der Distanz bis zum Ziel, wo jeder Kontrollpunkt auf dem Profil liegt, und kennt so trotzdem jeden Anstieg und jede Abfahrt bis dorthin. Es kommt auch mit Kontrollpunkten zurecht, die das Profil hat und die Uhr nicht, und mit einer Streckendatei, die eine leicht andere Version des Rennens ist.</p></details>
+<details><summary>Geht es mit, wenn sich meine Form ändert?</summary><p>Ja. Am Ende jeder Aktivität mit HowFar auf einer Datenseite fügt es das Gelernte zu dem hinzu, was es sich merkt, und ältere Aktivitäten zählen jedes Mal etwas weniger: Nach fünf weiteren Aktivitäten zählt eine alte weniger als die Hälfte, nach zehn etwa ein Fünftel. Im Rennen vergleicht es außerdem den heutigen Tag mit dem, was es sich gemerkt hat, sodass sich ein guter oder schlechter Tag schon auf den ersten Kilometern zeigt. Das Einzige, was nicht verblasst, ist das Tempo, das du aus früheren Rennen einfügst: Mach ein neues, wenn es alt wird.</p></details>
+<details><summary>Warum liegt es am Anfang eines Rennens daneben?</summary><p>Es lernt noch, wie du dich heute bewegst. Wenn du dein Tempo aus früheren Rennen einfügst, sind die ersten Kilometer viel genauer.</p></details>
+<details><summary>Wohin gehen meine Daten?</summary><p>Nirgendwohin. Die Uhr behält, was sie lernt, und die Renndateien, mit denen du dich vorbereitest, bleiben auf deinem eigenen Computer oder Handy. Die einzige Ausnahme ist optional: Auf der Vorbereitungsseite fragt „Hütten und Dörfer hinzufügen“ OpenStreetMap, was rund um deine Strecke liegt, und schickt dabei nur die Ecken eines Rechtecks um sie herum.</p></details>
+<details><summary>Auf welchen Uhren läuft es?</summary><p>Garmin Enduro 3, fēnix 8 (43 und 47 mm, Solar 47 und 51 mm) und epix Pro (Gen 2) 42, 47 und 51 mm. Weitere Modelle lassen sich hinzufügen.</p></details>
+</div>
+</div>
+</section>
+</main>
+<footer class="site-foot">
+<div class="wrap">
+<span>HowFar · kostenlos und <a href="https://github.com/howfar-garmin/howfar">Open Source</a> (MIT) · nicht mit Garmin verbunden</span>
+<span class="foot-tags" translate="no">#ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning #garmin #connectiq</span>
+</div>
+</footer>
+<script src="../demo/torx-s1.js?v=13"></script>
+<script src="../js/demo.js?v=19"></script>
+</body>
+</html>

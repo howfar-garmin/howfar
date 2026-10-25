@@ -1,23 +1,27 @@
 // HowFar race prep page: pace from past activities, course profile, library. Everything runs
 // in the browser; files are never uploaded. The calculations are in howfar-core.js.
 import * as core from "./howfar-core.js?v=5";
-import * as extra from "./extra-points.js?v=4";
+import * as extra from "./extra-points.js?v=5";
 
 const FIT_SDK = "https://cdn.jsdelivr.net/npm/@garmin/fitsdk@21.217.0/+esm";
 const JSZIP = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
 const STORE_KEY = "howfar.library.v1";
 const SVGNS = "http://www.w3.org/2000/svg";
 const $ = (id) => document.getElementById(id);
+// the page's language (tools/build_site.py): translated messages and numbers
+const LANG = window.HOWFAR_LANG || "en";
+const _t = window._t || ((s, v) => (v ? s.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m)) : s));
+const dec = (x, n) => x.toLocaleString(LANG, { minimumFractionDigits: n, maximumFractionDigits: n });
 
 // ---------------------------------------------------------------- small helpers
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const km = (m) => (m / 1000).toFixed(1) + " km";
-const num = (n) => Math.round(n).toLocaleString("en-US");
+const km = (m) => dec(m / 1000, 1) + " km";
+const num = (n) => Math.round(n).toLocaleString(LANG);
 const pad = (n) => (n < 10 ? "0" : "") + n;
 const hm = (h) => Math.floor(h) + ":" + pad(Math.round((h % 1) * 60) % 60) + " h";
 const newId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
-const dateLabel = (iso) => (iso ? new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : "–");
+const dateLabel = (iso) => (iso ? new Date(iso).toLocaleDateString(LANG, { year: "numeric", month: "short", day: "numeric" }) : "–");
 const baseName = (f) => f.replace(/\.(gpx|fit)$/i, "");
 
 function status(el, text, isError) {
@@ -30,7 +34,7 @@ function loadScript(src) {
     const s = document.createElement("script");
     s.src = src;
     s.onload = resolve;
-    s.onerror = () => reject(new Error("Couldn't load " + src + ". Check your internet connection."));
+    s.onerror = () => reject(new Error(_t("Couldn't load {src}. Check your internet connection.", { src })));
     document.head.appendChild(s);
   });
 }
@@ -44,7 +48,7 @@ async function expand(fileList) {
       if (!window.JSZip) await loadScript(JSZIP);
       const zip = await window.JSZip.loadAsync(await f.arrayBuffer());
       const inner = Object.values(zip.files).filter((z) => !z.dir && /\.(gpx|fit)$/i.test(z.name));
-      if (!inner.length) throw new Error(`${f.name} has no GPX or FIT file inside.`);
+      if (!inner.length) throw new Error(_t("{file} has no GPX or FIT file inside.", { file: f.name }));
       for (const z of inner) {
         const name = z.name.split("/").pop();
         out.push(name.toLowerCase().endsWith(".fit")
@@ -53,7 +57,7 @@ async function expand(fileList) {
       }
     } else if (lower.endsWith(".fit")) out.push({ name: f.name, kind: "fit", data: await f.arrayBuffer() });
     else if (lower.endsWith(".gpx")) out.push({ name: f.name, kind: "gpx", data: await f.text() });
-    else throw new Error(`${f.name} isn't a GPX, FIT or ZIP file.`);
+    else throw new Error(_t("{file} isn't a GPX, FIT or ZIP file.", { file: f.name }));
   }
   return out;
 }
@@ -61,26 +65,26 @@ async function expand(fileList) {
 async function parse(file) {
   if (file.kind === "gpx") {
     const parsed = core.readGpx(file.data, (t) => new DOMParser().parseFromString(t, "application/xml"));
-    if (!parsed.points.length) throw new Error(`${file.name} has no track in it.`);
+    if (!parsed.points.length) throw new Error(_t("{file} has no track in it.", { file: file.name }));
     return parsed;
   }
   const { Decoder, Stream } = await import(FIT_SDK);
   const decoder = new Decoder(Stream.fromArrayBuffer(file.data));
-  if (!decoder.isFIT()) throw new Error(`${file.name} isn't a valid FIT file.`);
+  if (!decoder.isFIT()) throw new Error(_t("{file} isn't a valid FIT file.", { file: file.name }));
   const { messages } = decoder.read();
   return core.readFitMessages(messages);
 }
 
 async function copyText(text, button) {
-  const done = (label) => { button.textContent = label; setTimeout(() => (button.textContent = "Copy"), 1800); };
+  const done = (label) => { button.textContent = label; setTimeout(() => (button.textContent = _t("Copy")), 1800); };
   try {
     await navigator.clipboard.writeText(text);
-    done("Copied ✓");
+    done(_t("Copied") + " ✓");
   } catch (e) {
     const pre = button.closest(".string-box").querySelector("pre");
     const r = document.createRange(); r.selectNodeContents(pre);
     const s = getSelection(); s.removeAllRanges(); s.addRange(r);
-    done("Selected: press Copy");
+    done(_t("Selected: press Copy"));
   }
 }
 
@@ -144,7 +148,7 @@ function drawPace(layer) {
   const my = (v) => M.t + ((vmax - v) / vmax) * (M.H - M.t - M.b);
   for (let v = 0; v <= vmax + 1e-9; v += 0.6) {
     el("line", { x1: M.l, x2: M.W - M.r, y1: my(v), y2: my(v), stroke: "var(--line-soft)" }, svg);
-    txt(svg, M.l - 6, my(v) + 4, v.toFixed(1), { "text-anchor": "end" });
+    txt(svg, M.l - 6, my(v) + 4, dec(v, 1), { "text-anchor": "end" });
   }
   [-40, -20, 0, 20, 40].forEach((g) => txt(svg, mx(g), M.H - 12, (g > 0 ? "+" : "") + g + "%", { "text-anchor": "middle" }));
   txt(svg, M.l + 4, M.t + 8, "m/s");
@@ -159,9 +163,11 @@ function drawPace(layer) {
     const i = core.binIndex(g);
     cross.setAttribute("x1", mx(core.binCenter(i))); cross.setAttribute("x2", mx(core.binCenter(i))); cross.setAttribute("visibility", "visible");
     const c = core.binCenter(i);
-    if (layer.weights[i] < 3) return tip(box, `<b>${c > 0 ? "+" : ""}${c}% slope</b><br>not enough data here`, e);
+    const slope = _t("<b>{grade}% slope</b>", { grade: (c > 0 ? "+" : "") + c });
+    if (layer.weights[i] < 3) return tip(box, slope + "<br>" + _t("not enough data here"), e);
     const v = layer.speed(i), pace = 1000 / v;
-    tip(box, `<b>${c > 0 ? "+" : ""}${c}% slope</b><br>${v.toFixed(2)} m/s · ${Math.floor(pace / 60)}:${pad(Math.round(pace % 60))} per km<br>${num(layer.weights[i])} samples`, e);
+    tip(box, slope + "<br>" + _t("{speed} m/s · {pace} per km", { speed: dec(v, 2), pace: Math.floor(pace / 60) + ":" + pad(Math.round(pace % 60)) }) +
+      "<br>" + _t("{n} samples", { n: num(layer.weights[i]) }), e);
   };
   svg.onmouseleave = () => { tip(box, null); cross.setAttribute("visibility", "hidden"); };
 }
@@ -213,7 +219,7 @@ function showLoaded(kind, item, fallback) {
   $(kind + "Title").textContent = item.name.trim() || fallback;
   const state = $(kind + "State");
   const saved = item.id && library[kind === "pace" ? "paces" : "courses"].some((x) => x.id === item.id);
-  state.textContent = !saved ? "Not saved yet" : item.dirty ? "Changed since you saved it" : "Saved in your library";
+  state.textContent = !saved ? _t("Not saved yet") : item.dirty ? _t("Changed since you saved it") : _t("Saved in your library");
   state.className = "loaded-state" + (saved && !item.dirty ? " saved" : "");
   $(kind + "SaveTop").hidden = saved && !item.dirty;
 }
@@ -264,36 +270,36 @@ function renderPace() {
   $("paceRows").innerHTML = pace.activities.map((a) => `
     <tr><td>${esc(a.file)}</td><td class="num">${dateLabel(a.date)}</td><td class="num">${km(a.km * 1000)}</td>
     <td class="num">${num(a.up)} m</td><td class="num">${hm(a.movingHours)}</td>
-    <td class="num"><button type="button" class="btn small-btn" data-remove="${a.id}" aria-label="Remove ${esc(a.file)}">Remove</button></td></tr>`).join("");
+    <td class="num"><button type="button" class="btn small-btn" data-remove="${a.id}" aria-label="${esc(_t("Remove {file}", { file: a.file }))}">${_t("Remove")}</button></td></tr>`).join("");
   const layer = paceLayer();
   drawPace(layer);
   const samples = layer.totalWeight();
   $("paceNote").textContent = samples < 300
-    ? `Only ${num(samples)} samples so far (about ${num(samples * 25 / 1000)} km). Add more activities for a steadier curve.`
-    : `${num(samples)} samples, about ${num(samples * 25 / 1000)} km of moving data.`;
+    ? _t("Only {n} samples so far (about {km} km). Add more activities for a steadier curve.", { n: num(samples), km: num(samples * 25 / 1000) })
+    : _t("{n} samples, about {km} km of moving data.", { n: num(samples), km: num(samples * 25 / 1000) });
   $("paceText").textContent = layer.toString();
-  showLoaded("pace", pace, "Untitled pace");
+  showLoaded("pace", pace, _t("Untitled pace"));
 }
 
 async function addPaceFiles(fileList) {
   const st = $("paceStatus");
   try {
-    status(st, "Opening files…");
+    status(st, _t("Opening files…"));
     const files = await expand(fileList);
     const problems = [];
     for (const f of files) {
-      status(st, `Reading ${f.name}…`);
+      status(st, _t("Reading {file}…", { file: f.name }));
       await new Promise((r) => setTimeout(r, 0)); // let the message show before the work
       const parsed = await parse(f);
       const learned = core.learnActivity(parsed.points);
-      if (learned.observations < 5) { problems.push(`${f.name} has no times or altitude, so no pace can be learned from it.`); continue; }
+      if (learned.observations < 5) { problems.push(_t("{file} has no times or altitude, so no pace can be learned from it.", { file: f.name })); continue; }
       pace.activities.push({
         id: newId(), file: f.name, date: parsed.startTime, km: learned.km, up: learned.up, hours: learned.hours,
         movingHours: learned.movingHours, obs: learned.observations, paces: learned.layer.paces, weights: learned.layer.weights,
       });
       pace.dirty = true;
     }
-    if (!pace.name && pace.activities.length) pace.name = "My pace, " + new Date().toLocaleDateString(undefined, { month: "short", year: "numeric" });
+    if (!pace.name && pace.activities.length) pace.name = _t("My pace, {date}", { date: new Date().toLocaleDateString(LANG, { month: "short", year: "numeric" }) });
     status(st, problems.join(" "), problems.length > 0);
     renderPace();
   } catch (e) {
@@ -308,16 +314,16 @@ $("paceRows").addEventListener("click", (e) => {
   pace.dirty = true;
   renderPace();
 });
-renamer("pace", pace, "Untitled pace");
+renamer("pace", pace, _t("Untitled pace"));
 $("paceCopy").addEventListener("click", (e) => copyText($("paceText").textContent, e.currentTarget));
 $("paceSave").addEventListener("click", () => {
   pace.id = pace.id || newId();
-  pace.name = pace.name.trim() || "My pace";
+  pace.name = pace.name.trim() || _t("My pace");
   upsert(library.paces, { id: pace.id, name: pace.name, saved: new Date().toISOString(), activities: pace.activities, text: paceLayer().toString() });
   const ok = saveLibrary();
-  $("paceSaved").textContent = ok ? "Saved in your library." : "Couldn't save: this browser blocks storage. Use a backup file.";
+  $("paceSaved").textContent = ok ? _t("Saved in your library.") : _t("Couldn't save: this browser blocks storage. Use a backup file.");
   pace.dirty = !ok;
-  showLoaded("pace", pace, "Untitled pace");
+  showLoaded("pace", pace, _t("Untitled pace"));
   renderLibrary();
 });
 $("paceNew").addEventListener("click", () => {
@@ -346,7 +352,7 @@ function courseView(points, coursePoints, maxLen) {
     at += len;
     const climbM = grades.reduce((s, g, i) => s + Math.max(0, g / 1000) * (i === grades.length - 1 ? len - step * (grades.length - 1) : step), 0);
     if (name !== core.FINISH_NAME) checkpoints.push({ name, d: at, alt: Math.round(elev.at(at)), seg: len, climb: climbM });
-    else checkpoints.push({ name: "Finish", d: at, alt: Math.round(elev.at(at)), seg: len, climb: climbM, finish: true });
+    else checkpoints.push({ name: _t("Finish"), d: at, alt: Math.round(elev.at(at)), seg: len, climb: climbM, finish: true });
   }
   return { step, text, profile, checkpoints, length: elev.length, up: core.climb(points) };
 }
@@ -357,16 +363,19 @@ function renderCourse() {
   if (!v) return;
   const real = v.checkpoints.filter((c) => !c.finish);
   $("courseDrop").classList.add("compact");
-  $("courseDropTitle").textContent = "Replace the course";
+  $("courseDropTitle").textContent = _t("Replace the course");
   $("addPoints").hidden = !course.parsed;
   $("readOnlyNote").hidden = !!course.parsed;
   const has = (kinds) => (course.candidates || []).some((c) => kinds.includes(c.added));
   $("removeClimbs").hidden = !has(["top", "bottom"]);
   $("removePlaces").hidden = !has(["hut", "village"]);
-  $("courseSummary").innerHTML = `<b>${esc(course.file)}</b>: ${km(v.length)}, ${num(v.up)} m of climbing, ${real.length} checkpoint${real.length === 1 ? "" : "s"}.`;
+  $("courseSummary").innerHTML = `<b>${esc(course.file)}</b>: ` + (real.length === 1
+    ? _t("{len}, {up} m of climbing, 1 checkpoint.", { len: km(v.length), up: num(v.up) })
+    : _t("{len}, {up} m of climbing, {n} checkpoints.", { len: km(v.length), up: num(v.up), n: real.length }));
   drawCourse(v.profile, v.checkpoints);
-  const tag = (c) => (c.added ? `<span class="added-tag">added: ${extra.ADDED_LABELS[c.added]}</span>` : "");
-  const row = (c, pick) => `<tr><td>${pick}${esc(c.name)}${pick ? "</label>" : ""}${tag(c)}</td><td class="num">${(c.d / 1000).toFixed(1)}</td><td class="num">${km(c.seg)}</td><td class="num">${num(c.climb)} m</td></tr>`;
+  const ADDED = { top: _t("top of a climb"), bottom: _t("bottom of a climb"), hut: _t("hut"), village: _t("village") };
+  const tag = (c) => (c.added ? `<span class="added-tag">${_t("added: {what}", { what: ADDED[c.added] || c.added })}</span>` : "");
+  const row = (c, pick) => `<tr><td>${pick}${esc(c.name)}${pick ? "</label>" : ""}${tag(c)}</td><td class="num">${dec(c.d / 1000, 1)}</td><td class="num">${km(c.seg)}</td><td class="num">${num(c.climb)} m</td></tr>`;
   const cands = course.parsed && course.candidates;
   $("coursePickNote").hidden = !cands || !cands.length;
   if (cands) {
@@ -375,22 +384,24 @@ function renderCourse() {
     $("courseRows").innerHTML = cands.map((c, i) => {
       const box = `<label class="cp-pick"><input type="checkbox" data-cp="${i}"${c.on ? " checked" : ""}>`;
       if (c.on) return row(real[k++], box);
-      return `<tr class="off"><td>${box}${esc(c.name)}</label>${tag(c)}</td><td class="num">${(c.dist / 1000).toFixed(1)}</td><td class="num">–</td><td class="num">–</td></tr>`;
+      return `<tr class="off"><td>${box}${esc(c.name)}</label>${tag(c)}</td><td class="num">${dec(c.dist / 1000, 1)}</td><td class="num">–</td><td class="num">–</td></tr>`;
     }).join("") + v.checkpoints.filter((c) => c.finish).map((c) => row(c, "")).join("");
   } else {
     $("courseRows").innerHTML = v.checkpoints.map((c) => row(c, "")).join("");
   }
   const warn = [];
-  if (!real.length) warn.push("This course has no checkpoints, so HowFar will only count down to the finish. If the race publishes a file with checkpoints, use that one.");
+  if (!real.length) warn.push(_t("This course has no checkpoints, so HowFar will only count down to the finish. If the race publishes a file with checkpoints, use that one."));
   const offTrack = course.candidates ? course.offTrack : (course.skipped || []).length;
-  if (offTrack) warn.push(`${offTrack} checkpoint${offTrack === 1 ? " was" : "s were"} left out because ${offTrack === 1 ? "it isn't" : "they aren't"} on this course's track (race files often list the whole race's).`);
+  if (offTrack) warn.push(offTrack === 1
+    ? _t("1 checkpoint was left out because it isn't on this course's track (race files often list the whole race's).")
+    : _t("{n} checkpoints were left out because they aren't on this course's track (race files often list the whole race's).", { n: offTrack }));
   const finishes = (cands || []).filter((c) => c.finish && !c.on);
-  if (finishes.length) warn.push(`Unticked: ${finishes.map((c) => "“" + c.name + "”").join(", ")}, a finish line the course passes by but doesn't end at, probably another race's. Tick it if it's a checkpoint of this race.`);
+  if (finishes.length) warn.push(_t("Unticked: {names}, a finish line the course passes by but doesn't end at, probably another race's. Tick it if it's a checkpoint of this race.", { names: finishes.map((c) => "“" + c.name + "”").join(", ") }));
   $("courseWarn").hidden = !warn.length;
   $("courseWarn").textContent = warn.join(" ");
-  $("courseMeta").innerHTML = `The text for the setting <b>“Course profile”</b> · one slope every ${v.step} m · ${num(v.text.length)} characters`;
+  $("courseMeta").innerHTML = _t("The text for the setting <b>“Course profile”</b> · one slope every {step} m · {n} characters", { step: v.step, n: num(v.text.length) });
   $("courseText").textContent = v.text;
-  showLoaded("course", course, "Untitled course");
+  showLoaded("course", course, _t("Untitled course"));
 }
 
 function recomputeCourse() {
@@ -426,11 +437,12 @@ $("addClimbs").addEventListener("click", () => {
   if (!course.parsed || !course.candidates) return;
   const kinds = ["top", "bottom"];
   const others = course.candidates.filter((c) => c.added && !kinds.includes(c.added));
-  const found = extra.climbPoints(core.courseFrom(course.parsed).points, Number($("climbMin").value), courseCheckpoints(), others);
+  const found = extra.climbPoints(core.courseFrom(course.parsed).points, Number($("climbMin").value), courseCheckpoints(), others,
+    { top: _t("Top"), bottom: _t("Bottom") });
   addPoints(kinds, found);
   status($("addStatus"), found.length
-    ? `Added ${found.length} climb top${found.length === 1 ? "" : "s"} and bottom${found.length === 1 ? "" : "s"}.`
-    : "No climbs that big on this course, away from its checkpoints. Try a smaller size.");
+    ? _t("Added {n} climb tops and bottoms.", { n: found.length })
+    : _t("No climbs that big on this course, away from its checkpoints. Try a smaller size."));
 });
 
 $("addPlaces").addEventListener("click", async (e) => {
@@ -438,20 +450,20 @@ $("addPlaces").addEventListener("click", async (e) => {
   const btn = e.currentTarget, st = $("addStatus");
   const points = core.courseFrom(course.parsed).points;
   btn.disabled = true;
-  status(st, "Asking OpenStreetMap…");
+  status(st, _t("Asking OpenStreetMap…"));
   try {
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), 90000);
     const res = await fetch(extra.OVERPASS_URL, { method: "POST", body: new URLSearchParams({ data: extra.overpassQuery(points) }), signal: ctl.signal });
     clearTimeout(timer);
-    if (!res.ok) throw new Error([429, 502, 503, 504].includes(res.status) ? "OpenStreetMap is busy right now. Try again in a minute." : `OpenStreetMap answered with an error (${res.status}).`);
+    if (!res.ok) throw Object.assign(new Error([429, 502, 503, 504].includes(res.status) ? _t("OpenStreetMap is busy right now. Try again in a minute.") : _t("OpenStreetMap answered with an error ({code}).", { code: res.status })), { osm: true });
     const kinds = ["hut", "village"];
     const others = course.candidates.filter((c) => c.added && !kinds.includes(c.added));
     const found = extra.placePoints(await res.json(), points, core.project, courseCheckpoints(), others);
     addPoints(kinds, found);
-    status(st, found.length ? `Added ${found.length} hut${found.length === 1 ? "" : "s"} and village${found.length === 1 ? "" : "s"}.` : "OpenStreetMap has no named huts or villages along this course, away from its checkpoints.");
+    status(st, found.length ? _t("Added {n} huts and villages.", { n: found.length }) : _t("OpenStreetMap has no named huts or villages along this course, away from its checkpoints."));
   } catch (err) {
-    status(st, err.name === "AbortError" ? "OpenStreetMap didn't answer in time. Try again later." : err.message.startsWith("OpenStreetMap") ? err.message : "Couldn't reach OpenStreetMap. Check your connection and try again.", true);
+    status(st, err.name === "AbortError" ? _t("OpenStreetMap didn't answer in time. Try again later.") : err.osm ? err.message : _t("Couldn't reach OpenStreetMap. Check your connection and try again."), true);
   } finally {
     btn.disabled = false;
   }
@@ -474,7 +486,7 @@ $("courseFit").addEventListener("click", async (e) => {
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 10000);
   } catch (err) {
-    status($("addStatus"), "Couldn't make the FIT file: " + err.message, true);
+    status($("addStatus"), _t("Couldn't make the FIT file: {why}", { why: err.message }), true);
   } finally {
     btn.disabled = false;
   }
@@ -482,11 +494,11 @@ $("courseFit").addEventListener("click", async (e) => {
 
 $("removeClimbs").addEventListener("click", () => {
   addPoints(["top", "bottom"], []);
-  status($("addStatus"), "Removed the climb tops and bottoms.");
+  status($("addStatus"), _t("Removed the climb tops and bottoms."));
 });
 $("removePlaces").addEventListener("click", () => {
   addPoints(["hut", "village"], []);
-  status($("addStatus"), "Removed the huts and villages.");
+  status($("addStatus"), _t("Removed the huts and villages."));
 });
 
 $("courseRows").addEventListener("change", (e) => {
@@ -501,13 +513,13 @@ $("courseRows").addEventListener("change", (e) => {
 async function addCourseFile(fileList) {
   const st = $("courseStatus");
   try {
-    status(st, "Opening the course…");
+    status(st, _t("Opening the course…"));
     const files = await expand([fileList[0]]);
     const f = files[0];
-    status(st, `Reading ${f.name}…`);
+    status(st, _t("Reading {file}…", { file: f.name }));
     await new Promise((r) => setTimeout(r, 0));
     const parsed = await parse(f);
-    if (!parsed.points.some((p) => p.alt != null)) throw new Error(`${f.name} has no elevation data, so no profile can be made from it.`);
+    if (!parsed.points.some((p) => p.alt != null)) throw new Error(_t("{file} has no elevation data, so no profile can be made from it.", { file: f.name }));
     Object.assign(course, { id: null, name: baseName(f.name), file: f.name, parsed, candidates: null, dirty: true });
     $("courseSaved").textContent = "";
     recomputeCourse();
@@ -521,7 +533,7 @@ $("courseMax").addEventListener("change", () => {
   course.dirty = true;
   recomputeCourse();
 });
-renamer("course", course, "Untitled course");
+renamer("course", course, _t("Untitled course"));
 $("courseCopy").addEventListener("click", (e) => copyText($("courseText").textContent, e.currentTarget));
 /** The course's track, thinned to a point every 10 m or more and rounded, so a saved course
  *  can be opened and changed again without its file: [[dist, alt, lat, lon], ...]. */
@@ -553,9 +565,9 @@ $("courseSave").addEventListener("click", () => {
     candidates: course.candidates || before.candidates,
   });
   const ok = saveLibrary();
-  $("courseSaved").textContent = ok ? "Saved in your library." : "Couldn't save: this browser blocks storage. Use a backup file.";
+  $("courseSaved").textContent = ok ? _t("Saved in your library.") : _t("Couldn't save: this browser blocks storage. Use a backup file.");
   course.dirty = !ok;
-  showLoaded("course", course, "Untitled course");
+  showLoaded("course", course, _t("Untitled course"));
   renderLibrary();
 });
 dropZone($("courseDrop"), $("courseFile"), addCourseFile);
@@ -566,19 +578,19 @@ function libItem(kind, item, meta) {
   return `<li class="lib-item">
     <div><b>${esc(item.name)}</b><span class="small muted">${meta}</span></div>
     <div class="lib-actions">
-      <button type="button" class="btn small-btn" data-open="${kind}:${item.id}">Open</button>
-      <button type="button" class="btn small-btn" data-copy="${kind}:${item.id}">Copy text</button>
-      <button type="button" class="btn small-btn danger" data-delete="${kind}:${item.id}">Delete</button>
+      <button type="button" class="btn small-btn" data-open="${kind}:${item.id}">${_t("Open")}</button>
+      <button type="button" class="btn small-btn" data-copy="${kind}:${item.id}">${_t("Copy text")}</button>
+      <button type="button" class="btn small-btn danger" data-delete="${kind}:${item.id}">${_t("Delete")}</button>
     </div></li>`;
 }
 
 function renderLibrary() {
   $("libPaces").innerHTML = library.paces.length
-    ? library.paces.map((p) => libItem("pace", p, `${p.activities.length} activit${p.activities.length === 1 ? "y" : "ies"} · saved ${dateLabel(p.saved)}`)).join("")
-    : `<li class="lib-empty small muted">Nothing saved yet. Make one in step 1 and press “Save in my library”.</li>`;
+    ? library.paces.map((p) => libItem("pace", p, (p.activities.length === 1 ? _t("1 activity · saved {date}", { date: dateLabel(p.saved) }) : _t("{n} activities · saved {date}", { n: p.activities.length, date: dateLabel(p.saved) })))).join("")
+    : `<li class="lib-empty small muted">${_t("Nothing saved yet. Make one in step 1 and press “Save in my library”.")}</li>`;
   $("libCourses").innerHTML = library.courses.length
-    ? library.courses.map((c) => libItem("course", c, `${km(c.length)} · ${c.checkpoints.filter((x) => !x.finish).length} checkpoints · saved ${dateLabel(c.saved)}`)).join("")
-    : `<li class="lib-empty small muted">Nothing saved yet. Make one in step 2 and press “Save in my library”.</li>`;
+    ? library.courses.map((c) => libItem("course", c, _t("{len} · {n} checkpoints · saved {date}", { len: km(c.length), n: c.checkpoints.filter((x) => !x.finish).length, date: dateLabel(c.saved) }))).join("")
+    : `<li class="lib-empty small muted">${_t("Nothing saved yet. Make one in step 2 and press “Save in my library”.")}</li>`;
 }
 
 $("library").addEventListener("click", (e) => {
@@ -589,8 +601,8 @@ $("library").addEventListener("click", (e) => {
   const item = list.find((x) => x.id === id);
   if (!item) return;
   if (b.dataset.copy) {
-    navigator.clipboard.writeText(item.text).then(() => { b.textContent = "Copied ✓"; setTimeout(() => (b.textContent = "Copy text"), 1800); },
-      () => { b.textContent = "Open it to copy"; });
+    navigator.clipboard.writeText(item.text).then(() => { b.textContent = _t("Copied") + " ✓"; setTimeout(() => (b.textContent = _t("Copy text")), 1800); },
+      () => { b.textContent = _t("Open it to copy"); });
   } else if (b.dataset.delete) {
     if (b.dataset.armed) {
       list.splice(list.indexOf(item), 1);
@@ -598,8 +610,8 @@ $("library").addEventListener("click", (e) => {
       renderLibrary();
     } else {
       b.dataset.armed = "1";
-      b.textContent = "Sure? Delete";
-      setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = "Delete"; } }, 3000);
+      b.textContent = _t("Sure? Delete");
+      setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = _t("Delete"); } }, 3000);
     }
   } else if (kind === "pace") {
     Object.assign(pace, { id: item.id, name: item.name, activities: item.activities.map((a) => ({ ...a })), dirty: false });
@@ -614,7 +626,7 @@ $("library").addEventListener("click", (e) => {
       candidates: editable ? item.candidates.map((c) => ({ ...c })) : null, offTrack: item.offTrack || 0,
       view: { step: item.step, text: item.text, profile: item.profile, checkpoints: item.checkpoints, length: item.length, up: item.up },
     });
-    $("courseSaved").textContent = "Opened from your library.";
+    $("courseSaved").textContent = _t("Opened from your library.");
     renderCourse();
     $("course").scrollIntoView({ behavior: "smooth" });
   }
@@ -627,7 +639,7 @@ $("backupSave").addEventListener("click", () => {
   a.download = `howfar-library-${new Date().toISOString().slice(0, 10)}.json`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-  $("backupStatus").textContent = "Backup file saved to your downloads.";
+  $("backupStatus").textContent = _t("Backup file saved to your downloads.");
 });
 $("backupLoad").addEventListener("change", async (e) => {
   const f = e.target.files[0];
@@ -641,9 +653,9 @@ $("backupLoad").addEventListener("change", async (e) => {
     for (const c of data.courses) if (!library.courses.some((x) => x.id === c.id)) { library.courses.push(c); added++; }
     saveLibrary();
     renderLibrary();
-    $("backupStatus").textContent = added ? `Added ${added} item${added === 1 ? "" : "s"} from the backup.` : "Everything in that backup is already here.";
+    $("backupStatus").textContent = added ? _t("Added {n} items from the backup.", { n: added }) : _t("Everything in that backup is already here.");
   } catch (err) {
-    $("backupStatus").textContent = "That file isn't a HowFar backup.";
+    $("backupStatus").textContent = _t("That file isn't a HowFar backup.");
   }
 });
 

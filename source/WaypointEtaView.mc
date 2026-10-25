@@ -19,6 +19,8 @@ class WaypointEtaView extends WatchUi.DataField {
     hidden var _etaSec as Number?;
     hidden var _name as String?;
     hidden var _usingProfile as Boolean = false;
+    hidden var _thenWord as String;   // "then", in the watch's language
+    hidden var _learningWord as String;
     hidden var _thenName as String?;  // the profile point after the next one
     hidden var _thenSec as Number?;
     hidden var _smoothSpeed as Float?;
@@ -31,6 +33,8 @@ class WaypointEtaView extends WatchUi.DataField {
         _tracker = new GradeTracker();
         _estimator = new EtaEstimator(_model);
         _scale = new CourseScale();
+        _thenWord = WatchUi.loadResource(Rez.Strings.Then) as String;
+        _learningWord = WatchUi.loadResource(Rez.Strings.Learning) as String;
         var stored = Application.Storage.getValue(STORAGE_KEY);
         if (stored instanceof Array) {
             _model.stored.loadArray(stored as Array);
@@ -242,11 +246,11 @@ class WaypointEtaView extends WatchUi.DataField {
             label = fitText(dc, label, "", maxW);
         }
         dc.drawText(w / 2, topY, Graphics.FONT_XTINY, label, center);
-        var arrive = eta == null ? "" : "@ " + WpUtil.formatClock(eta) + (learning ? " (learning)" : "");
+        var arrive = eta == null ? "" : "@ " + WpUtil.formatClock(eta) + (learning ? " " + _learningWord : "");
         if (withThen) {
             drawTime(dc, w / 2, h * 0.45, f[withExtras], main, unit, timeColor, fg, bg);
             dc.drawText(w / 2, h * 0.64, Graphics.FONT_XTINY, arrive, center);
-            var then = fitText(dc, "then " + thenName, " @ " + WpUtil.formatClock(thenSec as Number),
+            var then = fitText(dc, _thenWord + " " + thenName, " @ " + WpUtil.formatClock(thenSec as Number),
                 bottomObscured ? w * 0.8 : maxW);  // a round screen is still 0.8 wide this low
             dc.drawText(w / 2, h * (bottomObscured ? 0.80 : 0.86), Graphics.FONT_XTINY, then, center);
             return;

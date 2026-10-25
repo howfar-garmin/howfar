@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>HowFar</title>
+<meta content="Un data field gratuito per orologi Garmin che ti dice quanto ti manca per arrivare al prossimo checkpoint, in base al tuo passo in salita e in discesa. #ultratrail #trailrunning" name="description"/>
+<meta content="ultratrail, trail running, ultrarunning, skyrunning, corsa in montagna, Garmin, Connect IQ, data field, checkpoint, ristoro, orario di arrivo, Enduro 3, fenix 8, epix" name="keywords"/>
+<meta content="HowFar: quanto manca al prossimo checkpoint?" property="og:title"/>
+<meta content="Un data field Garmin gratuito per chi corre trail e ultra: il tempo al prossimo checkpoint, imparato dal tuo passo in salita e in discesa. #ultratrail #trailrunning #ultrarunning #skyrunning" property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="summary" name="twitter:card"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&amp;family=Public+Sans:wght@400;500;600&amp;family=Saira+Semi+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="../css/site.css?v=31" rel="stylesheet"/>
+<link href="https://howfar-garmin.github.io/howfar/" hreflang="en" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/it/" hreflang="it" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/fr/" hreflang="fr" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/de/" hreflang="de" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/" hreflang="x-default" rel="alternate"/><script>window.HOWFAR_LANG="it";window.HOWFAR_T={"(learning)": "(imparo)", "1 activity · saved {date}": "1 attività · salvato il {date}", "1 checkpoint was left out because it isn't on this course's track (race files often list the whole race's).": "1 checkpoint è stato escluso perché non è sulla traccia di questo percorso (i file delle gare spesso elencano quelli di tutta la gara).", "<b>Distance:</b> your watch measures <b>{pct} less</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.": "<b>Distanza:</b> il tuo orologio misura il <b>{pct} in meno</b> della mappa del percorso (tornanti, incertezze del GPS), quindi corregge la distanza che manca.", "<b>Distance:</b> your watch measures <b>{pct} more</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.": "<b>Distanza:</b> il tuo orologio misura il <b>{pct} in più</b> della mappa del percorso (tornanti, incertezze del GPS), quindi corregge la distanza che manca.", "<b>Last couple of km:</b> <b>{pct} faster</b> than it expected.": "<b>Ultimi due chilometri:</b> <b>{pct} più veloce</b> di quanto si aspettava.", "<b>Last couple of km:</b> <b>{pct} slower</b> than it expected.": "<b>Ultimi due chilometri:</b> <b>{pct} più lento</b> di quanto si aspettava.", "<b>Last couple of km:</b> on the pace it expected.": "<b>Ultimi due chilometri:</b> al passo che si aspettava.", "<b>Today vs. past races:</b> <b>{pct} faster</b> than usual.": "<b>Oggi rispetto alle gare passate:</b> <b>{pct} più veloce</b> del solito.", "<b>Today vs. past races:</b> <b>{pct} slower</b> than usual.": "<b>Oggi rispetto alle gare passate:</b> <b>{pct} più lento</b> del solito.", "<b>Today vs. past races:</b> about the same as usual.": "<b>Oggi rispetto alle gare passate:</b> più o meno come al solito.", "<b>{done}</b> of {total} · {alt} m": "<b>{done}</b> su {total} · {alt} m", "<b>{err}</b> (not counting stops)": "<b>{err}</b> (soste escluse)", "<b>{grade}% grade</b>": "<b>pendenza {grade}%</b>", "<b>{grade}% slope</b>": "<b>pendenza {grade}%</b>", "<b>{time}</b> · to {name}": "<b>{time}</b> · verso {name}", "<b>{time}</b> · {clock} local time": "<b>{time}</b> · {clock} ora locale", "<b>{time}</b>, arrived at {clock}": "<b>{time}</b>, arrivato alle {clock}", "<b>{time}</b>, arrived at {clock}, including {stop} min stopped": "<b>{time}</b>, arrivato alle {clock}, compresi {stop} min di sosta", "<b>{time}</b>, arriving at {clock}": "<b>{time}</b>, arrivo alle {clock}", "Added {n} climb tops and bottoms.": "Aggiunte {n} cime e fondi di salite.", "Added {n} huts and villages.": "Aggiunti {n} rifugi e paesi.", "Added {n} items from the backup.": "Aggiunti {n} elementi dal backup.", "Asking OpenStreetMap…": "Chiedo a OpenStreetMap…", "Average": "Media", "Average of the four races": "Media delle quattro gare", "Average, as a bar": "Media, come barra", "Backup file saved to your downloads.": "File di backup salvato nei download.", "Both: full race prep": "Entrambi: preparazione completa", "Bottom": "Fondo", "Changed since you saved it": "Modificato dopo il salvataggio", "Copied": "Copiato", "Copy": "Copia", "Copy text": "Copia il testo", "Couldn't load {src}. Check your internet connection.": "Impossibile caricare {src}. Controlla la connessione a internet.", "Couldn't make the FIT file: {why}": "Impossibile creare il file FIT: {why}", "Couldn't reach OpenStreetMap. Check your connection and try again.": "Impossibile raggiungere OpenStreetMap. Controlla la connessione e riprova.", "Couldn't save: this browser blocks storage. Use a backup file.": "Impossibile salvare: questo browser blocca la memoria. Usa un file di backup.", "Course profile only": "Solo il profilo del percorso", "Delete": "Elimina", "Everything in that backup is already here.": "Tutto quello che c'è in quel backup è già qui.", "Finish": "Arrivo", "Full race prep": "Preparazione completa", "How far off the watch was when you were 2 km from each checkpoint": "Di quanto sbagliava l'orologio quando eri a 2 km da ogni checkpoint", "How to read one entry:": "Come leggere una voce:", "Less than 5 min off": "Meno di 5 min di errore", "My pace": "Il mio passo", "My pace, {date}": "Il mio passo, {date}", "No climbs that big on this course, away from its checkpoints. Try a smaller size.": "Nessuna salita così grande su questo percorso, lontano dai suoi checkpoint. Prova una misura più piccola.", "No race prep": "Nessuna preparazione", "Not saved yet": "Non ancora salvato", "Nothing saved yet. Make one in step 1 and press “Save in my library”.": "Ancora niente di salvato. Creane uno nel passo 1 e premi «Salva nella mia libreria».", "Nothing saved yet. Make one in step 2 and press “Save in my library”.": "Ancora niente di salvato. Creane uno nel passo 2 e premi «Salva nella mia libreria».", "Nothing: no race prep": "Niente: nessuna preparazione", "Off by, 2 km before": "Errore a 2 km", "Only my pace from past races": "Solo il mio passo dalle gare passate", "Only the course profile": "Solo il profilo del percorso", "Only {n} samples so far (about {km} km). Add more activities for a steadier curve.": "Solo {n} campioni finora (circa {km} km). Aggiungi altre attività per una curva più stabile.", "Open": "Apri", "Open it to copy": "Aprilo per copiarlo", "OpenStreetMap answered with an error ({code}).": "OpenStreetMap ha risposto con un errore ({code}).", "OpenStreetMap didn't answer in time. Try again later.": "OpenStreetMap non ha risposto in tempo. Riprova più tardi.", "OpenStreetMap has no named huts or villages along this course, away from its checkpoints.": "OpenStreetMap non ha rifugi o paesi con un nome lungo questo percorso, lontano dai suoi checkpoint.", "OpenStreetMap is busy right now. Try again in a minute.": "OpenStreetMap è occupato in questo momento. Riprova tra un minuto.", "Opened from your library.": "Aperto dalla tua libreria.", "Opening files…": "Apro i file…", "Opening the course…": "Apro il percorso…", "Out of every 100 times the watch showed a time, how many were less than 5 minutes off": "Su 100 volte in cui l'orologio mostrava un tempo, quante sbagliavano di meno di 5 minuti", "Pace only": "Solo il passo", "Pause": "Pausa", "Play": "Play", "Reading {file}…": "Leggo {file}…", "Remove": "Rimuovi", "Remove {file}": "Rimuovi {file}", "Removed the climb tops and bottoms.": "Rimosse le cime e i fondi delle salite.", "Removed the huts and villages.": "Rimossi i rifugi e i paesi.", "Replace the course": "Sostituisci il percorso", "Saved in your library": "Salvato nella tua libreria", "Saved in your library.": "Salvato nella tua libreria.", "Section 1": "Sezione 1", "Section 2": "Sezione 2", "Selected: press Copy": "Selezionato: premi Copia", "Show on the watch": "Mostra sull'orologio", "Standing still": "Fermo", "Sure? Delete": "Sicuro? Elimina", "T1 course profile, one value per {step} m · {n} characters": "Profilo del percorso T1, un valore ogni {step} m · {n} caratteri", "That file isn't a HowFar backup.": "Quel file non è un backup di HowFar.", "The text for the setting <b>“Course profile”</b> · one slope every {step} m · {n} characters": "Il testo per l'impostazione <b>«Profilo del percorso»</b> · una pendenza ogni {step} m · {n} caratteri", "This course has no checkpoints, so HowFar will only count down to the finish. If the race publishes a file with checkpoints, use that one.": "Questo percorso non ha checkpoint, quindi HowFar farà il conto alla rovescia solo fino all'arrivo. Se la gara pubblica un file con i checkpoint, usa quello.", "Top": "Cima", "Unticked: {names}, a finish line the course passes by but doesn't end at, probably another race's. Tick it if it's a checkpoint of this race.": "Senza spunta: {names}, un arrivo vicino a cui passa il percorso ma dove non finisce, probabilmente di un'altra gara. Mettigli la spunta se è un checkpoint di questa gara.", "Untitled course": "Percorso senza nome", "Untitled pace": "Passo senza nome", "What you prepared": "Cosa hai preparato", "Within 5 min": "Entro 5 min", "You got there later": "Sei arrivato più tardi", "You got there sooner": "Sei arrivato prima", "You pasted both: it knows your pace from the first kilometre and every climb and descent ahead (P). This is HowFar with full race prep.": "Hai incollato entrambi: conosce il tuo passo dal primo chilometro e ogni salita e discesa che ti aspetta (P). Questo è HowFar con la preparazione completa.", "You pasted the course profile, so it knows every climb and descent to the checkpoint (P). Your pace it learns from today's run as you go.": "Hai incollato il profilo del percorso, quindi conosce ogni salita e discesa fino al checkpoint (P). Il tuo passo lo impara dalla corsa di oggi strada facendo.", "You pasted your pace from past races (here: the other three races in the test), so it knows how you climb and descend from the first kilometre. It still knows only how far away the checkpoint is and how much higher or lower (~).": "Hai incollato il tuo passo dalle gare passate (qui: le altre tre gare del test), quindi sa come sali e scendi dal primo chilometro. Sa ancora solo quanto è lontano il checkpoint e quanto è più in alto o più in basso (~).", "Your first race with HowFar, with nothing pasted in its settings. It learns your pace from today's run as you go, and knows only how far away the checkpoint is and how much higher or lower (~). After a few runs with HowFar it also remembers your past runs.": "La tua prima gara con HowFar, senza niente incollato nelle impostazioni. Impara il tuo passo dalla corsa di oggi strada facendo, e sa solo quanto è lontano il checkpoint e quanto è più in alto o più in basso (~). Dopo qualche corsa con HowFar ricorda anche le tue corse passate.", "added: {what}": "aggiunto: {what}", "bottom of a climb": "fondo di una salita", "hut": "rifugio", "not enough data here": "qui non ci sono abbastanza dati", "top of a climb": "cima di una salita", "village": "paese", "{dist} ahead, {m} m higher": "{dist} davanti, {m} m più in alto", "{dist} ahead, {m} m lower": "{dist} davanti, {m} m più in basso", "{dist} from the previous waypoint": "{dist} dal punto precedente", "{file} has no GPX or FIT file inside.": "{file} non contiene file GPX o FIT.", "{file} has no elevation data, so no profile can be made from it.": "{file} non ha dati di altitudine, quindi non se ne può ricavare un profilo.", "{file} has no times or altitude, so no pace can be learned from it.": "{file} non ha tempi o altitudine, quindi non se ne può ricavare un passo.", "{file} has no track in it.": "{file} non contiene una traccia.", "{file} isn't a GPX, FIT or ZIP file.": "{file} non è un file GPX, FIT o ZIP.", "{file} isn't a valid FIT file.": "{file} non è un file FIT valido.", "{len} · {n} checkpoints · saved {date}": "{len} · {n} checkpoint · salvato il {date}", "{len}, {up} m of climbing, 1 checkpoint.": "{len}, {up} m di dislivello positivo, 1 checkpoint.", "{len}, {up} m of climbing, {n} checkpoints.": "{len}, {up} m di dislivello positivo, {n} checkpoint.", "{name}: too few samples": "{name}: troppo pochi dati", "{n} activities · saved {date}": "{n} attività · salvato il {date}", "{n} checkpoints were left out because they aren't on this course's track (race files often list the whole race's).": "{n} checkpoint sono stati esclusi perché non sono sulla traccia di questo percorso (i file delle gare spesso elencano quelli di tutta la gara).", "{n} samples": "{n} campioni", "{n} samples, about {km} km of moving data.": "{n} campioni, circa {km} km in movimento.", "{race}: average minutes off": "{race}: minuti di errore in media", "{speed} m/s · {pace} per km": "{speed} m/s · {pace} al km", "{step} m at {grade}%": "{step} m al {grade}%"};
+window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\}/g,function(m,k){return k in v?v[k]:m}):x};
+(function(){try{var k="howfar.lang";document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-lang]");if(a)localStorage.setItem(k,a.getAttribute("data-lang"))});}catch(e){}})();</script></head>
+<body>
+<header class="site-head">
+<div class="wrap">
+<a class="wordmark" href="./" translate="no">HowFar<span>?</span></a>
+<nav aria-label="Sezioni" class="site-nav">
+<a href="#watch">Sull'orologio</a>
+<a href="#demo">Prova la demo</a>
+<a href="#install">Installa</a>
+<a href="#prepare">Prepara una gara</a>
+<a href="prepare.html">App di preparazione</a>
+<a href="#faq">Domande</a>
+</nav>
+<nav aria-label="Lingua" class="lang-switch" translate="no"><a data-lang="en" href="../" hreflang="en" lang="en" title="English">EN</a><a aria-current="true" data-lang="it" href="./" hreflang="it" lang="it" title="Italiano">IT</a><a data-lang="fr" href="../fr/" hreflang="fr" lang="fr" title="Français">FR</a><a data-lang="de" href="../de/" hreflang="de" lang="de" title="Deutsch">DE</a></nav></div>
+</header>
+<main>
+<section class="hero">
+<div class="wrap">
+<p class="eyebrow">Un data field gratuito per orologi Garmin</p>
+<h1>Quante volte hai voluto sapere quanto manca al prossimo checkpoint?</h1>
+<p class="lede">L'hai chiesto a un volontario e poi ti sei arrabbiato per quanto si sbagliava. HowFar ti mette la risposta al polso: il tempo al prossimo checkpoint del tuo percorso, calcolato da come sali e scendi <em>tu</em>, e aggiornato ogni secondo.</p>
+<div class="hero-actions">
+<a class="btn primary" href="#demo">▶ Guardalo su una gara vera</a>
+<a class="btn" href="#install">Mettilo sul mio orologio</a>
+</div>
+<ul aria-label="Hashtags" class="tags" translate="no">
+<li>#ultratrail</li><li>#trailrunning</li><li>#ultrarunning</li><li>#skyrunning</li><li>#mountainrunning</li><li>#garmin</li><li>#connectiq</li><li>#enduro3</li><li>#fenix8</li>
+</ul>
+</div>
+</section>
+<section id="watch">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Sull'orologio</p>
+<h2>Cosa mostra il campo</h2>
+<p class="muted">Aggiungi HowFar a una delle schermate dati della tua attività, carica un percorso con i checkpoint e corri. Mostra tre righe, quattro su un campo a schermo intero.</p>
+</div>
+<div class="explain-grid">
+<div aria-label="Esempio: P Rifugio Deffeyes, 1:20 h, @ 19:10" class="watch watch-small" role="img">
+<div class="screen" translate="no">
+<div class="w-label">P Rif. Deffeyes</div>
+<div class="w-time">1:20<span class="w-unit">h</span></div>
+<div class="w-arrive">@ 19:10</div>
+</div>
+</div>
+<ol class="callouts">
+<li><b>Riga in alto: il prossimo checkpoint.</b> Il nome viene dal tuo percorso, o da un punto che hai aggiunto nella pagina di preparazione, come la cima di una salita o un rifugio. La lettera davanti ti dice quanto sa l'orologio del sentiero che ti aspetta: <span class="pill">P</span> conosce ogni salita e discesa fino al checkpoint (gli hai dato il profilo del percorso, vedi <a href="#prepare">Prepara una gara</a>); <span class="pill">~</span> sa solo quanto è lontano il checkpoint e quanto è più in alto o più in basso.</li>
+<li><b>Numero grande: il tempo per arrivarci</b> finché continui a muoverti, preciso solo quanto si può sapere: ore e minuti a passi di 5 minuti da un'ora di distanza (<i>2:15 h</i>), minuti interi più vicino (<i>42 min</i>), minuti e secondi negli ultimi 5 minuti. Nei primi chilometri il numero è grigio: sta ancora imparando come ti muovi oggi. Il tempo fermo a un ristoro non è compreso, perché nessuno può indovinare quanto ti fermerai.</li>
+<li><b>Riga in basso: l'orario di arrivo.</b> L'ora del giorno in cui arriverai, nel formato a 12 o 24 ore del tuo orologio.</li>
+<li><b>Su un campo a schermo intero: il checkpoint successivo.</b> Il suo nome e quando ci arriverai, per esempio <i>poi Baite Youlaz @ 15:25</i>. Serve il profilo del percorso, perché l'orologio dice a un data field solo il prossimo checkpoint.</li>
+</ol>
+</div>
+<p class="small muted explain-note">Senza un percorso, o tra un percorso e l'altro, il campo mostra <b>--</b>. Su una schermata con molti campi mostra solo il numero grande.</p>
+</div>
+</section>
+<section id="demo">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Prova la demo</p>
+<h2>Una gara vera, accelerata</h2>
+<p class="muted">Tor des Géants 2026 (TORX), sezione 1: da Courmayeur a Valgrisenche, 48,5 km e 3.800 m di dislivello positivo, corsi in 13 ore e mezza. L'orologio qui sotto mostra cosa avrebbe indicato HowFar in ogni momento di quella gara, calcolato dalla traccia registrata.</p>
+</div>
+<ol aria-label="Come usare la demo" class="howto">
+<li><b>Premi Play.</b> La gara scorre 300 volte più veloce della realtà: tutte le 13 ore e mezza in meno di 3 minuti. Usa <b>60×</b> per guardare da vicino o <b>900×</b> per andare veloce.</li>
+<li><b>Trascina il cursore</b> per saltare a qualsiasi momento, o clicca in un punto qualsiasi del grafico altimetrico.</li>
+<li><b>Scegli cosa hai preparato</b>, sotto l'orologio: niente, il tuo passo dalle gare passate, il profilo del percorso o entrambi. L'orologio mostra cosa avrebbe detto HowFar in quel caso. Qualunque cosa scegli, durante la gara nota anche come sta andando la tua giornata.</li>
+<li><b>Confronta</b> due di queste scelte nel grafico «di quanto ha sbagliato» qui sotto, con «Confronta con».</li>
+</ol>
+<div class="demo-grid">
+<div class="watch-col">
+<div aria-label="Orologio che mostra il campo HowFar durante la gara" class="watch" role="img">
+<div class="screen" translate="no">
+<div class="w-label" id="wLabel">P Col d'Arp</div>
+<div class="w-time" id="wTime">1:10<span class="w-unit">h</span></div>
+<div class="w-arrive" id="wArrive">@ 14:05</div>
+</div>
+</div>
+<fieldset class="prep-choice" id="pickMain">
+<legend>Cosa hai incollato nelle impostazioni di HowFar prima della gara?</legend>
+</fieldset>
+<p class="watch-caption" id="modeNote"></p>
+</div>
+<div class="panel">
+<div class="controls">
+<button aria-label="Play" class="btn primary" id="play" type="button">▶ Play</button>
+<div aria-label="Velocità di riproduzione" class="seg" role="group">
+<button aria-pressed="false" data-speed="60" type="button">60×</button>
+<button aria-pressed="true" data-speed="300" type="button">300×</button>
+<button aria-pressed="false" data-speed="900" type="button">900×</button>
+</div>
+<span aria-live="off" class="race-clock" id="raceClock" translate="no">2:10:00</span>
+</div>
+<input aria-label="Momento della gara" class="scrub" id="scrub" max="1000" min="0" type="range" value="160"/>
+<dl class="readout">
+<dt>Tempo di gara</dt><dd id="rTime"></dd>
+<dt>Dove</dt><dd id="rPos"></dd>
+<dt>Prossimo checkpoint</dt><dd id="rNext"></dd>
+<dt>L'orologio dice</dt><dd id="rSays"></dd>
+<dt>Ci è voluto davvero</dt><dd id="rActual"></dd>
+<dt>L'orologio ha sbagliato di</dt><dd id="rErr"></dd>
+</dl>
+<div aria-live="off" class="learned">
+<span class="eyebrow">Cosa ha notato oggi l'orologio</span>
+<span id="lScale"></span>
+<span id="lForm"></span>
+<span id="lFatigue"></span>
+</div>
+</div>
+</div>
+<div class="chart-block">
+<div class="chart-head">
+<h3>Dove sei sul percorso</h3>
+<span class="small muted">In verde: il sentiero fino al prossimo checkpoint. Clicca per saltare lì.</span>
+</div>
+<div class="chart-box" id="elevBox"><svg aria-label="Elevation profile of the course with checkpoints and current position" class="wide" id="elev" role="img" viewbox="0 0 1000 300"></svg></div>
+</div>
+<div class="chart-block">
+<div class="chart-head">
+<h3>Di quanto ha sbagliato l'orologio</h3>
+<div class="legend">
+<span><i style="background: var(--series-p)"></i><span id="legMain"></span></span>
+<label class="picker legend-picker" for="pickCmp"><span class="swatch" style="background: var(--series-a)"></span>Confronta con
+              <select id="pickCmp"></select>
+</label>
+</div>
+</div>
+<p class="small muted">Per ogni momento della gara: il tempo previsto da HowFar (prima che l'orologio lo arrotondi), meno il tempo che ci è voluto davvero per arrivare al prossimo checkpoint (soste escluse). Sopra lo zero sei arrivato prima di quanto diceva l'orologio; sotto lo zero, dopo. La fascia verde è ±5 minuti. Nota come l'errore si riduce man mano che il checkpoint si avvicina, e quanto è migliore la linea di HowFar completo.</p>
+<div class="chart-box" id="errBox"><svg aria-label="How far off the two chosen predictions were during the race" class="wide" id="err" role="img" viewbox="0 0 1000 270"></svg></div>
+</div>
+</div>
+</section>
+<section id="how">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Come funziona</p>
+<h2>Impara come ti muovi in montagna</h2>
+</div>
+<div class="cols-3">
+<div>
+<h3>Il tuo passo su ogni pendenza</h3>
+<p class="muted">Ogni 25 m nota quanto è ripido il sentiero e quanto vai veloce, dalle discese ripide alle salite ripide. Le tue gare passate gli danno un vantaggio iniziale; i chilometri di oggi contano sempre di più man mano che la gara va avanti.</p>
+</div>
+<div>
+<h3>Il sentiero davanti</h3>
+<p class="muted">Se gli dai il profilo del percorso, conosce ogni salita e discesa fino al checkpoint e somma il tuo passo su ciascuna. Senza, conosce solo il dislivello totale, che è più approssimativo sui sentieri a saliscendi.</p>
+</div>
+<div>
+<h3>Come sta andando la tua giornata</h3>
+<p class="muted">Nota se sei più veloce o più lento che nelle gare passate, e se hai rallentato negli ultimi chilometri. Corregge anche il fatto che l'orologio misura più distanza della mappa del percorso: tornanti e incertezze del GPS aggiungono circa il 15% al Tor.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="compare">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Funziona?</p>
+<h2>Provato su quattro gare vere</h2>
+<p class="muted">Ogni gara è stata ripercorsa e la previsione dell'orologio confrontata con la realtà in ogni momento. Per «Solo il passo» e «Preparazione completa», il passo è stato ricavato dalle altre tre gare, così nessuna gara è servita a testare sé stessa. Meno minuti e una percentuale più alta di «meno di 5 min di errore» sono meglio. Clicca una riga per vederla sull'orologio della demo.</p>
+</div>
+<div class="table-wrap">
+<table class="results" id="results">
+<thead><tr></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<ul class="small muted caveat column-notes">
+<li><b>Colonne delle gare e Media:</b> di quanti minuti sbagliava l'orologio, in media, ogni volta che il prossimo checkpoint era a meno di un'ora.</li>
+<li><b>Meno di 5 min di errore:</b> su 100 volte in cui l'orologio mostrava un tempo, quante sbagliavano di meno di 5 minuti.</li>
+<li><b>Errore a 2 km:</b> di quanto sbagliava l'orologio quando eri a 2 km da ogni checkpoint, il momento in cui spesso decidi se mangiare o bere adesso.</li>
+<li>Il percorso di STL25 non aveva checkpoint, quindi è stato diviso in due tratti da 13 km.</li>
+</ul>
+<details class="sources">
+<summary>Cos'altro è stato provato</summary>
+<p class="muted">Le stesse gare sono servite a provare altri modi di prevedere: le classiche regole escursionistiche (Naismith, Tobler), il km-sforzo ITRA, un modello del costo energetico della corsa in salita e in discesa, un modello di machine learning, una correzione per il rallentamento con la distanza e una correzione ogni pochi chilometri basata sull'ultimo tratto. Nessuno ha fatto meglio, quindi HowFar non li usa.</p>
+<ul>
+<li>Minetti A.E. et al. (2002), <a href="https://iris.unibs.it/retrieve/ddc633e4-3c03-4e2e-e053-3705fe0a4c80/Minetti%20JAP%202002.pdf">Energy cost of walking and running at extreme uphill and downhill slopes</a>.</li>
+<li>La <a href="https://en.wikipedia.org/wiki/Naismith%27s_rule">regola di Naismith</a>, e la funzione di Tobler in <a href="https://www.biorxiv.org/content/10.1101/188417.full.pdf">una nuova verifica su dati raccolti in massa</a>.</li>
+<li>ITRA, <a href="https://itra.run/About/DiscoverTrailRunning">km-sforzo</a>.</li>
+<li>Il calo del ritmo in un trail di 173 km, <a href="https://peerj.com/articles/2591.pdf">PeerJ 2016</a>.</li>
+<li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12656631/">Real-time performance prediction in long-distance trail running</a>, Sports 2025.</li>
+</ul>
+</details>
+</div>
+</section>
+<section id="install">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Installa</p>
+<h2>Mettilo sul tuo orologio</h2>
+<p class="muted">HowFar è gratuito nel Garmin Connect IQ Store, per Enduro 3, fēnix 8 ed epix Pro (Gen 2). Lo installi dal telefono: niente da copiare, nessun computer.</p>
+</div>
+<div class="steps-grid">
+<div class="step-card">
+<h3>1. Installalo dallo store</h3>
+<ol class="steps">
+<li>Sul telefono apri il <b>Connect IQ Store</b>: nell'app <b>Garmin Connect</b> è nel menu del tuo orologio, oppure usa l'app separata <b>Connect IQ</b>.</li>
+<li>Cerca <b>HowFar</b> e aprilo.</li>
+<li>Tocca <b>Installa</b> e scegli il tuo orologio se te lo chiede.</li>
+<li>Sincronizza l'orologio con il telefono. HowFar arriva sull'orologio alla prossima sincronizzazione.</li>
+</ol>
+</div>
+<div class="step-card">
+<h3>2. Aggiungilo a una schermata dati</h3>
+<ol class="steps">
+<li>Sull'orologio apri l'attività con cui fai le gare, per esempio <b>Trail Run</b>, ma non avviarla.</li>
+<li>Tieni premuto il tasto <b>MENU</b> (a sinistra, in mezzo) e apri le impostazioni dell'attività, poi <b>Schermate dati</b>.</li>
+<li>Scegli una schermata, il campo da sostituire, poi <b>Connect IQ</b> → <b>HowFar</b>.</li>
+<li>Consiglio: dagli una schermata con uno o due campi, così il nome del checkpoint e l'orario di arrivo ci stanno. Su una schermata tutta sua mostra anche il checkpoint successivo.</li>
+</ol>
+</div>
+<div class="step-card">
+<h3>3. Corri con un percorso</h3>
+<ol class="steps">
+<li>Carica il percorso della gara sull'orologio come al solito (<b>Navigazione</b> → <b>Percorsi</b>), meglio se con i checkpoint segnati.</li>
+<li>Avvia l'attività. HowFar mostra il prossimo checkpoint e fa il conto alla rovescia.</li>
+<li>Nei primi chilometri il tempo è grigio ed è solo una stima approssimativa. Si assesta man mano che vede come ti muovi.</li>
+<li>Alla fine salva l'attività: HowFar ricorda quello che ha imparato per la prossima gara.</li>
+</ol>
+</div>
+</div>
+<details class="sources alt-install">
+<summary>Niente telefono a portata di mano? Copialo con il cavo</summary>
+<ol class="steps">
+<li>Scarica il file per il tuo modello dall'<a href="https://github.com/howfar-garmin/howfar/releases/latest">ultima versione su GitHub</a>, per esempio <b>HowFar-enduro3.prg</b> per un Enduro 3.</li>
+<li>Collega l'orologio al computer con il cavo di ricarica.</li>
+<li><b>Windows:</b> apri Esplora file; l'orologio compare come un telefono. <b>Mac:</b> installa l'app gratuita <a href="https://openmtp.ganeshrvel.com/">OpenMTP</a> e aprila (prima chiudi Garmin Express se è aperto).</li>
+<li>Apri la cartella <b>GARMIN</b>, poi <b>Apps</b>, e trascinaci il file scaricato. Scollega l'orologio: dopo qualche secondo HowFar è installato.</li>
+</ol>
+<p class="step-note"><b>Da sapere:</b> copiato così, HowFar funziona del tutto, ma non ha impostazioni, quindi non puoi incollare il tuo passo dalle gare passate né il profilo del percorso. Per passare poi alla versione dello store, prima cancella il file da <b>GARMIN → Apps</b>, così non ti ritrovi con due copie.</p>
+</details>
+</div>
+</section>
+<section id="prepare">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Prepara una gara (facoltativo)</p>
+<h2>Preciso dal primo chilometro</h2>
+<p class="muted">HowFar funziona senza nessuna preparazione. Due aggiunte facoltative, incollate nelle impostazioni del campo nell'app Garmin Connect sul telefono, lo migliorano. (Un campo copiato con il cavo non ha impostazioni.)</p>
+<p class="muted">Lì puoi anche aggiungere punti tuoi a cui fare il conto alla rovescia: la cima e il fondo di ogni salita importante, rifugi e paesi lungo il percorso. Il percorso sul tuo orologio resta com'è.</p>
+<p class="prep-cta"><a class="btn primary" href="prepare.html">Apri la preparazione</a> <span class="small muted">Crea entrambi i testi dai tuoi file, direttamente nel browser.</span></p>
+</div>
+<div class="tools-grid">
+<article class="tool">
+<h3>Il tuo passo dalle gare passate</h3>
+<p class="muted small">Così HowFar sa come sali e scendi già prima della partenza. Lo ricavi da una o più delle tue gare passate: in Garmin Connect apri l'attività, premi l'icona a ingranaggio e scegli <b>Esporta originale</b> (o <b>Esporta in GPX</b>). Qui sotto: cosa ha imparato dalle due sezioni del Tor. Passa sul grafico per vedere il tuo passo a ogni pendenza.</p>
+<div class="chart-box" id="modelBox"><svg aria-label="Speed by slope learned from section 1 and section 2" id="model" role="img" viewbox="0 0 640 300"></svg></div>
+<div class="string-box">
+<div class="chart-head"><span class="small muted">Cosa incolli nell'impostazione «Il tuo passo dalle gare passate»</span><button class="btn" data-copy="modelString" type="button">Copia</button></div>
+<pre id="modelString"></pre>
+</div>
+</article>
+<article class="tool">
+<h3>Il profilo del percorso</h3>
+<p class="muted small">Così HowFar conosce ogni salita e discesa tra i checkpoint (la <span class="pill">P</span> sull'orologio). Lo ricavi dal file del percorso della gara, lo stesso GPX che carichi sull'orologio. Per una gara a tappe, come il Tor, fanne uno per tappa e incolla quello giusto a ogni base vita.</p>
+<div class="string-box">
+<div class="chart-head"><span class="small muted" id="profileMeta">Profilo del percorso</span><button class="btn" data-copy="profileString" type="button">Copia</button></div>
+<pre id="profileString"></pre>
+</div>
+<div class="string-box">
+<span class="small muted" id="decodeTitle">Come leggerlo</span>
+<div class="decode" id="decode"></div>
+</div>
+<p class="muted small">Dove incollarlo: app Garmin Connect → il tuo orologio → <b>App Connect IQ</b> → <b>HowFar</b> → <b>Impostazioni</b>. L'orologio lo riceve alla prossima sincronizzazione.</p>
+</article>
+</div>
+<p class="prep-cta"><a class="btn primary" href="prepare.html">Crea il tuo nella preparazione</a> <span class="small muted">Tiene anche una libreria dei tuoi passi e dei profili delle gare. I tuoi file non lasciano mai il tuo dispositivo.</span></p>
+</div>
+</section>
+<section id="faq">
+<div class="wrap">
+<div class="section-head">
+<p class="eyebrow">Domande</p>
+<h2>Da sapere</h2>
+</div>
+<div class="faq">
+<details><summary>Serve un telefono o il segnale durante la gara?</summary><p>No. Tutto succede sull'orologio. Il telefono serve solo prima della gara, per incollare le impostazioni facoltative.</p></details>
+<details><summary>Consuma più batteria?</summary><p>Non usa sensori propri: legge la distanza, l'altitudine e le informazioni del percorso che l'orologio registra già, e fa un piccolo calcolo una volta al secondo. Il GPS e lo schermo dell'orologio consumano molto di più.</p></details>
+<details><summary>E il tempo ai ristori?</summary><p>HowFar conta solo il tempo in cui ti muovi. Non può sapere se ti fermerai due minuti o venti, quindi le soste non sono mai comprese: né nel conto alla rovescia né nell'orario di arrivo. Se pensi di fermarti lungo la strada, aggiungi quel tempo a mente: con 1:10 h sull'orologio e una pausa di 15 minuti a un ristoro prima del checkpoint, conta di arrivare in circa 1:25 h. Mentre sei fermo il conto alla rovescia aspetta, e quando riparti riprende da dove era.</p></details>
+<details><summary>E se esco dal percorso?</summary><p>HowFar usa la distanza dal prossimo checkpoint che gli dà la navigazione dell'orologio. Finché sei fuori dalla traccia la stima è più approssimativa; quando ci torni, si assesta di nuovo.</p></details>
+<details><summary>E se il percorso sull'orologio ha checkpoint che il profilo del percorso non ha?</summary><p>Nessun problema. HowFar capisce dove si trova ogni checkpoint sul profilo da quanto manca all'arrivo, quindi conosce comunque ogni salita e discesa fino a lì. Gestisce anche i checkpoint che il profilo ha e l'orologio no, e un file del percorso che è una versione leggermente diversa della gara.</p></details>
+<details><summary>Si adegua quando cambia la mia forma?</summary><p>Sì. Alla fine di ogni attività con HowFar su una schermata dati, aggiunge quello che ha imparato a quello che ricorda, e ogni volta le attività più vecchie contano un po' meno: dopo altre cinque attività una vecchia conta meno della metà, dopo dieci circa un quinto. Durante la gara confronta anche oggi con quello che ricorda, quindi una giornata buona o storta si vede già nei primi chilometri. L'unica cosa che non sbiadisce è il passo che incolli dalle gare passate: fanne uno nuovo quando invecchia.</p></details>
+<details><summary>Perché all'inizio della gara sbaglia?</summary><p>Sta ancora imparando come ti muovi oggi. Incollare il tuo passo dalle gare passate rende i primi chilometri molto più precisi.</p></details>
+<details><summary>Dove vanno i miei dati?</summary><p>Da nessuna parte. L'orologio tiene quello che impara, e i file delle gare che usi per prepararti restano sul tuo computer o telefono. L'unica eccezione è facoltativa: nella pagina di preparazione, «Aggiungi rifugi e paesi» chiede a OpenStreetMap cosa c'è intorno al tuo percorso, inviando solo gli angoli di un rettangolo che lo contiene.</p></details>
+<details><summary>Su quali orologi funziona?</summary><p>Garmin Enduro 3, fēnix 8 (43 e 47 mm, Solar 47 e 51 mm) ed epix Pro (Gen 2) 42, 47 e 51 mm. Si possono aggiungere altri modelli.</p></details>
+</div>
+</div>
+</section>
+</main>
+<footer class="site-foot">
+<div class="wrap">
+<span>HowFar · gratuito e <a href="https://github.com/howfar-garmin/howfar">open source</a> (MIT) · non affiliato a Garmin</span>
+<span class="foot-tags" translate="no">#ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning #garmin #connectiq</span>
+</div>
+</footer>
+<script src="../demo/torx-s1.js?v=13"></script>
+<script src="../js/demo.js?v=19"></script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 
 **How long to the next checkpoint?** A free data field for Garmin watches that tells trail and ultra runners the time to the next checkpoint of their course, learned from how they climb and descend.
 
-**[Website and demo](https://howfar-garmin.github.io/howfar/)** · **[Race prep](https://howfar-garmin.github.io/howfar/prepare.html)** · **License:** MIT
+**[Website and demo](https://howfar-garmin.github.io/howfar/)** ([IT](https://howfar-garmin.github.io/howfar/it/) · [FR](https://howfar-garmin.github.io/howfar/fr/) · [DE](https://howfar-garmin.github.io/howfar/de/)) · **[Race prep](https://howfar-garmin.github.io/howfar/prepare.html)** · **License:** MIT
 
 ![HowFar on a watch](store/images/hero-1440x720.png)
 

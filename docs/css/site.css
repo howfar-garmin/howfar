@@ -416,6 +416,11 @@ label.btn { cursor: pointer; }
 #ownName { width: 13em; max-width: 60vw; }
 #ownKm { width: 5em; }
 svg.pickable { cursor: crosshair; }
+.kind { display: inline-block; font: 600 0.72rem/1.4 var(--font-body); border-radius: 999px; padding: 1px 9px; border: 1px solid var(--ink-2); color: var(--ink); background: var(--surface); }
+.kind.minor { border-color: var(--line); color: var(--ink-3); }
+button.kind { cursor: pointer; }
+button.kind:hover { border-color: var(--accent); }
+.prep-table tr.minor-row td:first-child { color: var(--ink-2); }
 .fit-out summary { cursor: pointer; font-weight: 600; color: var(--ink-2); }
 .fit-out p { margin: 8px 0; max-width: 70ch; }
 

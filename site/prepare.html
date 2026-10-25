@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=45">
+<link rel="stylesheet" href="css/site.css?v=46">
 </head>
 <body>
 
@@ -31,7 +31,7 @@
     <div class="wrap">
       <p class="eyebrow">Race prep</p>
       <h1>Get HowFar ready for your next race</h1>
-      <p class="lede">HowFar learns your pace on every slope while you run. What it can't learn on its own is the course ahead. Give it the course profile, with every climb and descent between checkpoints, and it knows what's coming before you get there. Only with the profile can it also show the checkpoint after the next, and count down to points you add. Make it here, then paste it into the Garmin Connect app. It's optional: without it, HowFar still counts down to your watch's checkpoints.</p>
+      <p class="lede">HowFar learns your pace on every slope while you run. What it can't learn on its own is the course ahead. Give it the course profile, with every climb and descent between checkpoints, and it knows what's coming before you get there. Only with the profile can it also show the checkpoint after the next, and points you add. Make it here, then paste it into the Garmin Connect app. It's optional: without it, HowFar still counts down to your watch's checkpoints.</p>
       <ol class="howto prep-overview" aria-label="The two steps">
         <li><b>Your checkpoints.</b> Add the course file of the race you'll run, and any points you want to add.</li>
         <li><b>Paste on the watch.</b> Copy the text into HowFar's settings in Garmin Connect.</li>
@@ -77,10 +77,10 @@
               </div>
               <div class="chart-box" id="courseChartBox"><svg id="courseChart" class="wide" viewBox="0 0 1000 280" role="img" aria-label="Elevation profile of the course with its checkpoints"></svg></div>
             </div>
-            <p class="small muted" id="coursePickNote" hidden>Untick a checkpoint that isn't part of this race: the text below updates.</p>
+            <p class="small muted" id="coursePickNote" hidden>Untick a checkpoint that isn't part of this race: the text below updates. <b>Main</b> points are what the big number counts down to; <b>minor</b> ones (the points you add, at first) show on the bottom line of a full-screen field as you approach them, as in <i>via Col d'Arp @ 14:20</i>. Press Main or Minor to switch a point.</p>
             <div class="table-wrap">
               <table class="results prep-table">
-                <thead><tr><th scope="col">Checkpoint</th><th scope="col" class="num">At km</th><th scope="col" class="num">From the previous</th><th scope="col" class="num">Climb on the way</th></tr></thead>
+                <thead><tr><th scope="col">Checkpoint</th><th scope="col" class="num">At km</th><th scope="col" class="num">From the previous</th><th scope="col" class="num">Climb on the way</th><th scope="col">Main or minor</th></tr></thead>
                 <tbody id="courseRows"></tbody>
               </table>
             </div>
@@ -90,7 +90,7 @@
 
             <div class="add-points" id="addPoints">
               <h3>Add more points</h3>
-              <p class="small muted">HowFar will count down to these too: climbs and huts found for you, or any point of your own, like a spring or a viewpoint. They appear in the list above, where you can untick any of them.</p>
+              <p class="small muted">HowFar shows these too: climbs and huts found for you, or any point of your own, like a spring or a viewpoint. They start as minor points, shown on the way; make one main to count down to it. They appear in the list above, where you can switch or untick any of them.</p>
               <div class="add-row">
                 <button type="button" class="btn" id="addClimbs">Add climb tops and bottoms</button>
                 <label class="field inline" for="climbMin">for climbs of at least
@@ -213,6 +213,6 @@
   </div>
 </footer>
 
-<script type="module" src="js/prepare.js?v=17"></script>
+<script type="module" src="js/prepare.js?v=18"></script>
 </body>
 </html>

@@ -20,8 +20,10 @@ class WaypointEtaView extends WatchUi.DataField {
     hidden var _name as String?;
     hidden var _usingProfile as Boolean = false;
     hidden var _thenWord as String;   // "then", in the watch's language
+    hidden var _viaWord as String;    // "via": the bottom line names a minor point on the way
     hidden var _learningWord as String;
-    hidden var _thenName as String?;  // the profile point after the next one
+    hidden var _thenName as String?;  // the minor point on the way, or the main point after the next one
+    hidden var _thenVia as Boolean = false;
     hidden var _thenSec as Number?;
     hidden var _smoothSpeed as Float?;
     hidden var _lastName as String?;
@@ -34,6 +36,7 @@ class WaypointEtaView extends WatchUi.DataField {
         _estimator = new EtaEstimator(_model);
         _scale = new CourseScale();
         _thenWord = WatchUi.loadResource(Rez.Strings.Then) as String;
+        _viaWord = WatchUi.loadResource(Rez.Strings.Via) as String;
         _learningWord = WatchUi.loadResource(Rez.Strings.Learning) as String;
         var stored = Application.Storage.getValue(STORAGE_KEY);
         if (stored instanceof Array) {
@@ -136,7 +139,12 @@ class WaypointEtaView extends WatchUi.DataField {
 
         _thenName = null;
         _thenSec = null;
-        if (_usingProfile && profile != null) {
+        _thenVia = false;
+        if (_usingProfile && profile != null && profile.via != null) {
+            _thenName = profile.followingName(profile.via as Number);
+            _thenSec = (profile.viaTime(_estimator, scale) + 0.5).toNumber();
+            _thenVia = true;
+        } else if (_usingProfile && profile != null) {
             var i = profile.following();
             if (i != null) {
                 _thenName = profile.followingName(i);
@@ -246,7 +254,7 @@ class WaypointEtaView extends WatchUi.DataField {
         if (withThen) {
             drawTime(dc, w / 2, h * 0.45, f[withExtras], main, unit, timeColor, fg, bg);
             dc.drawText(w / 2, h * 0.64, Graphics.FONT_XTINY, arrive, center);
-            var then = fitText(dc, _thenWord + " " + thenName, " @ " + WpUtil.formatClock(thenSec as Number),
+            var then = fitText(dc, (_thenVia ? _viaWord : _thenWord) + " " + thenName, " @ " + WpUtil.formatClock(thenSec as Number),
                 bottomObscured ? w * 0.8 : maxW);  // a round screen is still 0.8 wide this low
             dc.drawText(w / 2, h * (bottomObscured ? 0.80 : 0.86), Graphics.FONT_XTINY, then, center);
             return;

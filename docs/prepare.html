@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&amp;family=Public+Sans:wght@400;500;600&amp;family=Saira+Semi+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="css/site.css?v=45" rel="stylesheet"/>
+<link href="css/site.css?v=46" rel="stylesheet"/>
 <link href="https://howfar-garmin.github.io/howfar/prepare.html" hreflang="en" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/it/prepare.html" hreflang="it" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/fr/prepare.html" hreflang="fr" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/de/prepare.html" hreflang="de" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/prepare.html" hreflang="x-default" rel="alternate"/><script>window.HOWFAR_LANG="en";window.HOWFAR_T={};
 window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\}/g,function(m,k){return k in v?v[k]:m}):x};
 (function(){try{var k="howfar.lang";document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-lang]");if(a)localStorage.setItem(k,a.getAttribute("data-lang"))});if(!localStorage.getItem(k)){var l=((navigator.languages&&navigator.languages[0])||navigator.language||"").slice(0,2).toLowerCase();if(["it", "fr", "de"].indexOf(l)>=0){localStorage.setItem(k,l);location.replace(l+"/"+location.pathname.split("/").pop()+location.hash)}}}catch(e){}})();</script></head>
@@ -32,7 +32,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="wrap">
 <p class="eyebrow">Race prep</p>
 <h1>Get HowFar ready for your next race</h1>
-<p class="lede">HowFar learns your pace on every slope while you run. What it can't learn on its own is the course ahead. Give it the course profile, with every climb and descent between checkpoints, and it knows what's coming before you get there. Only with the profile can it also show the checkpoint after the next, and count down to points you add. Make it here, then paste it into the Garmin Connect app. It's optional: without it, HowFar still counts down to your watch's checkpoints.</p>
+<p class="lede">HowFar learns your pace on every slope while you run. What it can't learn on its own is the course ahead. Give it the course profile, with every climb and descent between checkpoints, and it knows what's coming before you get there. Only with the profile can it also show the checkpoint after the next, and points you add. Make it here, then paste it into the Garmin Connect app. It's optional: without it, HowFar still counts down to your watch's checkpoints.</p>
 <ol aria-label="The two steps" class="howto prep-overview">
 <li><b>Your checkpoints.</b> Add the course file of the race you'll run, and any points you want to add.</li>
 <li><b>Paste on the watch.</b> Copy the text into HowFar's settings in Garmin Connect.</li>
@@ -75,10 +75,10 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 <div class="chart-box" id="courseChartBox"><svg aria-label="Elevation profile of the course with its checkpoints" class="wide" id="courseChart" role="img" viewbox="0 0 1000 280"></svg></div>
 </div>
-<p class="small muted" hidden="" id="coursePickNote">Untick a checkpoint that isn't part of this race: the text below updates.</p>
+<p class="small muted" hidden="" id="coursePickNote">Untick a checkpoint that isn't part of this race: the text below updates. <b>Main</b> points are what the big number counts down to; <b>minor</b> ones (the points you add, at first) show on the bottom line of a full-screen field as you approach them, as in <i>via Col d'Arp @ 14:20</i>. Press Main or Minor to switch a point.</p>
 <div class="table-wrap">
 <table class="results prep-table">
-<thead><tr><th scope="col">Checkpoint</th><th class="num" scope="col">At km</th><th class="num" scope="col">From the previous</th><th class="num" scope="col">Climb on the way</th></tr></thead>
+<thead><tr><th scope="col">Checkpoint</th><th class="num" scope="col">At km</th><th class="num" scope="col">From the previous</th><th class="num" scope="col">Climb on the way</th><th scope="col">Main or minor</th></tr></thead>
 <tbody id="courseRows"></tbody>
 </table>
 </div>
@@ -86,7 +86,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <p class="step-note" hidden="" id="readOnlyNote">This course was saved before saved courses could be changed. To change its checkpoints or add points, add its course file again and save it.</p>
 <div class="add-points" id="addPoints">
 <h3>Add more points</h3>
-<p class="small muted">HowFar will count down to these too: climbs and huts found for you, or any point of your own, like a spring or a viewpoint. They appear in the list above, where you can untick any of them.</p>
+<p class="small muted">HowFar shows these too: climbs and huts found for you, or any point of your own, like a spring or a viewpoint. They start as minor points, shown on the way; make one main to count down to it. They appear in the list above, where you can switch or untick any of them.</p>
 <div class="add-row">
 <button class="btn" id="addClimbs" type="button">Add climb tops and bottoms</button>
 <label class="field inline" for="climbMin">for climbs of at least
@@ -203,6 +203,6 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <span class="foot-tags" translate="no">#ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning</span>
 </div>
 </footer>
-<script src="js/prepare.js?v=17" type="module"></script>
+<script src="js/prepare.js?v=18" type="module"></script>
 </body>
 </html>

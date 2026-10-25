@@ -290,3 +290,24 @@ function testProfileCountsDownToItsOwnPoints(logger as Test.Logger) as Boolean {
     Test.assert(near(p.targetDist, 1100.0, 0.01));
     return true;
 }
+
+(:test)
+function testProfileMinorPointOnTheWay(logger as Test.Logger) as Boolean {
+    var est = new EtaEstimator(new SpeedGradeModel());
+    // a climb top marked minor ("+"): the field keeps counting down to B, the top is "via"
+    var p = new CourseProfile("p1;100;+Top 900m|800|0;B|1200|0");
+    Test.assert(p.update("B", 1700.0, 1700.0, 300.0, 1.0));
+    Test.assert((p.targetName("B") as String).equals("B"));
+    Test.assert(near(p.targetDist, 1700.0, 0.01));
+    Test.assert(p.followingName(p.via as Number).equals("Top 900m"));
+    Test.assert(near(p.viaTime(est, 1.0), est.timeForGrade(500.0, 0.0, 1.0), 0.01));
+    // past the top: nothing on the way any more
+    Test.assert(p.update("B", 1100.0, 1100.0, 900.0, 1.0));
+    Test.assert(p.via == null);
+    // the watch's course has the top too, but it's minor: count down to B through it
+    var q = new CourseProfile("p1;100;+Top 900m|800|0;B|1200|0");
+    Test.assert(q.update("Top 900m", 500.0, 1700.0, 300.0, 1.0));
+    Test.assert((q.targetName("Top 900m") as String).equals("B"));
+    Test.assert(near(q.targetDist, 1700.0, 0.01));
+    return true;
+}

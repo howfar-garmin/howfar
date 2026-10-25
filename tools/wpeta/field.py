@@ -32,8 +32,9 @@ class FieldLogic:
         self.profile = ProfileMatcher(*profile) if profile else None
         self.using_profile = False
         self.shown_name: str | None = None  # the point the countdown is for
-        self.then_name: str | None = None  # the profile point after it
+        self.then_name: str | None = None  # bottom line: the next minor point on the way, or the main one after
         self.then_eta: int | None = None
+        self.then_via = False  # True: then_name is a minor point on the way
         self._smooth_speed: float | None = None
         self._last_name: str | None = None
         self._last_dist = 0.0
@@ -90,7 +91,12 @@ class FieldLogic:
         eta = int(max(dist_next, 1.0) / self._smooth_speed + 0.5)
 
         self.then_name = self.then_eta = None
-        if self.using_profile:
+        self.then_via = False
+        if self.using_profile and self.profile.via is not None:
+            self.then_name = self.profile.following_name(self.profile.via)
+            self.then_eta = int(self.profile.via_time(self.estimator, scale) + 0.5)
+            self.then_via = True
+        elif self.using_profile:
             i = self.profile.following()
             if i is not None:
                 self.then_name = self.profile.following_name(i)

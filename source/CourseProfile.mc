@@ -2,6 +2,7 @@ import Toybox.Lang;
 
 // Elevation profile between course points, pasted into settings from the race prep page:
 //   p1;<step>;<name>|<length m>|<g>,<g>,...;...
+// A name starting with "+" is a minor point (a climb top, a hut, a point of your own).
 // Every next point gets a place on the profile (loc, metres from its start), and the time to
 // it is the profile's stretch that ends there and is distanceToNextPoint long:
 // - a point the profile knows by name: the end of its entry;
@@ -9,10 +10,10 @@ import Toybox.Lang;
 //   profile's length minus distanceToDestination.
 // The watch's course may be another version of the course, so the watch's distances are
 // converted with ratio (profile metres per watch course metre), learned at each known point.
-// What the field counts down to (target*) is the next profile point ahead of you, which can be
-// one the watch's course doesn't have (a climb top or a hut added on the race prep page), or
-// the watch's next point when that comes first. Where you are is always taken from the
-// watch's next point, so the watch's checkpoints keep anchoring it.
+// What the field counts down to (target*) is the next main profile point ahead of you, which
+// can be one the watch's course doesn't have, or the watch's next point when that comes first
+// and the profile doesn't know it. via is the next minor point before it. Where you are is
+// always taken from the watch's next point, so the watch's checkpoints keep anchoring it.
 // Mirrors ProfileMatcher in tools/wpeta/profile.py.
 class CourseProfile {
     const FINISH_NAME = "*";
@@ -28,11 +29,13 @@ class CourseProfile {
     var targetEnd as Float?;  // profile metres of what the field counts down to
     var targetIndex as Number?;  // its entry, null for a watch point the profile lacks
     var targetDist as Float = 0.0;  // watch course metres to it
+    var via as Number?;       // entry of the next minor point before it
     var mismatched as Boolean = false;
     var ratio as Float?;
     var total as Float = 0.0;
 
     hidden var _names as Array<String>;
+    hidden var _minor as Array<Boolean>;
     hidden var _lengths as Array<Float>;
     hidden var _starts as Array<Float>;
     hidden var _grades as Array<Array<Number> >;
@@ -49,6 +52,7 @@ class CourseProfile {
 
     function initialize(text as String) {
         _names = [] as Array<String>;
+        _minor = [] as Array<Boolean>;
         _lengths = [] as Array<Float>;
         _starts = [] as Array<Float>;
         _grades = [] as Array<Array<Number> >;
@@ -85,7 +89,12 @@ class CourseProfile {
             if (grades.size() == 0) {
                 grades.add(0);
             }
-            _names.add(f[0]);
+            var name = f[0];
+            var head = name.substring(0, 1);
+            var rest = name.substring(1, name.length());
+            var minor = head != null && head.equals("+") && rest != null;
+            _minor.add(minor);
+            _names.add(minor ? rest as String : name);
             _lengths.add(len);
             _starts.add(total);
             _grades.add(grades);
@@ -110,6 +119,7 @@ class CourseProfile {
         targetEnd = null;
         targetIndex = null;
         targetDist = 0.0;
+        via = null;
     }
 
     // --- walking the profile: stretches of constant grade
@@ -252,13 +262,22 @@ class CourseProfile {
     hidden function aim(here as Float, at as Float, r as Float) as Void {
         targetEnd = at;
         targetIndex = current;
+        via = null;
         for (var i = 0; i < _names.size(); i++) {
             var end = _starts[i] + _lengths[i];
-            if (end > here + PASSED) {
-                if (end < at - PASSED) {
+            if (!_minor[i] && end > here + PASSED) {
+                // the watch's next point, when the profile doesn't know it, counts as main
+                if (!(current == null && at < end - PASSED)) {
                     targetEnd = end;
                     targetIndex = i;
                 }
+                break;
+            }
+        }
+        for (var i = 0; i < _names.size(); i++) {
+            var end = _starts[i] + _lengths[i];
+            if (_minor[i] && end > here + PASSED && end < (targetEnd as Float) - PASSED) {
+                via = i;
                 break;
             }
         }
@@ -310,18 +329,25 @@ class CourseProfile {
         return t > 1.0 ? t : 1.0;
     }
 
-    // Entry of the profile point after the one the field counts down to, if there is one
+    // Entry of the main profile point after the one the field counts down to, if any
     function following() as Number? {
         var at = targetEnd;
         if (at == null) {
             return null;
         }
         for (var i = 0; i < _names.size(); i++) {
-            if (_starts[i] + _lengths[i] > at + 1.0) {
+            if (!_minor[i] && _starts[i] + _lengths[i] > at + 1.0) {
                 return i;
             }
         }
         return null;
+    }
+
+    // Time from where you are to the next minor point (via)
+    function viaTime(estimator as EtaEstimator, scale as Float) as Float {
+        var i = via as Number;
+        var t = timeBetween(_here as Float, _starts[i] + _lengths[i], estimator, scale);
+        return t > 1.0 ? t : 1.0;
     }
 
     function followingName(i as Number) as String {

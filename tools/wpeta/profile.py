@@ -4,7 +4,9 @@ Format:  p1;<step>;<name>|<length m>|<g>,<g>,...;<name>|...
 Each entry is the segment from the previous course point (or the start) to the named
 point. Grades are in tenths of a percent, one per <step> metres, ordered towards the
 point; the chunk next to the point may be shorter than <step>. A final entry named "*"
-covers the stretch from the last course point to the finish.
+covers the stretch from the last course point to the finish. A name starting with "+" is a
+minor point (a climb top, a hut, a point of your own): the field counts down to the main
+points, and shows the next minor one on the way on its bottom line.
 """
 
 from __future__ import annotations
@@ -15,6 +17,7 @@ from .model import MAX_GRADE, MIN_GRADE, PROFILE_PREFIX, clamp
 from .readers import CoursePoint, Point
 
 FINISH_NAME = "*"
+MINOR_MARK = "+"
 STEPS = (25, 50, 100, 200, 400)
 
 
@@ -126,10 +129,11 @@ class ProfileMatcher:
     watch's distances are converted with `ratio` (profile metres per watch course metre),
     learned at each point the profile knows from how far both say the finish is.
 
-    What the field counts down to (`target_*`) is the next profile point ahead of you, which
-    can be one the watch's course doesn't have (a climb top or a hut added on the race prep
-    page), or the watch's next point when that comes first. Where you are is always taken
-    from the watch's next point, so the watch's checkpoints keep anchoring it.
+    What the field counts down to (`target_*`) is the next main profile point ahead of you,
+    which can be one the watch's course doesn't have, or the watch's next point when that
+    comes first and the profile doesn't know it. `via` is the next minor point before it (a
+    climb top or a hut added on the race prep page). Where you are is always taken from the
+    watch's next point, so the watch's checkpoints keep anchoring it.
     """
 
     SLACK = 100.0  # m: a stretch may start this far before the profile's start
@@ -141,7 +145,8 @@ class ProfileMatcher:
 
     def __init__(self, step: int, entries: list[tuple[str, int, list[int]]]) -> None:
         self.step = step
-        self.entries = [(n, length, g or [0]) for n, length, g in entries]
+        self.minor = [n.startswith(MINOR_MARK) for n, _, _ in entries]
+        self.entries = [(n[1:] if m else n, length, g or [0]) for (n, length, g), m in zip(entries, self.minor)]
         self.starts: list[float] = []
         d = 0.0
         for _, length, _ in self.entries:
@@ -163,6 +168,7 @@ class ProfileMatcher:
         self.target_end: float | None = None  # profile metres of what the field counts down to
         self.target_index: int | None = None  # its entry, None for a watch point the profile lacks
         self.target_dist = 0.0  # watch course metres to it
+        self.via: int | None = None  # entry of the next minor point before it
 
     # --- walking the profile: stretches of constant grade --------------------------------
 
@@ -273,16 +279,20 @@ class ProfileMatcher:
         self._aim(self._here, r)
         return True
 
+    def _end(self, i: int) -> float:
+        return self.starts[i] + self.entries[i][1]
+
     def _aim(self, here: float, r: float) -> None:
         assert self.loc is not None
         self.target_end, self.target_index = self.loc, self.current
+        self.via = None
         if self.own_points:
-            for i in range(len(self.entries)):
-                end = self.starts[i] + self.entries[i][1]
-                if end > here + self.PASSED:
-                    if end < self.loc - self.PASSED:
-                        self.target_end, self.target_index = end, i
-                    break
+            main = next((i for i in range(len(self.entries)) if not self.minor[i] and self._end(i) > here + self.PASSED), None)
+            # the watch's next point, when the profile doesn't know it, counts as main
+            if main is not None and not (self.current is None and self.loc < self._end(main) - self.PASSED):
+                self.target_end, self.target_index = self._end(main), main
+            self.via = next((i for i in range(len(self.entries)) if self.minor[i]
+                             and here + self.PASSED < self._end(i) < self.target_end - self.PASSED), None)
         self.target_dist = max(0.0, (self.target_end - here) / r)
 
     def target_name(self, watch_name: str | None) -> str | None:
@@ -321,13 +331,18 @@ class ProfileMatcher:
         return max(self._time_between(self.loc - dist_next * (self.ratio or 1.0), self.loc, estimator, scale), 1.0)
 
     def following(self) -> int | None:
-        """Entry of the profile point after the one the field counts down to, if there is one."""
+        """Entry of the main profile point after the one the field counts down to, if any."""
         if self.target_end is None:
             return None
         for i in range(len(self.entries)):
-            if self.starts[i] + self.entries[i][1] > self.target_end + 1:
+            if not self.minor[i] and self._end(i) > self.target_end + 1:
                 return i
         return None
+
+    def via_time(self, estimator, scale: float) -> float:
+        """Time from where you are to the next minor point (`via`)."""
+        assert self._here is not None and self.via is not None
+        return max(self._time_between(self._here, self._end(self.via), estimator, scale), 1.0)
 
     def following_name(self, i: int) -> str:
         name = self.entries[i][0]

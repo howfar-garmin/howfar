@@ -161,9 +161,9 @@ function drawCourse(profile, checkpoints, onPick) {
   checkpoints.forEach((c) => {
     const x = ex(c.d), y = ey(c.alt);
     el("line", { x1: x, x2: x, y1: y - 4, y2: row ? 40 : 22, stroke: "var(--line)", "stroke-dasharray": "2 3" }, svg);
-    el("circle", { cx: x, cy: y, r: 4.5, fill: "var(--surface)", stroke: "var(--ink)", "stroke-width": 1.5 }, svg);
+    el("circle", { cx: x, cy: y, r: c.minor ? 3 : 4.5, fill: "var(--surface)", stroke: c.minor ? "var(--ink-3)" : "var(--ink)", "stroke-width": 1.5 }, svg);
     const label = c.name.length > 22 ? c.name.slice(0, 21) + "…" : c.name;
-    txt(svg, x, row ? 36 : 18, label, { "text-anchor": x > E.W - 90 ? "end" : x < E.l + 60 ? "start" : "middle", fill: "var(--ink-2)" });
+    txt(svg, x, row ? 36 : 18, label, { "text-anchor": x > E.W - 90 ? "end" : x < E.l + 60 ? "start" : "middle", fill: c.minor ? "var(--ink-3)" : "var(--ink-2)" });
     row = 1 - row;
   });
   svg.onmousemove = (e) => {
@@ -232,6 +232,11 @@ function renamer(kind, item, fallback) {
 // candidates: every checkpoint found on the course, { name, dist, on }; unticked ones are left out
 const course = { id: null, name: "", file: "", parsed: null, view: null, candidates: null, offTrack: 0, dirty: false };
 
+// A minor point's name starts with "+" in the profile text: the watch counts down to the main
+// points and shows the next minor one on the way. Added points are minor unless you switch them.
+const MINOR_MARK = "+";
+const isMinor = (c) => (c.minor != null ? c.minor : !!c.added);
+
 function courseView(points, coursePoints, maxLen) {
   const { step, text, entries } = core.bestProfile(points, coursePoints, maxLen);
   const elev = new core.Elevation(points);
@@ -244,7 +249,8 @@ function courseView(points, coursePoints, maxLen) {
   for (const [name, len, grades] of entries) {
     at += len;
     const climbM = grades.reduce((s, g, i) => s + Math.max(0, g / 1000) * (i === grades.length - 1 ? len - step * (grades.length - 1) : step), 0);
-    if (name !== core.FINISH_NAME) checkpoints.push({ name, d: at, alt: Math.round(elev.at(at)), seg: len, climb: climbM });
+    const minor = name.startsWith(MINOR_MARK);
+    if (name !== core.FINISH_NAME) checkpoints.push({ name: minor ? name.slice(1) : name, minor, d: at, alt: Math.round(elev.at(at)), seg: len, climb: climbM });
     else checkpoints.push({ name: _t("Finish"), d: at, alt: Math.round(elev.at(at)), seg: len, climb: climbM, finish: true });
   }
   return { step, text, profile, checkpoints, length: elev.length, up: core.climb(points) };
@@ -269,7 +275,10 @@ function renderCourse() {
   drawCourse(v.profile, v.checkpoints, course.parsed ? pickOwn : null);
   const ADDED = { top: _t("top of a climb"), bottom: _t("bottom of a climb"), hut: _t("hut"), village: _t("village"), own: _t("your point") };
   const tag = (c) => (c.added ? `<span class="added-tag">${_t("added: {what}", { what: ADDED[c.added] || c.added })}</span>` : "");
-  const row = (c, pick) => `<tr><td>${pick}${esc(c.name)}${pick ? "</label>" : ""}${tag(c)}</td><td class="num">${dec(c.d / 1000, 1)}</td><td class="num">${km(c.seg)}</td><td class="num">${num(c.climb)} m</td></tr>`;
+  const kindText = (minor) => (minor ? _t("Minor") : _t("Main"));
+  const kind = (c, i) => (i == null ? `<span class="kind${c.minor ? " minor" : ""}">${kindText(c.minor)}</span>`
+    : `<button type="button" class="kind${c.minor ? " minor" : ""}" data-kind="${i}" title="${esc(_t("Switch between main and minor"))}">${kindText(c.minor)}</button>`);
+  const row = (c, pick, i) => `<tr${c.minor ? ' class="minor-row"' : ""}><td>${pick}${esc(c.name)}${pick ? "</label>" : ""}${tag(c)}</td><td class="num">${dec(c.d / 1000, 1)}</td><td class="num">${km(c.seg)}</td><td class="num">${num(c.climb)} m</td><td>${kind(c, i)}</td></tr>`;
   const cands = course.parsed && course.candidates;
   $("coursePickNote").hidden = !cands || !cands.length;
   if (cands) {
@@ -277,8 +286,8 @@ function renderCourse() {
     let k = 0;
     $("courseRows").innerHTML = cands.map((c, i) => {
       const box = `<label class="cp-pick"><input type="checkbox" data-cp="${i}"${c.on ? " checked" : ""}>`;
-      if (c.on) return row(real[k++], box);
-      return `<tr class="off"><td>${box}${esc(c.name)}</label>${tag(c)}</td><td class="num">${dec(c.dist / 1000, 1)}</td><td class="num">–</td><td class="num">–</td></tr>`;
+      if (c.on) return row(real[k++], box, i);
+      return `<tr class="off"><td>${box}${esc(c.name)}</label>${tag(c)}</td><td class="num">${dec(c.dist / 1000, 1)}</td><td class="num">–</td><td class="num">–</td><td></td></tr>`;
     }).join("") + v.checkpoints.filter((c) => c.finish).map((c) => row(c, "")).join("");
   } else {
     $("courseRows").innerHTML = v.checkpoints.map((c) => row(c, "")).join("");
@@ -308,7 +317,8 @@ function recomputeCourse() {
     course.offTrack = c.skipped.length - c.otherFinishes.length;
   }
   const picked = course.candidates.filter((p) => p.on);
-  course.view = courseView(c.points, picked.map((p) => ({ name: p.name, dist: p.dist })), Number($("courseMax").value));
+  course.view = courseView(c.points, picked.map((p) => ({ name: (isMinor(p) ? MINOR_MARK : "") + p.name.replace(/^\++/, ""), dist: p.dist })),
+    Number($("courseMax").value));
   let k = 0;
   for (const cp of course.view.checkpoints) if (!cp.finish && picked[k]) cp.added = picked[k++].added;
   renderCourse();
@@ -396,7 +406,7 @@ function pickOwn(metres) {
 $("addOwn").addEventListener("click", () => {
   if (!course.parsed || !course.candidates) return;
   const st = $("addStatus");
-  const name = $("ownName").value.trim();
+  const name = $("ownName").value.replace(/^[\s+]+/, "").trim();
   const at = Number(String($("ownKm").value).replace(",", ".")) * 1000;
   const length = core.courseFrom(course.parsed).points.slice(-1)[0].dist;
   if (!name) return status(st, _t("Give the point a name."), true);
@@ -426,6 +436,16 @@ $("removeClimbs").addEventListener("click", () => {
 $("removePlaces").addEventListener("click", () => {
   addPoints(["hut", "village"], []);
   status($("addStatus"), _t("Removed the huts and villages."));
+});
+
+$("courseRows").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-kind]");
+  if (!b || !course.candidates) return;
+  const c = course.candidates[Number(b.dataset.kind)];
+  c.minor = !isMinor(c);
+  course.dirty = true;
+  $("courseSaved").textContent = "";
+  recomputeCourse();
 });
 
 $("courseRows").addEventListener("change", (e) => {

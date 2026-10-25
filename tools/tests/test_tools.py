@@ -303,6 +303,37 @@ def test_matcher_counts_down_to_profile_points_the_watch_lacks():
     assert m.target_name("B") == "B" and m.target_dist == pytest.approx(1100)
 
 
+def test_matcher_minor_points_are_shown_on_the_way():
+    from wpeta.model import EtaEstimator, SpeedGradeModel
+
+    est = EtaEstimator(SpeedGradeModel())
+    # a climb top marked minor ("+"): the field keeps counting down to B, the top is "via"
+    m = ProfileMatcher(100, [("+Top 900m", 800, [0] * 8), ("B", 1200, [0] * 12)])
+    assert m.update("B", 1700, 1700, 300.0)
+    assert m.target_name("B") == "B" and m.target_dist == pytest.approx(1700)
+    assert m.following_name(m.via) == "Top 900m"
+    assert m.via_time(est, 1.0) == pytest.approx(est.time_for_grade(500, 0.0))
+    # past the top: nothing on the way any more
+    assert m.update("B", 1100, 1100, 900.0)
+    assert m.via is None and m.target_dist == pytest.approx(1100)
+
+
+def test_matcher_skips_a_minor_point_the_watch_counts_down_to():
+    # the watch's course has the top too (downloaded with every point), but it's minor
+    m = ProfileMatcher(100, [("+Top 900m", 800, [0] * 8), ("B", 1200, [0] * 12)])
+    assert m.update("Top 900m", 500, 1700, 300.0) and m.current == 0
+    assert m.target_name("Top 900m") == "B" and m.target_dist == pytest.approx(1700)
+    assert m.following_name(m.via) == "Top 900m"
+
+
+def test_field_shows_the_minor_point_on_the_way():
+    entries = [("+Top 900m", 800, [0] * 8), ("B", 1200, [0] * 12), ("C", 1000, [0] * 10)]
+    f = FieldLogic(profile=(100, entries))
+    eta = f.compute(1.0, True, 0.0, 300.0, 2000.0, "B", 3000.0, 300.0)
+    assert f.shown_name == "B" and f.then_name == "Top 900m" and f.then_via
+    assert 0 < f.then_eta < eta
+
+
 def test_field_names_the_profile_point():
     entries = [("Top 900m", 800, [0] * 8), ("B", 1200, [0] * 12)]
     f = FieldLogic(profile=(100, entries))

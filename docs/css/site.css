@@ -296,9 +296,6 @@ table.results { border-collapse: collapse; width: 100%; min-width: 640px; font-s
 .results tr.group:hover td { background: var(--bg); cursor: default; }
 .results tr.baseline td { color: var(--ink-2); }
 .results tr.baseline:hover td { background: transparent; cursor: default; }
-.bar-col { width: 30%; }
-.bar { height: 8px; border-radius: 4px; background: var(--ink-3); opacity: 0.55; }
-.bar.best { background: var(--accent); opacity: 1; }
 .findings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin-top: 28px; }
 @media (max-width: 760px) { .findings { grid-template-columns: minmax(0, 1fr); } }
 .findings > div { display: grid; gap: 8px; align-content: start; }
@@ -441,7 +438,6 @@ label.btn { cursor: pointer; }
 .results th .race-km { display: block; font-weight: 500; font-size: 0.72rem; }
 /* results table: headings may wrap, so the columns fit the page */
 #results thead th { white-space: normal; vertical-align: bottom; line-height: 1.25; }
-#results .bar-col { width: 9%; min-width: 3em; }
 #results thead th .race-km { white-space: nowrap; }
 #results thead th:nth-last-child(-n+3) { min-width: 4.5em; }
 /* narrow enough to fit the page: tighter cells, row names and race names wrap */

@@ -327,15 +327,10 @@
     head.innerHTML = '<th scope="col">' + _t("Prediction") + "</th>" +
       RACES.map(function (r) { return '<th scope="col" class="num" title="' + _t("{race}: average minutes off", { race: r.name }) + '"><span class="race-name">' + (SHORT[r.key] || r.name) + "</span>" +
         (r.km ? ' <span class="race-km">(' + r.km.toLocaleString(LANG, { maximumFractionDigits: 1 }) + " km)</span>" : "") + "</th>"; }).join("") +
-      '<th scope="col" class="num" title="' + _t("Average of the races") + '">' + _t("Average") + '</th><th scope="col" class="bar-col"><span class="sr-only">' + _t("Average, as a bar") + "</span></th>" +
+      '<th scope="col" class="num" title="' + _t("Average of the races") + '">' + _t("Average") + "</th>" +
       '<th scope="col" class="num" title="' + _t("Out of every 100 times the watch showed a time, how many were less than 5 minutes off") + '">' + _t("Less than 5 min off") + "</th>" +
       '<th scope="col" class="num" title="' + _t("Out of every 100 times the watch showed a time, how many were less than 15 minutes off") + '">' + _t("Less than 15 min off") + "</th>" +
       '<th scope="col" class="num" title="' + _t("How far off the watch was when you were 2 km from each checkpoint") + '">' + _t("Off by, 2 km before") + "</th>";
-    var max = 0, best = STEPS[0];
-    STEPS.forEach(function (id) {
-      max = Math.max(max, mean(id, "mae_hour"));
-      if (mean(id, "mae_hour") < mean(best, "mae_hour")) best = id;
-    });
     var body = table.querySelector("tbody");
     STEPS.forEach(function (id) {
       var v = mean(id, "mae_hour");
@@ -346,7 +341,6 @@
       row.innerHTML = "<td>" + label(id) + "</td>" +
         RACES.map(function (r) { return '<td class="num">' + dec(S[id][r.key].mae_hour, 1) + " min</td>"; }).join("") +
         '<td class="num"><b>' + dec(v, 1) + " min</b></td>" +
-        '<td><div class="bar' + (id === best ? " best" : "") + '" style="width:' + (v / max * 100).toFixed(1) + '%"></div></td>' +
         '<td class="num">' + Math.round(mean(id, "within5_hour") * 100) + "%</td>" +
         '<td class="num">' + Math.round(mean(id, "within15_hour") * 100) + "%</td>" +
         '<td class="num">' + dec(mean(id, "mae_2000"), 1) + " min</td>";

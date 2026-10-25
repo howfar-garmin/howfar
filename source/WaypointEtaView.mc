@@ -19,6 +19,8 @@ class WaypointEtaView extends WatchUi.DataField {
     hidden var _etaSec as Number?;
     hidden var _name as String?;
     hidden var _usingProfile as Boolean = false;
+    hidden var _thenName as String?;  // the profile point after the next one
+    hidden var _thenSec as Number?;
     hidden var _smoothSpeed as Float?;
     hidden var _lastName as String?;
     hidden var _lastDist as Float = 0.0;
@@ -80,6 +82,8 @@ class WaypointEtaView extends WatchUi.DataField {
         if (distNext == null || distNext <= 0.0) {
             _etaSec = null;
             _smoothSpeed = null;
+            _thenName = null;
+            _thenSec = null;
             return;
         }
 
@@ -122,7 +126,18 @@ class WaypointEtaView extends WatchUi.DataField {
             sv = sv + (v - sv) * SMOOTHING;
         }
         _smoothSpeed = sv;
-        _etaSec = (distNext / sv + 0.5).toNumber();
+        var eta = (distNext / sv + 0.5).toNumber();
+        _etaSec = eta;
+
+        _thenName = null;
+        _thenSec = null;
+        if (_usingProfile && profile != null) {
+            var i = profile.following();
+            if (i != null) {
+                _thenName = profile.followingName(i);
+                _thenSec = eta + (profile.followingTime(i, _estimator, scale) + 0.5).toNumber();
+            }
+        }
     }
 
     // Activity saved or discarded: learn from it if it was a real run, then start fresh
@@ -144,9 +159,12 @@ class WaypointEtaView extends WatchUi.DataField {
         _lastName = null;
         _lastDist = 0.0;
         _etaSec = null;
+        _thenName = null;
+        _thenSec = null;
     }
 
     const MIN_FONT_WITH_EXTRAS = 4;  // FONT_MEDIUM: smallest font the time gets when label and arrival are shown too
+    const MIN_HEIGHT_WITH_THEN = 150;  // px: fields this tall also show the checkpoint after the next
 
     hidden function fonts() as Array<Graphics.FontDefinition> {
         return [
@@ -188,27 +206,48 @@ class WaypointEtaView extends WatchUi.DataField {
         var eta = _etaSec;
         var main = eta == null ? "--" : WpUtil.formatDuration(eta);
 
+        // the checkpoint after the next on tall fields, while the time can still be big
+        var thenName = _thenName;
+        var thenSec = _thenSec;
+        var withThen = eta != null && thenName != null && thenSec != null && h >= MIN_HEIGHT_WITH_THEN
+            && fitFont(dc, main, maxW, h * 0.36) <= MIN_FONT_WITH_EXTRAS;
+
         // label and arrival only when the time can still be big; otherwise the time alone
-        var withExtras = fitFont(dc, main, maxW, h * 0.5);
+        var withExtras = fitFont(dc, main, maxW, h * (withThen ? 0.36 : 0.5));
         if (h < 90 || withExtras > MIN_FONT_WITH_EXTRAS) {
             dc.drawText(w / 2, h / 2, f[fitFont(dc, main, maxW, h * 0.95)], main, center);
             return;
         }
 
+        var bottomObscured = (obs & WatchUi.DataField.OBSCURE_BOTTOM) != 0;
         var topY = h * ((obs & WatchUi.DataField.OBSCURE_TOP) != 0 ? 0.24 : 0.15);
-        var bottomY = h * ((obs & WatchUi.DataField.OBSCURE_BOTTOM) != 0 ? 0.76 : 0.85);
+        var bottomY = h * (bottomObscured ? 0.76 : 0.85);
         var label = "WPT ETA";
         var name = _name;
         if (eta != null) {
             label = (_usingProfile ? "P " : "~ ") + (name != null ? name : "WPT");
-            while (label.length() > 1 && dc.getTextWidthInPixels(label, Graphics.FONT_XTINY) > maxW) {
-                label = label.substring(0, label.length() - 1) as String;
-            }
+            label = fitText(dc, label, "", maxW);
         }
         dc.drawText(w / 2, topY, Graphics.FONT_XTINY, label, center);
+        if (withThen) {
+            dc.drawText(w / 2, h * 0.45, f[withExtras], main, center);
+            dc.drawText(w / 2, h * 0.64, Graphics.FONT_XTINY, "@ " + WpUtil.formatClock(eta as Number), center);
+            var then = fitText(dc, "then " + thenName, " @ " + WpUtil.formatClock(thenSec as Number),
+                bottomObscured ? w * 0.8 : maxW);  // a round screen is still 0.8 wide this low
+            dc.drawText(w / 2, h * (bottomObscured ? 0.80 : 0.86), Graphics.FONT_XTINY, then, center);
+            return;
+        }
         dc.drawText(w / 2, h * 0.5, f[withExtras], main, center);
         if (eta != null) {
             dc.drawText(w / 2, bottomY, Graphics.FONT_XTINY, "@ " + WpUtil.formatClock(eta), center);
         }
+    }
+
+    // text + tail, shortening text until it fits maxW in FONT_XTINY
+    hidden function fitText(dc as Graphics.Dc, text as String, tail as String, maxW as Float) as String {
+        while (text.length() > 1 && dc.getTextWidthInPixels(text + tail, Graphics.FONT_XTINY) > maxW) {
+            text = text.substring(0, text.length() - 1) as String;
+        }
+        return text + tail;
     }
 }

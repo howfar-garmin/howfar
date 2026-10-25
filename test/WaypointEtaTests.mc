@@ -250,3 +250,22 @@ function testProfileMismatch(logger as Test.Logger) as Boolean {
     Test.assert(p.mismatched);
     return true;
 }
+
+(:test)
+function testProfileFollowingPoint(logger as Test.Logger) as Boolean {
+    var m = new SpeedGradeModel();
+    var est = new EtaEstimator(m);
+    var p = new CourseProfile("p1;100;A|1000|0;B|2000|0;*|500|0");
+    Test.assert(p.update("A", 600.0, 3100.0, 400.0, 1.0));
+    var i = p.following() as Number;
+    Test.assert(p.followingName(i).equals("B"));
+    Test.assert(near(p.followingTime(i, est, 1.0), est.timeForGrade(2000.0, 0.0, 1.0), 0.01));
+    // a point the profile lacks, 500 m before B: the one after it is still B
+    Test.assert(p.update("Hut", 1000.0, 2000.0, 1500.0, 1.0) && p.current == null);
+    Test.assert(p.followingName(p.following() as Number).equals("B"));
+    Test.assert(p.update("B", 500.0, 1000.0, 2500.0, 1.0));
+    Test.assert(p.followingName(p.following() as Number).equals("Finish"));
+    Test.assert(p.update(null, 500.0, 500.0, 3000.0, 1.0));
+    Test.assert(p.following() == null);
+    return true;
+}

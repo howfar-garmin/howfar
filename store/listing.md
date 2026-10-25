@@ -49,6 +49,7 @@ HowFar? puts the answer on your wrist. While you follow a course, it shows:
 - the name of the next checkpoint
 - the time to get there, while you keep moving
 - the time of day you'll arrive
+- on a full-screen field, with a course profile: the checkpoint after that and when you'll get there
 
 It learns how fast you go on every slope, from steep descents to steep climbs, and keeps learning during the race. It corrects for how your day is going and for your watch measuring more distance than the course map.
 

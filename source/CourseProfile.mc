@@ -236,11 +236,9 @@ class CourseProfile {
         return true;
     }
 
-    // Time over the profile's stretch ending at loc, distNext watch course metres long
-    function remainingTime(distNext as Float, estimator as EtaEstimator, scale as Float) as Float {
+    // Time over the profile from a to b; profile metres before its start count at the first grade
+    hidden function timeBetween(a as Float, b as Float, estimator as EtaEstimator, scale as Float) as Float {
         var r = ratio != null ? ratio : 1.0;
-        var b = loc as Float;
-        var a = b - distNext * r;
         var t = 0.0;
         var first = null;
         seek(a > 0.0 ? a : 0.0);
@@ -257,6 +255,36 @@ class CourseProfile {
         if (a < 0.0) {
             t += estimator.timeForGrade(-a / r, (first != null ? first : 0.0) * r, scale);
         }
+        return t;
+    }
+
+    // Time over the profile's stretch ending at loc, distNext watch course metres long
+    function remainingTime(distNext as Float, estimator as EtaEstimator, scale as Float) as Float {
+        var b = loc as Float;
+        var t = timeBetween(b - distNext * (ratio != null ? ratio : 1.0), b, estimator, scale);
         return t > 1.0 ? t : 1.0;
+    }
+
+    // Entry of the profile point after the next point, if there is one
+    function following() as Number? {
+        var at = loc;
+        if (at == null) {
+            return null;
+        }
+        for (var i = 0; i < _names.size(); i++) {
+            if (_starts[i] + _lengths[i] > at + 1.0) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    function followingName(i as Number) as String {
+        return _names[i].equals(FINISH_NAME) ? "Finish" : _names[i];
+    }
+
+    // Time from the next point to profile point i
+    function followingTime(i as Number, estimator as EtaEstimator, scale as Float) as Float {
+        return timeBetween(loc as Float, _starts[i] + _lengths[i], estimator, scale);
     }
 }

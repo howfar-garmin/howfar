@@ -14,6 +14,8 @@ While you follow a course, three lines:
 - **the time to get there** while you keep moving (time stopped at aid stations isn't counted)
 - **the time of day you'll arrive**
 
+On a full-screen field, with a course profile, a fourth line shows the checkpoint after that and when you'll get there.
+
 It learns your pace on every slope and keeps learning during the race, correcting for how your day is going.
 
 ## Install

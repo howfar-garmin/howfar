@@ -271,6 +271,33 @@ def test_matcher_learns_a_longer_watch_course():
     assert abs(m.loc - 7000) < 1e-6
 
 
+def test_matcher_following_point():
+    from wpeta.model import EtaEstimator, SpeedGradeModel
+
+    est = EtaEstimator(SpeedGradeModel())
+    m = ProfileMatcher(100, [("A", 1000, [0] * 10), ("B", 2000, [0] * 20), ("*", 500, [0] * 5)])
+    assert m.update("A", 600, 3100, 400.0)
+    i = m.following()
+    assert m.following_name(i) == "B"
+    assert m.following_time(i, est, 1.0) == pytest.approx(est.time_for_grade(2000, 0.0))
+    # a point the profile lacks, 500 m before B: the one after it is still B
+    assert m.update("Hut", 1000, 2000, 1500.0) and m.current is None
+    assert m.following_name(m.following()) == "B"
+    assert m.update("B", 500, 1000, 2500.0)
+    assert m.following_name(m.following()) == "Finish"
+    assert m.update(None, 500, 500, 3000.0)
+    assert m.following() is None
+
+
+def test_field_shows_the_point_after_the_next():
+    entries = [("A", 1000, [0] * 10), ("B", 2000, [0] * 20)]
+    f = FieldLogic(profile=(100, entries))
+    eta = f.compute(1.0, True, 0.0, 300.0, 1000.0, "A", 3000.0, 300.0)
+    assert f.then_name == "B" and f.then_eta > eta
+    f.compute(2.0, True, 3.0, 300.0, None, None, None, None)
+    assert f.then_name is None and f.then_eta is None
+
+
 def test_matcher_time_crosses_entries():
     from wpeta.model import EtaEstimator, SpeedGradeModel
 

@@ -262,11 +262,10 @@ class ProfileMatcher:
         self._here_watch = watch_dist
         return True
 
-    def remaining_time(self, dist_next: float, estimator, scale: float) -> float:
-        """Time over the profile's stretch ending at loc, dist_next watch course metres long."""
-        assert self.loc is not None
+    def _time_between(self, a: float, b: float, estimator, scale: float) -> float:
+        """Time over the profile from a to b; profile metres before its start count at the
+        first grade."""
         r = self.ratio or 1.0
-        a, b = self.loc - dist_next * r, self.loc
         before = max(0.0, -a)
         t = 0.0
         self._seek(max(0.0, a))
@@ -280,4 +279,27 @@ class ProfileMatcher:
             t += estimator.time_for_grade(use / r, g * r, scale)
         if before > 0:
             t += estimator.time_for_grade(before / r, (first or 0.0) * r, scale)
-        return max(t, 1.0)
+        return t
+
+    def remaining_time(self, dist_next: float, estimator, scale: float) -> float:
+        """Time over the profile's stretch ending at loc, dist_next watch course metres long."""
+        assert self.loc is not None
+        return max(self._time_between(self.loc - dist_next * (self.ratio or 1.0), self.loc, estimator, scale), 1.0)
+
+    def following(self) -> int | None:
+        """Entry of the profile point after the next point, if there is one."""
+        if self.loc is None:
+            return None
+        for i in range(len(self.entries)):
+            if self.starts[i] + self.entries[i][1] > self.loc + 1:
+                return i
+        return None
+
+    def following_name(self, i: int) -> str:
+        name = self.entries[i][0]
+        return "Finish" if name == FINISH_NAME else name
+
+    def following_time(self, i: int, estimator, scale: float) -> float:
+        """Time from the next point to profile point i."""
+        assert self.loc is not None
+        return self._time_between(self.loc, self.starts[i] + self.entries[i][1], estimator, scale)

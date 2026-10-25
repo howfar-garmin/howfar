@@ -26,6 +26,8 @@ class FieldLogic:
         self.scale = CourseScale()
         self.profile = ProfileMatcher(*profile) if profile else None
         self.using_profile = False
+        self.then_name: str | None = None  # the profile point after the next one
+        self.then_eta: int | None = None
         self._smooth_speed: float | None = None
         self._last_name: str | None = None
         self._last_dist = 0.0
@@ -49,6 +51,7 @@ class FieldLogic:
 
         if dist_next is None or dist_next <= 0:
             self._smooth_speed = None
+            self.then_name = self.then_eta = None
             return None
 
         if timer_on and dist is not None and dist_dest is not None:
@@ -72,7 +75,15 @@ class FieldLogic:
 
         v = dist_next / raw
         self._smooth_speed = v if self._smooth_speed is None else self._smooth_speed + (v - self._smooth_speed) * SMOOTHING
-        return int(dist_next / self._smooth_speed + 0.5)
+        eta = int(dist_next / self._smooth_speed + 0.5)
+
+        self.then_name = self.then_eta = None
+        if self.using_profile:
+            i = self.profile.following()
+            if i is not None:
+                self.then_name = self.profile.following_name(i)
+                self.then_eta = eta + int(self.profile.following_time(i, self.estimator, scale) + 0.5)
+        return eta
 
     def timer_reset(self) -> bool:
         """Activity ended. Returns True when this run was merged into the stored model."""

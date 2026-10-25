@@ -233,7 +233,6 @@
     lineMain.setAttribute("points", seriesPoints(state.main));
     lineCmp.setAttribute("points", seriesPoints(state.cmp));
     $("legMain").textContent = cfg(state.main).label;
-    $("legCmp").textContent = cfg(state.cmp).label;
     $("modeNote").textContent = NOTES[state.main] || "";
   }
 

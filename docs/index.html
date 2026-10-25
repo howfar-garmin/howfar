@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=24">
+<link rel="stylesheet" href="css/site.css?v=25">
 </head>
 <body>
 
@@ -103,9 +103,6 @@
             <label class="picker" for="pickMain"><span class="swatch" style="background: var(--series-p)"></span>Watch shows
               <select id="pickMain"></select>
             </label>
-            <label class="picker" for="pickCmp"><span class="swatch" style="background: var(--series-a)"></span>Compare with
-              <select id="pickCmp"></select>
-            </label>
           </div>
           <p class="watch-caption" id="modeNote"></p>
         </div>
@@ -152,8 +149,10 @@
         <div class="chart-head">
           <h3>How far off the watch was</h3>
           <div class="legend">
-            <span><i style="background: var(--series-p)"></i><span id="legMain"></span></span>
-            <span><i style="background: var(--series-a)"></i><span id="legCmp"></span></span>
+            <span><i style="background: var(--series-p)"></i>Watch shows: <span id="legMain"></span></span>
+            <label class="picker legend-picker" for="pickCmp"><span class="swatch" style="background: var(--series-a)"></span>Compare with
+              <select id="pickCmp"></select>
+            </label>
           </div>
         </div>
         <p class="small muted">For every moment of the race: the time the watch showed, minus the time it really took to reach the next checkpoint (stops left out). Above zero, you arrived earlier than the watch said; below zero, later. The green band is ±5 minutes. Notice how the error shrinks as each checkpoint gets closer, and how much better the full HowFar? line is.</p>
@@ -332,6 +331,6 @@
 </footer>
 
 <script src="demo/torx-s1.js?v=11"></script>
-<script src="js/demo.js?v=11"></script>
+<script src="js/demo.js?v=12"></script>
 </body>
 </html>

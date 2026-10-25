@@ -277,6 +277,7 @@ section + section { border-top: 1px solid var(--line-soft); }
   background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 8px;
 }
 .swatch { width: 14px; height: 4px; border-radius: 2px; display: inline-block; }
+.legend-picker { grid-template-columns: auto auto auto; }
 
 /* results table */
 .table-wrap { position: relative; /* keeps the hidden header label inside the scroll box */ overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }

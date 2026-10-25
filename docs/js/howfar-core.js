@@ -157,10 +157,17 @@ export function readFitMessages(messages) {
   return { points, waypoints, coursePoints, startTime: t0 !== null ? new Date(t0).toISOString() : null };
 }
 
+function nearBothEnds(points, lat, lon, maxOffset) {
+  const first = points[0], end = points[points.length - 1];
+  if (!first || first.lat == null || end.lat == null) return false;
+  return haversine(lat, lon, first.lat, first.lon) <= maxOffset && haversine(lat, lon, end.lat, end.lon) <= maxOffset;
+}
+
 /** Course points sorted by distance; waypoints placed at the nearest track point, dropped when
  *  more than MAX_WAYPOINT_OFFSET metres off the track (race files often carry the whole race's).
  *  So is a finish that isn't at the end of the track (another race's finish the course passes
- *  by); a finish near both the start and the end of a loop is put at the end. */
+ *  by). On a loop, a finish near both the start and the end is put at the end, and any other
+ *  point near both at the start. */
 export function courseFrom(parsed, maxOffset = MAX_WAYPOINT_OFFSET) {
   const cps = parsed.coursePoints.slice();
   const skipped = [];
@@ -176,6 +183,8 @@ export function courseFrom(parsed, maxOffset = MAX_WAYPOINT_OFFSET) {
         otherFinishes.push({ name: w.name, dist });
         offset = Infinity;
       }
+    } else if (offset <= maxOffset && !FINISH_WORDS.test(w.name) && nearBothEnds(pts, w.lat, w.lon, maxOffset)) {
+      dist = 0; // a loop's start: the nearest track point may be the one the run ended on
     }
     if (offset <= maxOffset) cps.push({ name: w.name, dist });
     else skipped.push(w.name);

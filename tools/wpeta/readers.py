@@ -174,6 +174,13 @@ def read_track(path: str | Path) -> list[Point]:
     return points
 
 
+def _near_both_ends(points: list[Point], lat: float, lon: float, max_offset: float) -> bool:
+    first, end = points[0], points[-1]
+    if first.lat is None or end.lat is None:
+        return False
+    return haversine(lat, lon, first.lat, first.lon) <= max_offset and haversine(lat, lon, end.lat, end.lon) <= max_offset
+
+
 def read_course(
     path: str | Path, max_offset: float = MAX_WAYPOINT_OFFSET, skipped: list[str] | None = None
 ) -> tuple[list[Point], list[CoursePoint]]:
@@ -183,8 +190,8 @@ def read_course(
     Those more than max_offset metres off the track are dropped (their names go into
     `skipped`): race GPX files often carry every waypoint of the whole race. So is a finish
     that isn't at the end of the track: another race's finish the course passes by (the TORX
-    finish line, a few hundred metres into the Tor's first stage). A finish near both the
-    start and the end of a loop is put at the end.
+    finish line, a few hundred metres into the Tor's first stage). On a loop, a finish near both
+    the start and the end is put at the end, and any other point near both at the start.
     """
     path = Path(path)
     if path.suffix.lower() == ".gpx":
@@ -201,6 +208,8 @@ def read_course(
                 dist = length
             else:
                 offset = math.inf
+        elif offset <= max_offset and not FINISH_WORDS.search(name) and _near_both_ends(points, lat, lon, max_offset):
+            dist = 0.0  # a loop's start: the nearest track point may be the one the run ended on
         if offset <= max_offset:
             cps.append(CoursePoint(name, dist))
         elif skipped is not None:

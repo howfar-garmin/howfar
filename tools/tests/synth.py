@@ -95,3 +95,29 @@ def write_gpx(path: Path, recs: list[dict], waypoints: list[tuple[str, float]] =
         lines.append(f'<trkpt lat="{r["lat"]:.8f}" lon="{r["lon"]:.8f}"><ele>{r["alt"]:.2f}</ele>{tm}</trkpt>')
     lines.append("</trkseg></trk></gpx>")
     path.write_text("\n".join(lines))
+
+
+def write_loop_gpx(path: Path) -> None:
+    """A 10 km loop course, as race files come: the track ends a few metres off where it started,
+    the start arch is near that end, the finish is at the start, and a hut a quarter of the way."""
+    import math
+
+    radius = 10000 / (2 * math.pi)
+    m_lon = M_PER_DEG_LAT * math.cos(math.radians(45.0))
+
+    def at(i: int) -> tuple[float, float]:
+        a = 2 * math.pi * i / 1000
+        return 45.0 + radius * math.sin(a) / M_PER_DEG_LAT, 7.0 + radius * (1 - math.cos(a)) / m_lon
+
+    track = [at(i) for i in range(1000)] + [(45.0 + 3 / M_PER_DEG_LAT, 7.0 - 6 / m_lon)]
+    hut = at(250)
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<gpx version="1.1" creator="test" xmlns="http://www.topografix.com/GPX/1/1">',
+             f'<wpt lat="{45.0 + 3 / M_PER_DEG_LAT:.8f}" lon="{7.0 - 5 / m_lon:.8f}"><name>Start</name></wpt>',
+             '<wpt lat="45.00000000" lon="7.00000000"><name>Finish</name></wpt>',
+             f'<wpt lat="{hut[0]:.8f}" lon="{hut[1]:.8f}"><name>Rifugio</name></wpt>',
+             "<trk><trkseg>"]
+    for i, (lat, lon) in enumerate(track):
+        lines.append(f'<trkpt lat="{lat:.8f}" lon="{lon:.8f}"><ele>{1000 + 100 * math.sin(2 * math.pi * i / 1000):.2f}</ele></trkpt>')
+    lines.append("</trkseg></trk></gpx>")
+    path.write_text("\n".join(lines))

@@ -1,6 +1,6 @@
 // HowFar race prep page: course profile and checkpoints, library. Everything runs
 // in the browser; files are never uploaded. The calculations are in howfar-core.js.
-import * as core from "./howfar-core.js?v=6";
+import * as core from "./howfar-core.js?v=7";
 import * as extra from "./extra-points.js?v=6";
 
 const FIT_SDK = "https://cdn.jsdelivr.net/npm/@garmin/fitsdk@21.217.0/+esm";

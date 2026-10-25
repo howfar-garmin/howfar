@@ -8,7 +8,7 @@ TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from synth import samples, write_fit, write_gpx  # noqa: E402
+from synth import samples, write_fit, write_gpx, write_loop_gpx  # noqa: E402
 from wpeta.field import FieldLogic  # noqa: E402
 from wpeta.learn import layer_from_files  # noqa: E402
 from wpeta.model import (  # noqa: E402
@@ -436,6 +436,14 @@ def test_gpx_finish_of_another_race_is_dropped(tmp_path):
     assert recs[-1]["dist"] > 1100
     assert skipped == ["TORX Finish Line"]
     assert cps[-1].name == "Arrivo"
+
+
+def test_gpx_loop_start_stays_at_the_start(tmp_path):
+    # the track ends a few metres from the start arch, closer to it than the track's first point
+    p = tmp_path / "loop.gpx"
+    write_loop_gpx(p)
+    pts, cps = read_course(p)
+    assert [(c.name, round(c.dist)) for c in cps] == [("Start", 0), ("Rifugio", 2500), ("Finish", round(pts[-1].dist))]
 
 
 def test_course_scale():

@@ -18,7 +18,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 sys.path[:0] = [str(HERE), str(HERE.parent)]
 
-from synth import samples, write_fit, write_gpx  # noqa: E402
+from synth import samples, write_fit, write_gpx, write_loop_gpx  # noqa: E402
 from wpeta.profile import best_profile  # noqa: E402
 from wpeta.readers import read_course  # noqa: E402
 
@@ -48,9 +48,11 @@ def main() -> int:
     # a course GPX with a waypoint from somewhere else, which must be dropped
     text = (fx / "course.gpx").read_text().replace("<trk>", '<wpt lat="46.5" lon="7.5"><name>Other stage</name></wpt><trk>')
     (fx / "course-extra-wpt.gpx").write_text(text)
+    write_loop_gpx(fx / "loop.gpx")
 
     expected = expected_for(
-        {"course.fit": fx / "course.fit", "course.gpx": fx / "course.gpx", "course-extra-wpt.gpx": fx / "course-extra-wpt.gpx"},
+        {"course.fit": fx / "course.fit", "course.gpx": fx / "course.gpx", "course-extra-wpt.gpx": fx / "course-extra-wpt.gpx",
+         "loop.gpx": fx / "loop.gpx"},
     )
     (fx / "expected.json").write_text(json.dumps(expected, indent=1, ensure_ascii=False))
     print("fixtures:", sorted(p.name for p in fx.iterdir()))

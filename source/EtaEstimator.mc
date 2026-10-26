@@ -41,12 +41,12 @@ class EtaEstimator {
         // fatigue: how the full model (before seeing this observation) did on it
         var fpred = dist / _model.predict(gradePct);
         if (_count == 0) {
-            _fpred = fpred;
-            _fact = act;
-        } else {
-            _fpred += (fpred - _fpred) * FATIGUE_ALPHA;
-            _fact += (act - _fact) * FATIGUE_ALPHA;
+            // averages that start empty, so the first metres don't outweigh the next kilometres
+            _fpred = 0.0;
+            _fact = 0.0;
         }
+        _fpred += (fpred - _fpred) * FATIGUE_ALPHA;
+        _fact += (act - _fact) * FATIGUE_ALPHA;
         if (_count + 1 >= MIN_OBS && _fact > 0.0) {
             fatigue = WpUtil.clamp(_fpred / _fact, FATIGUE_LO, FATIGUE_HI);
         }
@@ -90,6 +90,7 @@ class CourseScale {
     hidden var _baseDist as Float?;
     hidden var _baseDest as Float = 0.0;
     hidden var _lastDest as Float?;
+    hidden var _lastDist as Float?;
 
     function initialize() {
         reset();
@@ -100,18 +101,23 @@ class CourseScale {
         _baseDist = null;
         _baseDest = 0.0;
         _lastDest = null;
+        _lastDist = null;
     }
 
     function update(dist as Float, distDest as Float) as Float {
-        // start over at the first fix, or when the remaining course jumps up (new course, reroute)
+        // start over at the first fix, when the remaining course jumps up (new course, reroute)
+        // or drops by more than you ran (you cut part of the course)
         var lastDest = _lastDest;
+        var lastDist = _lastDist;
         var baseDist = _baseDist;
-        if (baseDist == null || (lastDest != null && distDest > lastDest + 200.0)) {
+        var cut = lastDest != null && lastDist != null && lastDest - distDest > dist - lastDist + 200.0;
+        if (baseDist == null || cut || (lastDest != null && distDest > lastDest + 200.0)) {
             baseDist = dist;
             _baseDist = dist;
             _baseDest = distDest;
         }
         _lastDest = distDest;
+        _lastDist = dist;
         var progress = _baseDest - distDest;
         var walked = dist - baseDist;
         if (progress >= MIN_PROGRESS && walked > 0.0) {

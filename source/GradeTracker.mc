@@ -9,6 +9,8 @@ class GradeTracker {
     const STOP_WINDOW = 60.0; // stopped = less than STOP_DIST metres in the last STOP_WINDOW seconds
     const STOP_DIST = 15.0;
     const STOP_SIZE = 90;
+    const STILL_DIST = 2.0;   // also stopped: less than this many metres for STILL_TIME seconds (a short stop to read the watch)
+    const STILL_TIME = 10.0;
     const MIN_SPEED = 0.2;
     const MAX_SPEED = 10.0;
 
@@ -29,6 +31,9 @@ class GradeTracker {
     hidden var _scount as Number = 0;
     hidden var _lastEmit as Float?;
     hidden var _lastTime as Float?;
+    hidden var _stillDist as Float?;    // where the distance last moved on by STILL_DIST
+    hidden var _stillSince as Float = 0.0;  // and when
+    hidden var _wasMoving as Boolean = true;
 
     function initialize() {
         _d = new Array<Float>[SIZE];
@@ -55,6 +60,9 @@ class GradeTracker {
         _scount = 0;
         _lastEmit = null;
         _lastTime = null;
+        _stillDist = null;
+        _stillSince = 0.0;
+        _wasMoving = true;
         movingTime = 0.0;
         observations = 0;
         lastGrade = 0.0;
@@ -70,6 +78,14 @@ class GradeTracker {
         _shead = (_shead + 1) % STOP_SIZE;
         if (_scount < STOP_SIZE) {
             _scount++;
+        }
+        var stillDist = _stillDist;
+        if (stillDist == null || dist - stillDist >= STILL_DIST) {
+            _stillDist = dist;
+            _stillSince = timeS;
+        }
+        if (timeS - _stillSince >= STILL_TIME) {
+            return false;
         }
         for (var k = 1; k < _scount; k++) {
             var idx = (_shead - 1 - k + STOP_SIZE) % STOP_SIZE;
@@ -92,6 +108,15 @@ class GradeTracker {
             }
         }
         _lastTime = timeS;
+        if (_wasMoving && !moving) {
+            // a stop is seen only after a while: the seconds already spent standing weren't moving
+            movingTime -= WpUtil.clamp(timeS - _stillSince, 0.0, STOP_WINDOW);
+        } else if (moving && !_wasMoving) {
+            // the first observation after a stop starts after it
+            _count = 0;
+            _lastEmit = null;
+        }
+        _wasMoving = moving;
         if (!moving) {
             return false;
         }

@@ -209,6 +209,9 @@ class WaypointEtaView extends WatchUi.DataField {
     }
 
     const MIN_FONT_WITH_EXTRAS = 4;  // FONT_MEDIUM: smallest font the time gets when label and arrival are shown too
+    const LIST_FIRST_FONT = 2;  // FONT_NUMBER_MEDIUM: biggest time in the list, so the names get the room
+    const LINE_FONT = Graphics.FONT_TINY;   // the lines around the checkpoint in the list
+    const LABEL_FONT = Graphics.FONT_SMALL; // the checkpoint's name, in the list and the countdown
     const MIN_HEIGHT_WITH_THEN = 150;  // px: fields this tall show the points around the checkpoint (full screen)
     hidden var _dotR as Float = 3.0;  // px: radius of the coloured dot before each time
     const LEARN_OBS = 160;  // ~4 km of moving: until then today's form is still a guess (grey digits)
@@ -225,10 +228,10 @@ class WaypointEtaView extends WatchUi.DataField {
         ] as Array<Graphics.FontDefinition>;
     }
 
-    // Index into fonts() of the largest font that fits text in maxW x maxH (the last one if none does)
-    hidden function fitFont(dc as Graphics.Dc, text as String, maxW as Float, maxH as Float) as Number {
+    // Index into fonts() of the largest font, from first on, that fits text in maxW x maxH (the last one if none does)
+    hidden function fitFont(dc as Graphics.Dc, text as String, maxW as Float, maxH as Float, first as Number) as Number {
         var f = fonts();
-        for (var i = 0; i < f.size() - 1; i++) {
+        for (var i = first; i < f.size() - 1; i++) {
             if (dc.getTextWidthInPixels(text, f[i]) <= maxW && dc.getFontHeight(f[i]) <= maxH) {
                 return i;
             }
@@ -276,7 +279,7 @@ class WaypointEtaView extends WatchUi.DataField {
         var name = _name;
         if (eta != null) {
             label = (_usingProfile ? "P " : "~ ") + (name != null ? name : "WPT");
-            label = fitText(dc, label, "", maxW);
+            label = fitText(dc, label, "", maxW, LABEL_FONT);
         }
 
         // the list only on a field of its own (a data screen with one field); smaller fields get the countdown
@@ -288,15 +291,15 @@ class WaypointEtaView extends WatchUi.DataField {
         }
 
         // label and arrival only when the time can still be big; otherwise the time alone
-        var withExtras = fitFont(dc, main, maxW - sideW - dotW, h * 0.6);
+        var withExtras = fitFont(dc, main, maxW - sideW - dotW, h * 0.6, 0);
         if (h < 90 || withExtras > MIN_FONT_WITH_EXTRAS) {
-            drawTime(dc, w / 2, h / 2, f[fitFont(dc, main, digitsW, h * 0.95)], main, unit, timeColor, fg, dot);
+            drawTime(dc, w / 2, h / 2, f[fitFont(dc, main, digitsW, h * 0.95, 0)], main, unit, timeColor, fg, dot);
             return;
         }
         // the countdown: the main checkpoint, the time with its arrival, and the word while learning
         var topY = h * ((obs & WatchUi.DataField.OBSCURE_TOP) != 0 ? 0.24 : 0.15);
         var bottomY = h * ((obs & WatchUi.DataField.OBSCURE_BOTTOM) != 0 ? 0.76 : 0.85);
-        dc.drawText(w / 2, topY, Graphics.FONT_XTINY, label, center);
+        dc.drawText(w / 2, topY, h >= 120 ? LABEL_FONT : Graphics.FONT_XTINY, label, center);
         if (eta == null) {
             drawTime(dc, w / 2, h * 0.55, f[withExtras], main, unit, timeColor, fg, null);
             return;
@@ -304,7 +307,7 @@ class WaypointEtaView extends WatchUi.DataField {
         drawTimeWithArrival(dc, w / 2, h * 0.55, f[withExtras], main, unit, arriveSide, timeColor, fg, dot);
         // the word while learning, when there's room for it under the number (the grey digits say it anyway)
         if (learning && h * 0.55 + dc.getFontHeight(f[withExtras]) * 0.4 + lineH < bottomY + lineH * 0.5 && h >= 120) {
-            drawLine(dc, w / 2, bottomY, _learningWord, grey, null);
+            drawLine(dc, w / 2, bottomY, _learningWord, grey, null, Graphics.FONT_XTINY);
         }
     }
 
@@ -328,42 +331,53 @@ class WaypointEtaView extends WatchUi.DataField {
         var t = budget - m < thens ? budget - m : thens;
         var note = learning && m + t < budget ? 1 : 0;
         var maxW = w * (round ? 0.72 : 0.94);
+        var lh = dc.getFontHeight(LINE_FONT);
+        var labelH = dc.getFontHeight(LABEL_FONT);
         while (true) {
             var small = m + t + note;
             // the number font's top and bottom padding may overlap the lines around it
-            var avail = (h * 0.86 - (small + 1) * lineH) / 0.75;
-            var fi = fitFont(dc, main, maxW - sideW - dotW, avail);
+            var avail = (h * 0.86 - small * lh - labelH) / 0.75;
+            var fi = fitFont(dc, main, maxW - sideW - dotW, avail, LIST_FIRST_FONT);
             if (fi <= MIN_FONT_WITH_EXTRAS) {
                 var bigH = dc.getFontHeight(f[fi]) * 0.75;
-                var y = (h - (small + 1) * lineH - bigH) / 2.0 + lineH / 2.0;
+                var top = (h - small * lh - labelH - bigH) / 2.0;
                 for (var j = 0; j < m; j++) {
+                    var y = top + lh / 2.0;
                     var tail = " " + _inWord + " " + WpUtil.etaHm(_minorSecs[j]);
                     if (j == m - 1 && _minorCount > m) {
                         tail += " (+" + (_minorCount - m) + ")";
                     }
-                    drawLine(dc, w / 2, y, fitText(dc, _minorNames[j], tail, chordW(w, h, y, round) - dotW / 2), grey,
-                        dotColor(_minorSecs[j], bg));
-                    y += lineH;
+                    var cw = chordW(w, h, y, round) - dotW / 2;
+                    var lf = lineFont(dc, _minorNames[j] + tail, cw);
+                    drawLine(dc, w / 2, y, fitText(dc, _minorNames[j], tail, cw, lf), grey, dotColor(_minorSecs[j], bg), lf);
+                    top += lh;
                 }
                 dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(w / 2, y, Graphics.FONT_XTINY, label, center);
-                y += lineH / 2.0 + bigH / 2.0;
-                drawTimeWithArrival(dc, w / 2, y, f[fi], main, unit, arriveSide, timeColor, fg, dot);
-                y += bigH / 2.0 + lineH / 2.0;
+                var ly = top + labelH / 2.0;
+                dc.drawText(w / 2, ly, LABEL_FONT, fitText(dc, label, "", chordW(w, h, ly, round), LABEL_FONT), center);
+                top += labelH;
+                drawTimeWithArrival(dc, w / 2, top + bigH / 2.0, f[fi], main, unit, arriveSide, timeColor, fg, dot);
+                top += bigH;
                 if (t > 0) {
+                    var y = top + lh / 2.0;
                     var ts = _thenSec as Number;
-                    drawLine(dc, w / 2, y, fitText(dc, _thenWord + " " + _thenName, " +" + WpUtil.etaHm(ts), chordW(w, h, y, round) - dotW / 2),
-                        fg, dotColor(ts, bg));
-                    y += lineH;
+                    var cw = chordW(w, h, y, round) - dotW / 2;
+                    var text = _thenWord + " " + _thenName;
+                    var lf = lineFont(dc, text + " +" + WpUtil.etaHm(ts), cw);
+                    drawLine(dc, w / 2, y, fitText(dc, text, " +" + WpUtil.etaHm(ts), cw, lf), fg, dotColor(ts, bg), lf);
+                    top += lh;
                 }
                 if (t > 1) {
+                    var y = top + lh / 2.0;
                     var ts2 = _then2Sec as Number;
-                    drawLine(dc, w / 2, y, fitText(dc, _thenWord + " " + _then2Name, " +" + WpUtil.etaHm(ts2), chordW(w, h, y, round) - dotW / 2),
-                        fg, dotColor(ts2, bg));
-                    y += lineH;
+                    var cw = chordW(w, h, y, round) - dotW / 2;
+                    var text = _thenWord + " " + _then2Name;
+                    var lf = lineFont(dc, text + " +" + WpUtil.etaHm(ts2), cw);
+                    drawLine(dc, w / 2, y, fitText(dc, text, " +" + WpUtil.etaHm(ts2), cw, lf), fg, dotColor(ts2, bg), lf);
+                    top += lh;
                 }
                 if (note > 0) {
-                    drawLine(dc, w / 2, y, _learningWord, grey, null);
+                    drawLine(dc, w / 2, top + lh / 2.0, _learningWord, grey, null, Graphics.FONT_XTINY);
                 }
                 dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
                 return true;
@@ -414,12 +428,12 @@ class WaypointEtaView extends WatchUi.DataField {
 
     // A small line centred on x, after its dot when it has one
     hidden function drawLine(dc as Graphics.Dc, x as Number or Float, y as Number or Float, text as String,
-            color as Graphics.ColorType, dot as Graphics.ColorType?) as Void {
-        var tw = dc.getTextWidthInPixels(text, Graphics.FONT_XTINY);
+            color as Graphics.ColorType, dot as Graphics.ColorType?, font as Graphics.FontDefinition) as Void {
+        var tw = dc.getTextWidthInPixels(text, font);
         var left = x - (tw + (dot != null ? _dotR * 3 + 2 : 0.0)) / 2.0;
         left += drawDot(dc, left, y, dot, _dotR);
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(left, y, Graphics.FONT_XTINY, text, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(left, y, font, text, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     // The digits centred on x (after the dot), with the unit small after them, level with their lower part
@@ -462,9 +476,14 @@ class WaypointEtaView extends WatchUi.DataField {
         dc.drawText(left + dw + 4, y + lh * 0.5, Graphics.FONT_XTINY, arrival, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
-    // text + tail, shortening text until it fits maxW in FONT_XTINY
-    hidden function fitText(dc as Graphics.Dc, text as String, tail as String, maxW as Float) as String {
-        while (text.length() > 1 && dc.getTextWidthInPixels(text + tail, Graphics.FONT_XTINY) > maxW) {
+    // LINE_FONT when the whole line fits in maxW, else the smallest font, so a name is cut only when it must be
+    hidden function lineFont(dc as Graphics.Dc, text as String, maxW as Float) as Graphics.FontDefinition {
+        return dc.getTextWidthInPixels(text, LINE_FONT) <= maxW ? LINE_FONT : Graphics.FONT_XTINY;
+    }
+
+    // text + tail, shortening text until it fits maxW in font
+    hidden function fitText(dc as Graphics.Dc, text as String, tail as String, maxW as Float, font as Graphics.FontDefinition) as String {
+        while (text.length() > 1 && dc.getTextWidthInPixels(text + tail, font) > maxW) {
             text = text.substring(0, text.length() - 1) as String;
         }
         return text + tail;

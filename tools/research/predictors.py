@@ -84,12 +84,21 @@ class HowFar:
         return ctx.dist_next / self._smooth
 
 
+class _PlainStops(GradeTracker):
+    """Stops as a simple moving-time clock sees them: less than 15 m in a minute, with no going
+    back over the first minute of a stop. Keeps the baseline as it was before the field learned
+    to leave stops out entirely."""
+
+    STILL_TIME = float("inf")
+    FORGET_STOPS = False
+
+
 class AveragePace:
     """The usual watch estimate, for comparison: the distance left at your average moving speed
-    so far (stops left out, as for HowFar). No slopes, no course profile, nothing remembered."""
+    so far (longer stops left out). No slopes, no course profile, nothing remembered."""
 
     def __init__(self) -> None:
-        self.tracker = GradeTracker()
+        self.tracker = _PlainStops()
         self._start: float | None = None
         self._dist = 0.0
 

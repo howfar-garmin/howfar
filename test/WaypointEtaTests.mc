@@ -146,12 +146,49 @@ function testTrackerSlowClimbIsMoving(logger as Test.Logger) as Boolean {
 
 (:test)
 function testTrackerStop(logger as Test.Logger) as Boolean {
-    // 300 s moving, 600 s standing still: at most STOP_WINDOW of the stop counts
+    // 300 s moving, 600 s standing still: none of the stop counts
     var t = new GradeTracker();
     for (var i = 0; i < 900; i++) {
         t.update(i.toFloat(), (i < 300 ? i : 300) * 1.0, 300.0);
     }
-    Test.assert(t.movingTime < 300.0 + 60.0);
+    Test.assert(near(t.movingTime, 300.0, 2.0));
+    return true;
+}
+
+(:test)
+function testTrackerShortStop(logger as Test.Logger) as Boolean {
+    // 2.5 m/s, a 20 s stop to read the watch at 600 m, then on: no slow observation after it
+    var t = new GradeTracker();
+    var d = 0.0;
+    var slowest = 100.0;
+    for (var i = 0; i < 700; i++) {
+        if (i < 240 || i >= 260) {
+            d += 2.5;
+        }
+        if (t.update(i.toFloat(), d, 300.0) && t.lastSpeed < slowest) {
+            slowest = t.lastSpeed;
+        }
+    }
+    Test.assert(near(t.movingTime, 679.0, 2.0));
+    Test.assert(near(slowest, 2.5, 0.05));
+    return true;
+}
+
+(:test)
+function testFatigueNotStuckOnSlowStart(logger as Test.Logger) as Boolean {
+    // the first 250 m at half speed (a warm-up, a crowded start), then 1 km at the usual pace
+    var m = new SpeedGradeModel();
+    m.stored.add(Wp.binIndex(0.0), 3.0, 30.0);
+    var est = new EtaEstimator(m);
+    for (var i = 0; i < 10; i++) {
+        est.observe(0.0, 1.5, 25.0);
+        m.observe(0.0, 1.5);
+    }
+    for (var i = 0; i < 40; i++) {
+        est.observe(0.0, 3.0, 25.0);
+        m.observe(0.0, 3.0);
+    }
+    Test.assert(est.fatigue > 0.85);
     return true;
 }
 
@@ -172,6 +209,9 @@ function testCourseScale(logger as Test.Logger) as Boolean {
     Test.assert(near(cs.update(1150.0, 9000.0), 1.15, 0.001));
     Test.assert(near(cs.update(1200.0, 12000.0), 1.15, 0.001));  // reroute: start over
     Test.assert(near(cs.update(2400.0, 11000.0), 1.2, 0.001));
+    // a cut: 3 km of course gone in 100 m of running, start over instead of sticking at the floor
+    Test.assert(near(cs.update(2500.0, 8000.0), 1.2, 0.001));
+    Test.assert(near(cs.update(3600.0, 7000.0), 1.1, 0.001));
     return true;
 }
 
@@ -272,9 +312,10 @@ function testProfileFollowingPoint(logger as Test.Logger) as Boolean {
     var i = p.following() as Number;
     Test.assert(p.followingName(i).equals("B"));
     Test.assert(near(p.followingTime(i, est, 1.0), est.timeForGrade(2000.0, 0.0, 1.0), 0.01));
-    // a point the profile lacks, 500 m before B: the one after it is still B
-    Test.assert(p.update("Hut", 1000.0, 2000.0, 1500.0, 1.0) && p.current == null);
-    Test.assert(p.followingName(p.following() as Number).equals("B"));
+    // a point the profile lacks, 500 m ahead (a turn the watch announces): still counting down to B
+    Test.assert(p.update("Turn Rgt.", 500.0, 2000.0, 1500.0, 1.0) && p.current == null);
+    Test.assert((p.targetName("Turn Rgt.") as String).equals("B") && near(p.targetDist, 1500.0, 0.01));
+    Test.assert(p.followingName(p.following() as Number).equals("Finish"));
     Test.assert(p.update("B", 500.0, 1000.0, 2500.0, 1.0));
     Test.assert(p.followingName(p.following() as Number).equals("Finish"));
     Test.assert(p.update(null, 500.0, 500.0, 3000.0, 1.0));

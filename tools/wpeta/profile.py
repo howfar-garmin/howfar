@@ -130,8 +130,8 @@ class ProfileMatcher:
     learned at each point the profile knows from how far both say the finish is.
 
     What the field counts down to (`target_*`) is the next main profile point ahead of you,
-    which can be one the watch's course doesn't have, or the watch's next point when that
-    comes first and the profile doesn't know it. `via` is the next minor point before it (a
+    which can be one the watch's course doesn't have; a watch point the profile doesn't know (a
+    turn the watch announces) is never counted down to. `via` is the next minor point before it (a
     climb top or a hut added on the race prep page). Where you are is always taken from the
     watch's next point, so the watch's checkpoints keep anchoring it.
     """
@@ -290,8 +290,9 @@ class ProfileMatcher:
         self.vias = []
         if self.own_points:
             main = next((i for i in range(len(self.entries)) if not self.minor[i] and self._end(i) > here + self.PASSED), None)
-            # the watch's next point, when the profile doesn't know it, counts as main
-            if main is not None and not (self.current is None and self.loc < self._end(main) - self.PASSED):
+            # the profile's points are the list: a watch point it doesn't know (a turn the watch
+            # announces, a checkpoint you unticked) still says where you are, but isn't counted down to
+            if main is not None:
                 self.target_end, self.target_index = self._end(main), main
             self.vias = [i for i in range(len(self.entries)) if self.minor[i]
                          and here + self.PASSED < self._end(i) < self.target_end - self.PASSED]

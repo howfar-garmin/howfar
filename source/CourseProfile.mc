@@ -11,8 +11,8 @@ import Toybox.Lang;
 // The watch's course may be another version of the course, so the watch's distances are
 // converted with ratio (profile metres per watch course metre), learned at each known point.
 // What the field counts down to (target*) is the next main profile point ahead of you, which
-// can be one the watch's course doesn't have, or the watch's next point when that comes first
-// and the profile doesn't know it. via is the next minor point before it. Where you are is
+// can be one the watch's course doesn't have; a watch point the profile doesn't know (a turn the
+// watch announces) is never counted down to. via is the next minor point before it. Where you are is
 // always taken from the watch's next point, so the watch's checkpoints keep anchoring it.
 // Mirrors ProfileMatcher in tools/wpeta/profile.py.
 class CourseProfile {
@@ -268,11 +268,10 @@ class CourseProfile {
         for (var i = 0; i < _names.size(); i++) {
             var end = _starts[i] + _lengths[i];
             if (!_minor[i] && end > here + PASSED) {
-                // the watch's next point, when the profile doesn't know it, counts as main
-                if (!(current == null && at < end - PASSED)) {
-                    targetEnd = end;
-                    targetIndex = i;
-                }
+                // the profile's points are the list: a watch point it doesn't know (a turn the watch
+                // announces, a checkpoint you unticked) still says where you are, but isn't counted down to
+                targetEnd = end;
+                targetIndex = i;
                 break;
             }
         }

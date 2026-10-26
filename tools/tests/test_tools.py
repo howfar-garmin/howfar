@@ -279,9 +279,10 @@ def test_matcher_following_point():
     i = m.following()
     assert m.following_name(i) == "B"
     assert m.following_time(i, est, 1.0) == pytest.approx(est.time_for_grade(2000, 0.0))
-    # a point the profile lacks, 500 m before B: the one after it is still B
-    assert m.update("Hut", 1000, 2000, 1500.0) and m.current is None
-    assert m.following_name(m.following()) == "B"
+    # a point the profile lacks, 500 m ahead (a turn the watch announces): still counting down to B
+    assert m.update("Turn Rgt.", 500, 2000, 1500.0) and m.current is None
+    assert m.target_name("Turn Rgt.") == "B" and m.target_dist == pytest.approx(1500)
+    assert m.following_name(m.following()) == "Finish"
     assert m.update("B", 500, 1000, 2500.0)
     assert m.following_name(m.following()) == "Finish"
     assert m.update(None, 500, 500, 3000.0)
@@ -462,13 +463,28 @@ def test_tracker_slow_climb_counts_as_moving():
 
 
 def test_tracker_excludes_stops():
-    # 300 s moving, 600 s standing still: at most STOP_WINDOW of the stop counts
+    # 300 s moving, 600 s standing still: none of the stop counts
     from wpeta.model import GradeTracker
 
     t = GradeTracker()
     for i in range(900):
         t.update(float(i), min(i, 300) * 1.0, 300.0)
-    assert t.moving_time < 300 + 60
+    assert t.moving_time == pytest.approx(300, abs=2)
+
+
+def test_tracker_short_stop_leaves_no_trace():
+    # 2.5 m/s, a 20 s stop to read the watch at 600 m, then on: no slow observation after it
+    from wpeta.model import GradeTracker
+
+    t = GradeTracker()
+    d, speeds = 0.0, []
+    for i in range(700):
+        if not 240 <= i < 260:
+            d += 2.5
+        if t.update(float(i), d, 300.0):
+            speeds.append(t.last_speed)
+    assert t.moving_time == pytest.approx(679, abs=2)
+    assert min(speeds) == pytest.approx(2.5, abs=0.05)
 
 
 def test_layer_averages_pace_not_speed():
@@ -532,6 +548,9 @@ def test_course_scale():
     # reroute: remaining course jumps up, start over
     assert cs.update(1200.0, 12000.0) == pytest.approx(1.15)
     assert cs.update(2400.0, 11000.0) == pytest.approx(1.2)
+    # a cut: 3 km of course gone in 100 m of running, start over instead of sticking at the floor
+    assert cs.update(2500.0, 8000.0) == pytest.approx(1.2)
+    assert cs.update(3600.0, 7000.0) == pytest.approx(1.1)
 
 
 def test_time_scales_distance_and_grade():
@@ -574,6 +593,20 @@ def test_fatigue_factor_tracks_recent_slowdown(monkeypatch):
         m.observe(0, 2.4)
     assert est.fatigue < 0.97  # still slower than the (lagging) model says
     assert est.time_for_grade(1000, 0) > 1000 / m.predict(0)
+
+
+def test_fatigue_factor_not_stuck_on_a_slow_start():
+    # the first 250 m at half speed (a warm-up, a crowded start), then 1 km at the usual pace
+    m = SpeedGradeModel()
+    m.stored.add(bin_index(0), 3.0, 30)
+    est = EtaEstimator(m)
+    for _ in range(10):
+        est.observe(0, 1.5, 25)
+        m.observe(0, 1.5)
+    for _ in range(40):
+        est.observe(0, 3.0, 25)
+        m.observe(0, 3.0)
+    assert est.fatigue > 0.85
 
 
 # --- the website in every language ---------------------------------------------------

@@ -217,6 +217,9 @@ class GradeTracker:
     STOP_WINDOW = 60.0  # stopped = less than STOP_DIST metres in the last STOP_WINDOW seconds
     STOP_DIST = 15.0
     STOP_SIZE = 90
+    STILL_DIST = 2.0  # also stopped: less than this many metres for STILL_TIME seconds (a short stop to read the watch)
+    STILL_TIME = 10.0
+    FORGET_STOPS = True  # take the start of a stop back off the moving time (research baselines turn it off)
     MIN_SPEED = 0.2
     MAX_SPEED = 10.0
 
@@ -235,6 +238,9 @@ class GradeTracker:
         self._scount = 0
         self._last_emit: float | None = None
         self._last_time: float | None = None
+        self._still_dist: float | None = None  # where the distance last moved on by STILL_DIST
+        self._still_since = 0.0  # and when
+        self._was_moving = True
         self.moving_time = 0.0
         self.observations = 0
         self.last_grade = 0.0
@@ -249,6 +255,10 @@ class GradeTracker:
         self._shead = (self._shead + 1) % self.STOP_SIZE
         if self._scount < self.STOP_SIZE:
             self._scount += 1
+        if self._still_dist is None or dist - self._still_dist >= self.STILL_DIST:
+            self._still_dist, self._still_since = dist, time_s
+        if time_s - self._still_since >= self.STILL_TIME:
+            return False
         for k in range(1, self._scount):
             idx = (self._shead - 1 - k + self.STOP_SIZE) % self.STOP_SIZE
             if self._st[idx] <= time_s - self.STOP_WINDOW:
@@ -263,6 +273,14 @@ class GradeTracker:
             if 0 < dt < 30 and moving:
                 self.moving_time += dt
         self._last_time = time_s
+        if self._was_moving and not moving and self.FORGET_STOPS:
+            # a stop is seen only after a while: the seconds already spent standing weren't moving
+            self.moving_time -= clamp(time_s - self._still_since, 0.0, self.STOP_WINDOW)
+        elif moving and not self._was_moving:
+            # the first observation after a stop starts after it
+            self._count = 0
+            self._last_emit = None
+        self._was_moving = moving
         if not moving:
             return False
 
@@ -329,8 +347,9 @@ class EtaEstimator:
         # fatigue: how the full model (before seeing this observation) did on it
         fpred = dist / self.model.predict(grade_pct)
         if self._count == 0:
-            self._fpred, self._fact = fpred, act
-        elif self.FATIGUE_ALPHA > 0:
+            # averages that start empty, so the first metres don't outweigh the next kilometres
+            self._fpred, self._fact = 0.0, 0.0
+        if self.FATIGUE_ALPHA > 0:
             self._fpred += (fpred - self._fpred) * self.FATIGUE_ALPHA
             self._fact += (act - self._fact) * self.FATIGUE_ALPHA
         if self._count + 1 >= self.MIN_OBS and self._fact > 0 and self.FATIGUE_ALPHA > 0:
@@ -373,13 +392,18 @@ class CourseScale:
         self._base_dist: float | None = None
         self._base_dest = 0.0
         self._last_dest: float | None = None
+        self._last_dist: float | None = None
 
     def update(self, dist: float, dist_dest: float) -> float:
-        # start over at the first fix, or when the remaining course jumps up (new course, reroute)
-        if self._base_dist is None or (self._last_dest is not None and dist_dest > self._last_dest + 200):
+        # start over at the first fix, when the remaining course jumps up (new course, reroute)
+        # or drops by more than you ran (you cut part of the course)
+        cut = (self._last_dest is not None and self._last_dist is not None
+               and self._last_dest - dist_dest > dist - self._last_dist + 200)
+        if self._base_dist is None or cut or (self._last_dest is not None and dist_dest > self._last_dest + 200):
             self._base_dist = dist
             self._base_dest = dist_dest
         self._last_dest = dist_dest
+        self._last_dist = dist
         progress = self._base_dest - dist_dest
         walked = dist - self._base_dist
         if progress >= self.MIN_PROGRESS and walked > 0:

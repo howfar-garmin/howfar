@@ -57,6 +57,8 @@ Before the race, take a few minutes on the race prep page of the website. From y
 
 Made for trail runs of 25 km or more with real climbs and descents. Works without a phone or signal during the race. Time spent stopped at aid stations is not counted.
 
+Feedback, problems, ideas: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (or Contact Developer on this page).
+
 Free and open source. Not affiliated with Garmin.
 
 #ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning
@@ -73,6 +75,7 @@ First version: next checkpoint, time to it and arrival time; learns your pace by
 
 - Website: https://howfar-garmin.github.io/howfar/
 - Source: https://github.com/howfar-garmin/howfar
+- Feedback: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml
 
 ## Translations
 
@@ -98,6 +101,8 @@ Prima della gara, dedica qualche minuto alla pagina di preparazione del sito. Da
 
 Pensato per trail di 25 km o più, con salite e discese vere. Funziona senza telefono e senza segnale durante la gara. Il tempo fermo ai ristori non viene contato.
 
+Commenti, problemi, idee: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (oppure Contatta lo sviluppatore in questa pagina).
+
 Gratuito e open source. Non affiliato a Garmin.
 
 ### Français
@@ -120,6 +125,8 @@ Avant la course, prends quelques minutes sur la page de préparation du site. À
 
 Conçu pour les trails de 25 km ou plus, avec de vraies montées et descentes. Fonctionne sans téléphone ni réseau pendant la course. Le temps passé à l'arrêt aux ravitaillements n'est pas compté.
 
+Avis, problèmes, idées : https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (ou Contacter le développeur sur cette page).
+
 Gratuit et open source. Non affilié à Garmin.
 
 ### Deutsch
@@ -141,6 +148,8 @@ Nichts einzustellen: Es lernt, während du läufst, wie schnell du auf jeder Ste
 Nimm dir vor dem Rennen ein paar Minuten für die Vorbereitungsseite der Website. Aus der Streckendatei deines Rennens erstellt sie ein Streckenprofil, das du in die Einstellungen von HowFar einfügst: Dann kennt HowFar jeden Anstieg und Abstieg zwischen den Kontrollpunkten und kann die Punkte rund um den nächsten zeigen. Dort kannst du auch Punkte hinzufügen: Fuß und Gipfel jedes Anstiegs und benannte Hütten und Dörfer, für dich gefunden, oder eigene. Mach jeden zum Hauptpunkt, um herunterzuzählen, oder zum Nebenpunkt, um ihn auf dem Weg zu sehen. Es ist optional, und die Website erklärt es Schritt für Schritt, auch auf Deutsch.
 
 Gemacht für Trailläufe ab 25 km mit echten Anstiegen und Abstiegen. Funktioniert während des Rennens ohne Handy und ohne Empfang. Die Zeit an Verpflegungsstationen wird nicht mitgezählt.
+
+Feedback, Probleme, Ideen: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (oder Entwickler kontaktieren auf dieser Seite).
 
 Kostenlos und Open Source. Nicht mit Garmin verbunden.
 

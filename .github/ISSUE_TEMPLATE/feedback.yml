@@ -1,0 +1,57 @@
+name: Feedback
+description: How HowFar did in a race or a run, something that looks wrong, or an idea.
+title: "[Feedback] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for writing. Everything you post here is **public**, files and photos included: leave out what you'd rather not share.
+  - type: dropdown
+    id: about
+    attributes:
+      label: What is it about?
+      options:
+        - How good the times were in a race or a run
+        - Something looks wrong on the watch
+        - The race prep page
+        - The website
+        - An idea
+    validations:
+      required: true
+  - type: input
+    id: watch
+    attributes:
+      label: Watch
+      placeholder: "For example: Enduro 3, fēnix 8 47 mm"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: HowFar version
+      description: From the Connect IQ Store, a beta, or a file from GitHub. The version is in the Connect IQ app, under HowFar.
+      placeholder: "For example: 0.4.0 from the store"
+  - type: dropdown
+    id: profile
+    attributes:
+      label: Had you pasted the course profile?
+      options:
+        - "Yes"
+        - "No"
+        - Not sure
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What the watch showed, and what you expected. For a race, roughly where and when.
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Photos and files
+      description: |
+        Drag them in here. The most useful, if you can share them:
+        - photos of the watch during the run;
+        - the activity, as GPX or FIT (from Garmin Connect or Strava);
+        - the course file you loaded on the watch, and the course profile text you pasted.

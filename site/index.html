@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=58">
+<link rel="stylesheet" href="css/site.css?v=59">
 </head>
 <body>
 
@@ -84,6 +84,17 @@
         <p class="eyebrow">Before the race · a few minutes</p>
         <h2>Prepare your race and get the whole field</h2>
         <p class="muted">On its own, HowFar only knows what your watch tells it: the next checkpoint, and how much higher or lower it is. Prepare your race on the <a href="prepare.html">race prep page</a> and HowFar knows the whole course, with the points you choose.</p>
+      </div>
+
+      <div class="needs">
+        <div>
+          <h3>Always: the course on your watch</h3>
+          <p class="muted">Put the race course on the watch, from Garmin Connect or by copying its file, and pick it when you start the activity (<b>Navigate</b> → <b>Courses</b>). HowFar knows where you are only from the watch's navigation: with no course running, the field shows <b>--</b>, even with a course profile.</p>
+        </div>
+        <div>
+          <h3>Optional: the course profile</h3>
+          <p class="muted">With only the course on the watch, HowFar already counts down to its checkpoints, from your pace and the height difference (<span class="pill">~</span>). The profile adds every climb and descent, your own points, and the list of what's coming.</p>
+        </div>
       </div>
 
       <figure class="points-fig">
@@ -382,6 +393,8 @@
         <h2>Good to know</h2>
       </div>
       <div class="faq">
+        <details><summary>Do I need to load the course on the watch?</summary><p>Yes, always. HowFar follows your watch's navigation to know where you are and how far the next checkpoint is. Put the race course on the watch, from Garmin Connect or by copying its file, and pick it when you start the activity (<b>Navigate</b> → <b>Courses</b>). With no course running, the field shows <b>--</b>, even with a course profile in its settings.</p></details>
+        <details><summary>Does it work without the course profile?</summary><p>Yes. With only the course on the watch, HowFar counts down to the watch's checkpoints, from your pace and how much higher or lower the next one is (<span class="pill">~</span> on the watch). The course profile makes it more accurate on up-and-down trails, adds the points you choose, and lets a full screen list what's coming (<span class="pill">P</span>).</p></details>
         <details><summary>Does it need a phone or a signal during the race?</summary><p>No. Everything happens on the watch. You only need your phone before the race, to paste the optional course profile.</p></details>
         <details><summary>Does it use more battery?</summary><p>Hardly. It uses no sensors of its own: it reads the distance, altitude and course data your watch already records, and does a little math once a second. The GPS and the screen use far more.</p></details>
         <details><summary>What about time at aid stations?</summary><p>HowFar only counts the time you'll spend moving. It can't know if you'll stop for two minutes or twenty, so stops are never included, neither in the countdown nor in the arrival time. If you plan to stop on the way, add that time yourself: with 1:10 h on the watch and a 15-minute stop before the checkpoint, expect to get there in about 1:25 h. The times of the next main checkpoints (<i>then Valgrisenche +1:25</i>) leave stops out too: each is the moving time for that leg, from when you leave the checkpoint before it. While you're stopped, the countdown pauses, and it carries on when you set off again.</p></details>

@@ -515,3 +515,7 @@ button.kind:hover { border-color: var(--accent); }
 .prep-feature details.more { margin-top: 16px; display: grid; gap: 10px; }
 .chart-box .points-svg { cursor: default; }
 .prep-cta .btn { text-decoration: none; }
+.needs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+@media (max-width: 760px) { .needs { grid-template-columns: minmax(0, 1fr); } }
+.needs > div { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 14px 18px; display: grid; gap: 6px; align-content: start; }
+.needs p { font-size: var(--step--1); }

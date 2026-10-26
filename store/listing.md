@@ -39,7 +39,7 @@ Data fields
 
 ## Short description
 
-Time to the next checkpoint of your course, learned from how you climb and descend.
+Beta. The time to the next checkpoint of a long trail run, learned from how you climb and descend.
 
 ## Description
 
@@ -51,17 +51,23 @@ HowFar puts the answer on your wrist. While you follow a course, it shows:
 - the time of day you'll arrive
 - on a full data screen, with a course profile: the points before and after it, in the order you meet them
 
+This is a beta. HowFar is new, and real races are what make it better: try it and tell us how it did, good or bad. The more feedback, the better. Feedback form: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (or Contact Developer on this page).
+
+Made for long trail runs and ultras, 25 km and more, with real climbs and descents. That's where your average pace says little about the climb ahead, and where HowFar does much better. It isn't meant for a flat 5 or 10 km: there your average pace already works.
+
 Nothing to set up: it learns how fast you go on every slope while you run, from steep descents to steep climbs, and keeps learning all race long. It remembers your past runs, follows you when you slow down or pick up again, and corrects for your watch measuring more distance than the course map.
 
-Before the race, take a few minutes on the race prep page of the website. From your race's course file it makes a course profile to paste into HowFar's settings, so HowFar knows every climb and descent between checkpoints and can show the points around the next one. There you can also add points: the top and bottom of every climb and named huts and villages, found for you, or your own. Make each one main, to count down to it, or minor, to see it on the way. It's optional, and the website explains it step by step in English, Italian, French and German.
+Before the race, take a few minutes on the race prep page of the website. From your race's course file it makes a course profile to paste into HowFar's settings, so HowFar knows every climb and descent between checkpoints and can show the points around the next one. There you can also add points: the top and bottom of every climb and named huts and villages, found for you, or your own. Make main the points where you stop or face a cutoff, and minor the landmarks in between, shown on the way. It's optional, and the website explains it step by step in English, Italian, French and German.
 
-Made for trail runs of 25 km or more with real climbs and descents. Works without a phone or signal during the race. Time spent stopped at aid stations is not counted.
-
-Feedback, problems, ideas: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (or Contact Developer on this page).
+Works without a phone or signal during the race. Time spent stopped at aid stations is not counted.
 
 Free and open source. Not affiliated with Garmin.
 
 #ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning
+
+## What's new (0.4.0)
+
+A fair start: a slow first few hundred metres no longer holds the prediction down for kilometres. Stops leave no trace, even a short one to read the watch. With the course profile, turn directions announced by the watch are ignored. After a shortcut, the distance correction starts over. The checkpoint's name and the lines around it are bigger, the big number a little smaller.
 
 ## What's new (0.3.0)
 
@@ -83,7 +89,7 @@ The store takes a description per language. The app name stays **HowFar**.
 
 ### Italiano
 
-**Descrizione breve:** Il tempo al prossimo checkpoint del tuo percorso, imparato da come sali e scendi.
+**Descrizione breve:** Beta. Il tempo al prossimo checkpoint di un trail lungo, imparato da come sali e scendi.
 
 **Descrizione:**
 
@@ -95,19 +101,21 @@ HowFar ti mette la risposta al polso. Mentre segui un percorso mostra:
 - l'ora a cui arriverai
 - a schermo intero, con il profilo del percorso: i punti prima e dopo, nell'ordine in cui li incontri
 
+Questa è una beta. HowFar è nuovo, e sono le gare vere a renderlo migliore: provalo e raccontaci come è andato, bene o male. Più commenti arrivano, meglio è. Modulo per i commenti: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (oppure Contatta lo sviluppatore in questa pagina).
+
+Pensato per trail lunghi e ultra, da 25 km in su, con salite e discese vere. È lì che il passo medio dice poco sulla salita che arriva, ed è lì che HowFar fa molto meglio. Non è pensato per 5 o 10 km in piano: lì il passo medio funziona già.
+
 Niente da impostare: impara quanto vai veloce su ogni pendenza mentre corri, dalle discese ripide alle salite ripide, e continua a imparare per tutta la gara. Ricorda le tue corse passate, ti segue quando rallenti o riprendi, e tiene conto del fatto che l'orologio misura più distanza della mappa del percorso.
 
-Prima della gara, dedica qualche minuto alla pagina di preparazione del sito. Dal file del percorso della gara crea un profilo del percorso da incollare nelle impostazioni di HowFar, così HowFar conosce ogni salita e discesa tra i checkpoint e può mostrare i punti intorno al prossimo. Lì puoi anche aggiungere punti: l'inizio e la cima di ogni salita e rifugi e paesi con un nome, trovati per te, o punti tuoi. Rendi ognuno principale, per il conto alla rovescia, o secondario, per vederlo lungo la strada. È facoltativo, e il sito lo spiega passo per passo, anche in italiano.
+Prima della gara, dedica qualche minuto alla pagina di preparazione del sito. Dal file del percorso della gara crea un profilo del percorso da incollare nelle impostazioni di HowFar, così HowFar conosce ogni salita e discesa tra i checkpoint e può mostrare i punti intorno al prossimo. Lì puoi anche aggiungere punti: l'inizio e la cima di ogni salita e rifugi e paesi con un nome, trovati per te, o punti tuoi. Rendi principali i punti dove ti fermi o c'è una barriera oraria, e secondari i riferimenti in mezzo, mostrati lungo la strada. È facoltativo, e il sito lo spiega passo per passo, anche in italiano.
 
-Pensato per trail di 25 km o più, con salite e discese vere. Funziona senza telefono e senza segnale durante la gara. Il tempo fermo ai ristori non viene contato.
-
-Commenti, problemi, idee: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (oppure Contatta lo sviluppatore in questa pagina).
+Funziona senza telefono e senza segnale durante la gara. Il tempo fermo ai ristori non viene contato.
 
 Gratuito e open source. Non affiliato a Garmin.
 
 ### Français
 
-**Description courte :** Le temps jusqu'au prochain point de contrôle de ton parcours, appris de ta façon de monter et de descendre.
+**Description courte :** Bêta. Le temps jusqu'au prochain point de contrôle d'un trail long, appris de ta façon de monter et de descendre.
 
 **Description :**
 
@@ -119,19 +127,21 @@ HowFar te donne la réponse au poignet. Pendant que tu suis un parcours, il affi
 - l'heure à laquelle tu y seras
 - en plein écran, avec le profil du parcours : les points avant et après, dans l'ordre où tu les rencontres
 
+C'est une bêta. HowFar est nouveau, et ce sont les vraies courses qui l'améliorent : essaie-le et dis-nous comment ça s'est passé, en bien ou en mal. Plus il y a de retours, mieux c'est. Formulaire de retour : https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (ou Contacter le développeur sur cette page).
+
+Conçu pour les trails longs et les ultras, à partir de 25 km, avec de vraies montées et descentes. C'est là que ton allure moyenne dit peu de la montée à venir, et là que HowFar fait beaucoup mieux. Il n'est pas fait pour un 5 ou 10 km plat : là, l'allure moyenne marche déjà.
+
 Rien à régler : il apprend ta vitesse sur chaque pente pendant que tu cours, des descentes raides aux montées raides, et continue d'apprendre toute la course. Il se souvient de tes sorties passées, te suit quand tu ralentis ou repars, et tient compte du fait que ta montre mesure plus de distance que la carte du parcours.
 
-Avant la course, prends quelques minutes sur la page de préparation du site. À partir du fichier du parcours de ta course, elle crée un profil du parcours à coller dans les réglages de HowFar : HowFar connaît alors chaque montée et descente entre les points de contrôle et peut afficher les points autour du prochain. Tu peux aussi y ajouter des points : le bas et le haut de chaque montée et les refuges et villages qui ont un nom, trouvés pour toi, ou les tiens. Rends chacun principal, pour un compte à rebours, ou secondaire, pour le voir sur le chemin. C'est facultatif, et le site l'explique étape par étape, aussi en français.
+Avant la course, prends quelques minutes sur la page de préparation du site. À partir du fichier du parcours de ta course, elle crée un profil du parcours à coller dans les réglages de HowFar : HowFar connaît alors chaque montée et descente entre les points de contrôle et peut afficher les points autour du prochain. Tu peux aussi y ajouter des points : le bas et le haut de chaque montée et les refuges et villages qui ont un nom, trouvés pour toi, ou les tiens. Rends principaux les points où tu t'arrêtes ou où il y a une barrière horaire, et secondaires les repères entre les deux, affichés sur le chemin. C'est facultatif, et le site l'explique étape par étape, aussi en français.
 
-Conçu pour les trails de 25 km ou plus, avec de vraies montées et descentes. Fonctionne sans téléphone ni réseau pendant la course. Le temps passé à l'arrêt aux ravitaillements n'est pas compté.
-
-Avis, problèmes, idées : https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (ou Contacter le développeur sur cette page).
+Fonctionne sans téléphone ni réseau pendant la course. Le temps passé à l'arrêt aux ravitaillements n'est pas compté.
 
 Gratuit et open source. Non affilié à Garmin.
 
 ### Deutsch
 
-**Kurzbeschreibung:** Die Zeit bis zum nächsten Kontrollpunkt deiner Strecke, gelernt daraus, wie du bergauf und bergab läufst.
+**Kurzbeschreibung:** Beta. Die Zeit bis zum nächsten Kontrollpunkt eines langen Traillaufs, gelernt daraus, wie du bergauf und bergab läufst.
 
 **Beschreibung:**
 
@@ -143,13 +153,15 @@ HowFar bringt dir die Antwort ans Handgelenk. Während du einer Strecke folgst, 
 - die Uhrzeit, zu der du ankommst
 - im Vollbild, mit Streckenprofil: die Punkte davor und danach, in der Reihenfolge, in der du sie erreichst
 
+Das ist eine Beta. HowFar ist neu, und echte Rennen machen es besser: Probier es aus und erzähl uns, wie es lief, gut oder schlecht. Je mehr Feedback, desto besser. Feedback-Formular: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (oder Entwickler kontaktieren auf dieser Seite).
+
+Gemacht für lange Trailläufe und Ultras ab 25 km, mit echten Anstiegen und Abstiegen. Dort sagt dein Durchschnittstempo wenig über den nächsten Anstieg, und dort ist HowFar viel besser. Für flache 5 oder 10 km ist es nicht gedacht: Da reicht das Durchschnittstempo schon.
+
 Nichts einzustellen: Es lernt, während du läufst, wie schnell du auf jeder Steigung bist, von steilen Abstiegen bis zu steilen Anstiegen, und lernt das ganze Rennen über weiter. Es merkt sich deine früheren Läufe, folgt dir, wenn du langsamer wirst oder wieder zulegst, und berücksichtigt, dass deine Uhr mehr Strecke misst als die Streckenkarte.
 
-Nimm dir vor dem Rennen ein paar Minuten für die Vorbereitungsseite der Website. Aus der Streckendatei deines Rennens erstellt sie ein Streckenprofil, das du in die Einstellungen von HowFar einfügst: Dann kennt HowFar jeden Anstieg und Abstieg zwischen den Kontrollpunkten und kann die Punkte rund um den nächsten zeigen. Dort kannst du auch Punkte hinzufügen: Fuß und Gipfel jedes Anstiegs und benannte Hütten und Dörfer, für dich gefunden, oder eigene. Mach jeden zum Hauptpunkt, um herunterzuzählen, oder zum Nebenpunkt, um ihn auf dem Weg zu sehen. Es ist optional, und die Website erklärt es Schritt für Schritt, auch auf Deutsch.
+Nimm dir vor dem Rennen ein paar Minuten für die Vorbereitungsseite der Website. Aus der Streckendatei deines Rennens erstellt sie ein Streckenprofil, das du in die Einstellungen von HowFar einfügst: Dann kennt HowFar jeden Anstieg und Abstieg zwischen den Kontrollpunkten und kann die Punkte rund um den nächsten zeigen. Dort kannst du auch Punkte hinzufügen: Fuß und Gipfel jedes Anstiegs und benannte Hütten und Dörfer, für dich gefunden, oder eigene. Mach die Punkte, an denen du anhältst oder ein Zeitlimit hast, zu Hauptpunkten und die Orientierungspunkte dazwischen zu Nebenpunkten, die auf dem Weg erscheinen. Es ist optional, und die Website erklärt es Schritt für Schritt, auch auf Deutsch.
 
-Gemacht für Trailläufe ab 25 km mit echten Anstiegen und Abstiegen. Funktioniert während des Rennens ohne Handy und ohne Empfang. Die Zeit an Verpflegungsstationen wird nicht mitgezählt.
-
-Feedback, Probleme, Ideen: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (oder Entwickler kontaktieren auf dieser Seite).
+Funktioniert während des Rennens ohne Handy und ohne Empfang. Die Zeit an Verpflegungsstationen wird nicht mitgezählt.
 
 Kostenlos und Open Source. Nicht mit Garmin verbunden.
 

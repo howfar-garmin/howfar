@@ -519,3 +519,5 @@ button.kind:hover { border-color: var(--accent); }
 @media (max-width: 760px) { .needs { grid-template-columns: minmax(0, 1fr); } }
 .needs > div { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 14px 18px; display: grid; gap: 6px; align-content: start; }
 .needs p { font-size: var(--step--1); }
+.hero-note { margin-top: 18px; max-width: 60ch; font-size: var(--step--1); color: var(--ink-2); background: var(--accent-soft); border-radius: var(--radius); padding: 10px 14px; }
+.hero-note b { color: var(--ink); }

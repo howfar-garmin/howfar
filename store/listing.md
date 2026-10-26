@@ -61,6 +61,8 @@ Before the race, take a few minutes on the race prep page of the website. From y
 
 Works without a phone or signal during the race. Time spent stopped at aid stations is not counted.
 
+Website and race prep page: https://howfar-garmin.github.io/howfar/
+
 Free and open source. Not affiliated with Garmin.
 
 #ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning
@@ -79,6 +81,7 @@ First version: next checkpoint, time to it and arrival time; learns your pace by
 
 ## Links
 
+- Store: https://apps.garmin.com/apps/e34840a9-6cd4-4ea6-96b0-051edeb0db73 (submitted 26 October 2026 as 0.4.0)
 - Website: https://howfar-garmin.github.io/howfar/
 - Source: https://github.com/howfar-garmin/howfar
 - Feedback: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml
@@ -111,6 +114,8 @@ Prima della gara, dedica qualche minuto alla pagina di preparazione del sito. Da
 
 Funziona senza telefono e senza segnale durante la gara. Il tempo fermo ai ristori non viene contato.
 
+Sito e pagina di preparazione: https://howfar-garmin.github.io/howfar/it/
+
 Gratuito e open source. Non affiliato a Garmin.
 
 ### Français
@@ -137,6 +142,8 @@ Avant la course, prends quelques minutes sur la page de préparation du site. À
 
 Fonctionne sans téléphone ni réseau pendant la course. Le temps passé à l'arrêt aux ravitaillements n'est pas compté.
 
+Site et page de préparation : https://howfar-garmin.github.io/howfar/fr/
+
 Gratuit et open source. Non affilié à Garmin.
 
 ### Deutsch
@@ -162,6 +169,8 @@ Nichts einzustellen: Es lernt, während du läufst, wie schnell du auf jeder Ste
 Nimm dir vor dem Rennen ein paar Minuten für die Vorbereitungsseite der Website. Aus der Streckendatei deines Rennens erstellt sie ein Streckenprofil, das du in die Einstellungen von HowFar einfügst: Dann kennt HowFar jeden Anstieg und Abstieg zwischen den Kontrollpunkten und kann die Punkte rund um den nächsten zeigen. Dort kannst du auch Punkte hinzufügen: Fuß und Gipfel jedes Anstiegs und benannte Hütten und Dörfer, für dich gefunden, oder eigene. Mach die Punkte, an denen du anhältst oder ein Zeitlimit hast, zu Hauptpunkten und die Orientierungspunkte dazwischen zu Nebenpunkten, die auf dem Weg erscheinen. Es ist optional, und die Website erklärt es Schritt für Schritt, auch auf Deutsch.
 
 Funktioniert während des Rennens ohne Handy und ohne Empfang. Die Zeit an Verpflegungsstationen wird nicht mitgezählt.
+
+Website und Vorbereitungsseite: https://howfar-garmin.github.io/howfar/de/
 
 Kostenlos und Open Source. Nicht mit Garmin verbunden.
 

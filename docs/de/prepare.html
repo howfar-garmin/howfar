@@ -71,11 +71,11 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="chart-block">
 <div class="chart-head">
 <h3>Strecke und Kontrollpunkte</h3>
-<span class="small muted">Große Punkte: Hauptpunkte, zu denen HowFar herunterzählt. Kleine Punkte: Nebenpunkte.</span>
+<span class="small muted">Große Punkte: Hauptpunkte, wo du anhältst oder ein Zeitlimit hast; die große Zahl zeigt die Zeit bis zu ihnen. Kleine Punkte: Nebenpunkte, Orientierungspunkte auf dem Weg.</span>
 </div>
 <div class="chart-box" id="courseChartBox"><svg aria-label="Elevation profile of the course with its checkpoints" class="wide" id="courseChart" role="img" viewbox="0 0 1000 280"></svg></div>
 </div>
-<p class="small muted" hidden="" id="coursePickNote">Entferne den Haken bei einem Kontrollpunkt nur, wenn er nicht zu diesem Rennen gehört, etwa das Ziel eines anderen Rennens; der Text unten aktualisiert sich. HowFar zählt zu <b>Haupt</b>punkten herunter. <b>Neben</b>punkte werden auf dem Weg gezeigt, im Vollbild über dem Namen des Kontrollpunkts, wie in <i>Col d'Arp in 0:35</i>. Punkte, die du hinzufügst, beginnen als Nebenpunkte. Drück Haupt oder Neben, um einen Punkt umzustellen. Soll die große Zahl nicht bis zu einem Kontrollpunkt deiner Strecke herunterzählen, mach ihn zum Nebenpunkt: Ohne Haken würde er trotzdem als Hauptpunkt zählen, weil die Strecke auf deiner Uhr ihn noch hat.</p>
+<p class="small muted" hidden="" id="coursePickNote">Entferne den Haken bei einem Kontrollpunkt nur, wenn er nicht zu diesem Rennen gehört, etwa das Ziel eines anderen Rennens; der Text unten aktualisiert sich. Mach die Punkte zu <b>Haupt</b>punkten, an denen du anhältst oder ein Zeitlimit hast, etwa Verpflegungsstellen und Base Vita: Die große Zahl und die Ankunftszeit gelten ihnen. Mach die Orientierungspunkte dazwischen, etwa Pässe und Hütten, zu <b>Neben</b>punkten: Im Vollbild erscheint jeder klein über dem Namen des Kontrollpunkts, mit seiner eigenen Zeit, wie in <i>Col d'Arp in 0:35</i>. Punkte, die du hinzufügst, beginnen als Nebenpunkte. Drück Haupt oder Neben, um einen Punkt umzustellen. Soll die große Zahl einen Kontrollpunkt deiner Strecke nicht zeigen, mach ihn zum Nebenpunkt: Ohne Haken würde er trotzdem als Hauptpunkt zählen, weil die Strecke auf deiner Uhr ihn noch hat.</p>
 <div class="table-wrap">
 <table class="results prep-table">
 <thead><tr><th scope="col">Kontrollpunkt</th><th class="num" scope="col">Bei km</th><th class="num" scope="col">Vom vorigen</th><th class="num" scope="col">Anstieg unterwegs</th><th scope="col">Haupt- oder Nebenpunkt</th></tr></thead>
@@ -86,7 +86,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <p class="step-note" hidden="" id="readOnlyNote">Diese Strecke wurde mit einer älteren Version gespeichert und lässt sich nicht ändern. Um ihre Kontrollpunkte zu ändern oder Punkte hinzuzufügen, füge ihre Streckendatei erneut hinzu und speichere sie.</p>
 <div class="add-points" id="addPoints">
 <h3>Weitere Punkte hinzufügen</h3>
-<p class="small muted">HowFar zeigt auch diese: für dich gefundene Anstiege und Hütten oder einen eigenen Punkt, etwa eine Quelle oder einen Aussichtspunkt. Sie beginnen als Nebenpunkte, die auf dem Weg angezeigt werden. Mach einen zum Hauptpunkt, um bis dorthin herunterzuzählen. Sie erscheinen in der Liste oben, wo du sie umstellen oder abhaken kannst.</p>
+<p class="small muted">HowFar zeigt auch diese: für dich gefundene Anstiege und Hütten oder einen eigenen Punkt, etwa eine Quelle oder einen Aussichtspunkt. Sie beginnen als Nebenpunkte, Orientierungspunkte auf dem Weg. Mach einen zum Hauptpunkt, wenn du dort anhältst oder er ein Zeitlimit hat: Die große Zahl zeigt dann die Zeit bis dorthin. Sie erscheinen in der Liste oben, wo du sie umstellen oder abhaken kannst.</p>
 <div class="add-row">
 <button class="btn" id="addClimbs" type="button">Hoch- und Tiefpunkte der Anstiege hinzufügen</button>
 <label class="field inline" for="climbMin">für Anstiege mit mindestens

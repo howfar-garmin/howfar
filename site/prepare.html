@@ -73,11 +73,11 @@
             <div class="chart-block">
               <div class="chart-head">
                 <h3>Course and checkpoints</h3>
-                <span class="small muted">Big dots: main checkpoints, which HowFar counts down to. Small dots: minor points.</span>
+                <span class="small muted">Big dots: main checkpoints, where you stop or face a cutoff; the big number shows the time to them. Small dots: minor points, landmarks on the way.</span>
               </div>
               <div class="chart-box" id="courseChartBox"><svg id="courseChart" class="wide" viewBox="0 0 1000 280" role="img" aria-label="Elevation profile of the course with its checkpoints"></svg></div>
             </div>
-            <p class="small muted" id="coursePickNote" hidden>Untick a checkpoint only if it isn't part of this race, like another race's finish; the text below updates. HowFar counts down to <b>main</b> points. <b>Minor</b> points are shown on the way, above the checkpoint's name on a full screen, as in <i>Col d'Arp in 0:35</i>. Points you add start as minor. Press Main or Minor to switch a point. If you don't want the big number to count down to a checkpoint of your course, make it minor: unticked, it would still count as main, because the course on your watch still has it.</p>
+            <p class="small muted" id="coursePickNote" hidden>Untick a checkpoint only if it isn't part of this race, like another race's finish; the text below updates. Make <b>main</b> the points where you stop or face a cutoff, like aid stations and life bases: the big number and the arrival time are for them. Make <b>minor</b> the landmarks in between, like cols and huts: on a full screen each shows in small print above the checkpoint's name, with its own time, as in <i>Col d'Arp in 0:35</i>. Points you add start as minor. Press Main or Minor to switch a point. If you don't want the big number to show a checkpoint of your course, make it minor: unticked, it would still count as main, because the course on your watch still has it.</p>
             <div class="table-wrap">
               <table class="results prep-table">
                 <thead><tr><th scope="col">Checkpoint</th><th scope="col" class="num">At km</th><th scope="col" class="num">From the previous</th><th scope="col" class="num">Climb on the way</th><th scope="col">Main or minor</th></tr></thead>
@@ -90,7 +90,7 @@
 
             <div class="add-points" id="addPoints">
               <h3>Add more points</h3>
-              <p class="small muted">HowFar shows these too: climbs and huts found for you, or any point of your own, like a spring or a viewpoint. They start as minor points, shown on the way. Make one main to count down to it. They appear in the list above, where you can switch or untick them.</p>
+              <p class="small muted">HowFar shows these too: climbs and huts found for you, or any point of your own, like a spring or a viewpoint. They start as minor points, landmarks shown on the way. Make one main if you'll stop there or it has a cutoff: the big number then shows the time to it. They appear in the list above, where you can switch or untick them.</p>
               <div class="add-row">
                 <button type="button" class="btn" id="addClimbs">Add climb tops and bottoms</button>
                 <label class="field inline" for="climbMin">for climbs of at least

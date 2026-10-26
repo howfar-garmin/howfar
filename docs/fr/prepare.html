@@ -71,11 +71,11 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="chart-block">
 <div class="chart-head">
 <h3>Parcours et points de contrôle</h3>
-<span class="small muted">Gros points : les points de contrôle principaux, jusqu'auxquels HowFar fait le compte à rebours. Petits points : les points secondaires.</span>
+<span class="small muted">Gros points : les points de contrôle principaux, là où tu t'arrêtes ou où il y a une barrière horaire ; le grand nombre affiche le temps jusqu'à eux. Petits points : les points secondaires, des repères sur le chemin.</span>
 </div>
 <div class="chart-box" id="courseChartBox"><svg aria-label="Elevation profile of the course with its checkpoints" class="wide" id="courseChart" role="img" viewbox="0 0 1000 280"></svg></div>
 </div>
-<p class="small muted" hidden="" id="coursePickNote">Décoche un point de contrôle seulement s'il ne fait pas partie de cette course, comme l'arrivée d'une autre course ; le texte ci-dessous se met à jour. HowFar fait le compte à rebours jusqu'aux points <b>principaux</b>. Les points <b>secondaires</b> sont affichés sur le chemin, au-dessus du nom du point de contrôle en plein écran, comme dans <i>Col d'Arp dans 0:35</i>. Les points que tu ajoutes commencent comme secondaires. Appuie sur Principal ou Secondaire pour changer un point. Si tu ne veux pas que le grand nombre fasse le compte à rebours jusqu'à un point de contrôle de ton parcours, rends-le secondaire : décoché, il compterait quand même comme principal, car le parcours de ta montre l'a toujours.</p>
+<p class="small muted" hidden="" id="coursePickNote">Décoche un point de contrôle seulement s'il ne fait pas partie de cette course, comme l'arrivée d'une autre course ; le texte ci-dessous se met à jour. Rends <b>principaux</b> les points où tu t'arrêtes ou où il y a une barrière horaire, comme les ravitaillements et les bases de vie : le grand nombre et l'heure d'arrivée sont pour eux. Rends <b>secondaires</b> les repères entre les deux, comme les cols et les refuges : en plein écran, chacun s'affiche en petit au-dessus du nom du point de contrôle, avec son propre temps, comme dans <i>Col d'Arp dans 0:35</i>. Les points que tu ajoutes commencent comme secondaires. Appuie sur Principal ou Secondaire pour changer un point. Si tu ne veux pas que le grand nombre affiche un point de contrôle de ton parcours, rends-le secondaire : décoché, il compterait quand même comme principal, car le parcours de ta montre l'a toujours.</p>
 <div class="table-wrap">
 <table class="results prep-table">
 <thead><tr><th scope="col">Point de contrôle</th><th class="num" scope="col">Au km</th><th class="num" scope="col">Depuis le précédent</th><th class="num" scope="col">D+ du tronçon</th><th scope="col">Principal ou secondaire</th></tr></thead>
@@ -86,7 +86,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <p class="step-note" hidden="" id="readOnlyNote">Ce parcours a été enregistré par une version plus ancienne et ne peut pas être modifié. Pour changer ses points de contrôle ou ajouter des points, ajoute à nouveau son fichier et enregistre-le.</p>
 <div class="add-points" id="addPoints">
 <h3>Ajouter d'autres points</h3>
-<p class="small muted">HowFar affiche aussi ceux-ci : montées et refuges trouvés pour toi, ou un point à toi, comme une source ou un belvédère. Ils commencent comme points secondaires, affichés sur le chemin. Rends-en un principal pour faire le compte à rebours jusqu'à lui. Ils apparaissent dans la liste ci-dessus, où tu peux les changer ou les décocher.</p>
+<p class="small muted">HowFar affiche aussi ceux-ci : montées et refuges trouvés pour toi, ou un point à toi, comme une source ou un belvédère. Ils commencent comme points secondaires, des repères affichés sur le chemin. Rends-en un principal si tu t'y arrêteras ou s'il a une barrière horaire : le grand nombre affichera alors le temps jusqu'à lui. Ils apparaissent dans la liste ci-dessus, où tu peux les changer ou les décocher.</p>
 <div class="add-row">
 <button class="btn" id="addClimbs" type="button">Ajouter le haut et le bas des montées</button>
 <label class="field inline" for="climbMin">pour les montées d'au moins

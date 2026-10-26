@@ -71,11 +71,11 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="chart-block">
 <div class="chart-head">
 <h3>Percorso e checkpoint</h3>
-<span class="small muted">Punti grandi: checkpoint principali, a cui HowFar fa il conto alla rovescia. Punti piccoli: punti secondari.</span>
+<span class="small muted">Punti grandi: checkpoint principali, dove ti fermi o c'è una barriera oraria; il numero grande mostra il tempo fino a loro. Punti piccoli: punti secondari, riferimenti lungo la strada.</span>
 </div>
 <div class="chart-box" id="courseChartBox"><svg aria-label="Elevation profile of the course with its checkpoints" class="wide" id="courseChart" role="img" viewbox="0 0 1000 280"></svg></div>
 </div>
-<p class="small muted" hidden="" id="coursePickNote">Togli la spunta a un checkpoint solo se non fa parte di questa gara, come l'arrivo di un'altra gara; il testo qui sotto si aggiorna. HowFar fa il conto alla rovescia ai punti <b>principali</b>. I punti <b>secondari</b> sono mostrati lungo la strada, sopra il nome del checkpoint a schermo intero, come in <i>Col d'Arp tra 0:35</i>. I punti che aggiungi partono come secondari. Premi Principale o Secondario per cambiare un punto. Se non vuoi che il numero grande faccia il conto alla rovescia fino a un checkpoint del tuo percorso, rendilo secondario: senza spunta conterebbe comunque come principale, perché il percorso sull'orologio lo ha ancora.</p>
+<p class="small muted" hidden="" id="coursePickNote">Togli la spunta a un checkpoint solo se non fa parte di questa gara, come l'arrivo di un'altra gara; il testo qui sotto si aggiorna. Rendi <b>principali</b> i punti dove ti fermi o c'è una barriera oraria, come ristori e basi vita: il numero grande e l'ora di arrivo sono per loro. Rendi <b>secondari</b> i riferimenti in mezzo, come colli e rifugi: a schermo intero ognuno compare in piccolo sopra il nome del checkpoint, con il suo tempo, come in <i>Col d'Arp tra 0:35</i>. I punti che aggiungi partono come secondari. Premi Principale o Secondario per cambiare un punto. Se non vuoi che il numero grande mostri un checkpoint del tuo percorso, rendilo secondario: senza spunta conterebbe comunque come principale, perché il percorso sull'orologio lo ha ancora.</p>
 <div class="table-wrap">
 <table class="results prep-table">
 <thead><tr><th scope="col">Checkpoint</th><th class="num" scope="col">Al km</th><th class="num" scope="col">Dal precedente</th><th class="num" scope="col">Salita lungo il tratto</th><th scope="col">Principale o secondario</th></tr></thead>
@@ -86,7 +86,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <p class="step-note" hidden="" id="readOnlyNote">Questo percorso è stato salvato da una versione precedente e non si può modificare. Per cambiarne i checkpoint o aggiungere punti, aggiungi di nuovo il suo file del percorso e salvalo.</p>
 <div class="add-points" id="addPoints">
 <h3>Aggiungi altri punti</h3>
-<p class="small muted">HowFar mostra anche questi: salite e rifugi trovati per te, o un punto tuo, come una sorgente o un belvedere. Partono come punti secondari, mostrati lungo la strada. Rendine uno principale per fare il conto alla rovescia fino a lì. Compaiono nell'elenco qui sopra, dove puoi cambiarli o togliere la spunta.</p>
+<p class="small muted">HowFar mostra anche questi: salite e rifugi trovati per te, o un punto tuo, come una sorgente o un belvedere. Partono come punti secondari, riferimenti mostrati lungo la strada. Rendine uno principale se ti fermerai lì o ha una barriera oraria: il numero grande mostrerà il tempo fino a lì. Compaiono nell'elenco qui sopra, dove puoi cambiarli o togliere la spunta.</p>
 <div class="add-row">
 <button class="btn" id="addClimbs" type="button">Aggiungi cime e fondi delle salite</button>
 <label class="field inline" for="climbMin">per salite di almeno

@@ -22,7 +22,7 @@ Nothing to set up: it learns your pace on every slope while you run and keeps le
 
 ## Install
 
-Free in the **Garmin Connect IQ Store**: search for *HowFar* in the Connect IQ Store in the Garmin Connect app (or the Connect IQ app), install, and sync your watch. Then add it to a data screen of your Trail Run activity.
+Free in the **[Garmin Connect IQ Store](https://apps.garmin.com/apps/e34840a9-6cd4-4ea6-96b0-051edeb0db73)**: search for *HowFar* in the Connect IQ Store in the Garmin Connect app (or the Connect IQ app), install, and sync your watch. Then add it to a data screen of your Trail Run activity.
 
 Works on the **Enduro 3**, **fēnix 8** and **epix Pro (Gen 2)**. Without the store, the [latest release](https://github.com/howfar-garmin/howfar/releases/latest) has a file per watch to copy over USB (that way it has no settings).
 

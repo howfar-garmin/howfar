@@ -18,7 +18,7 @@ While you follow a course:
 
 On a data screen of its own, with a course profile, it also lists the points around the checkpoint in the order you meet them: minor points on the way (climb tops, huts, your own) with their time from now, and the next main checkpoints with each leg's moving time. On a smaller field it shows just the countdown.
 
-Nothing to set up: it learns your pace on every slope while you run and keeps learning all race long, following you as your day goes. It remembers your past runs, and they count less and less as today's kilometres add up. It works best on trail runs of 25 km or more with real climbs and descents, where it was tested.
+Nothing to set up: it learns your pace on every slope while you run and keeps learning all race long, following you as your day goes. On steep climbs, with a course profile, it counts the metres you climb per hour, so one long climb teaches it every steep slope. It remembers your past runs, and they count less and less as today's kilometres add up. It works best on trail runs of 25 km or more with real climbs and descents, where it was tested.
 
 ## Install
 

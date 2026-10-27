@@ -21,6 +21,9 @@ MIN_WEIGHT = 3.0  # bins with less total weight are filled from their neighbours
 DEFAULT_FLAT_SPEED = 2.8  # m/s, used only when there is no data at all
 STORED_DECAY = 0.85  # weight kept by the stored model each time a run is merged in
 STORED_CAP = 200.0
+STEEP_GRADE = 12.0  # % from which climbs share one vertical speed (metres climbed per hour)
+STEEP_OWN = 10.0  # weight a steep bin needs to keep its own pace
+STEEP_FROM = 8.0  # with no steep data, the gentlest bin a climb rate is taken from
 RUN_DECAY = 0.995  # fatigue: weight kept by this run's older observations at each new one (~3.5 km half-life)
 
 MODEL_PREFIX = "v1"
@@ -111,12 +114,20 @@ class SpeedGradeModel:
         self.stored = Layer()
         self.form = 1.0
         self.prior_cap = PRIOR_CAP
+        self.steep_pool = True  # only while following the course profile: see set_steep_pool
         self._curve: list[float] | None = None
         self._prior_curve: list[float] | None = None
 
     def invalidate(self) -> None:
         self._curve = None
         self._prior_curve = None
+
+    def set_steep_pool(self, on: bool) -> None:
+        """One climb rate for steep slopes needs the slopes ahead: with only the average grade
+        to the next point, a leg mixing gentle and very steep parts would be too fast."""
+        if on != self.steep_pool:
+            self.steep_pool = on
+            self.invalidate()
 
     def has_prior(self) -> bool:
         return self.stored.total_weight() > 0
@@ -184,7 +195,41 @@ class SpeedGradeModel:
                     total += values[j] * tobler_factor(bin_center(j)) / c * w
                     weight += w
             values[i] = total / weight if weight > 0 else 1.0 / (DEFAULT_FLAT_SPEED * form * c)
+        if self.steep_pool:
+            self._pool_steep(values, use_run)
         return values
+
+    def _pool_steep(self, values: list[float], use_run: bool) -> None:
+        """Steep climbs go at a constant vertical speed. Bins of STEEP_GRADE or more with less
+        than STEEP_OWN weight take the vertical pace pooled over every steep bin with data, so
+        one long climb teaches all the steep slopes at once. With no steep data yet, they climb
+        like the nearest known bin of STEEP_FROM or more below them. (On the watch it calls
+        nothing: it runs at the bottom of compute's deepest chain, and the stack is small.)"""
+        first = int((STEEP_GRADE - MIN_GRADE) / BIN_STEP + 0.5)
+        total = weight = 0.0
+        lo = -1  # the steepest bin below `first` with data
+        for i in range(NUM_BINS):
+            pw = self.stored.weights[i]
+            tot = self.run.weights[i] + min(pw, self.prior_cap) if use_run else pw
+            if tot < MIN_WEIGHT:
+                continue
+            if i < first:
+                lo = i
+            else:
+                total += values[i] * 100.0 / (MIN_GRADE + i * BIN_STEP) * tot
+                weight += tot
+        if weight > 0:
+            vpace = total / weight  # s per metre climbed
+        else:
+            g_lo = MIN_GRADE + lo * BIN_STEP
+            if lo < 0 or g_lo < STEEP_FROM:
+                return
+            vpace = values[lo] * 100.0 / g_lo
+        for i in range(first, NUM_BINS):
+            pw = self.stored.weights[i]
+            tot = self.run.weights[i] + min(pw, self.prior_cap) if use_run else pw
+            if weight == 0 or tot < STEEP_OWN:
+                values[i] = vpace * (MIN_GRADE + i * BIN_STEP) / 100.0
 
     @staticmethod
     def _interp(curve: list[float], grade_pct: float) -> float:

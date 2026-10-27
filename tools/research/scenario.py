@@ -36,6 +36,7 @@ class Ctx:
     elev_next: float  # course elevation at the next waypoint
     chunks: list[tuple[float, float]]  # (course metres, grade %) from here to the waypoint
     wp_index: int
+    profile: bool = True  # chunks follow the course profile (else one average grade)
 
 
 @dataclass
@@ -187,7 +188,7 @@ def run(race: Race, predictor, trail_ahead: bool = True, first_wp: int | None = 
             ch = chunks_ahead(race.elev, cd, wp.course_dist)
         else:
             ch = [(dn, max(-40.0, min(40.0, (elev_next - p.alt) / dn * 100.0)))]
-        ctx = Ctx(p.t, p.dist, p.alt, dn, total - cd, elev_next, ch, k)
+        ctx = Ctx(p.t, p.dist, p.alt, dn, total - cd, elev_next, ch, k, trail_ahead)
         eta = predictor.predict(ctx)
         if k in race.skip:
             continue

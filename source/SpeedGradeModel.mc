@@ -15,6 +15,9 @@ module Wp {
     const DEFAULT_FLAT_SPEED = 2.8;  // m/s, used only when there is no data at all
     const STORED_DECAY = 0.85;       // weight kept by the stored model each time a run is merged in
     const STORED_CAP = 200.0;
+    const STEEP_GRADE = 12.0;        // % from which climbs share one vertical speed (metres climbed per hour)
+    const STEEP_OWN = 10.0;          // weight a steep bin needs to keep its own pace
+    const STEEP_FROM = 8.0;          // with no steep data, the gentlest bin a climb rate is taken from
     const RUN_DECAY = 0.995;         // fatigue: weight kept by this run's older observations at each new one
 
     function binIndex(gradePct as Float) as Number {
@@ -115,6 +118,7 @@ class SpeedGradeModel {
     var stored as ModelLayer;
     var form as Float = 1.0;
     var priorCap as Float = Wp.PRIOR_CAP;
+    var steepPool as Boolean = true;  // only while following the course profile: see setSteepPool
     hidden var _curve as Array<Float>?;
     hidden var _priorCurve as Array<Float>?;
 
@@ -127,6 +131,15 @@ class SpeedGradeModel {
     function invalidate() as Void {
         _curve = null;
         _priorCurve = null;
+    }
+
+    // One climb rate for steep slopes needs the slopes ahead: with only the average grade
+    // to the next point, a leg mixing gentle and very steep parts would be too fast.
+    function setSteepPool(on as Boolean) as Void {
+        if (on != steepPool) {
+            steepPool = on;
+            invalidate();
+        }
     }
 
     function hasPrior() as Boolean {
@@ -219,7 +232,59 @@ class SpeedGradeModel {
             }
             values[i] = weight > 0.0 ? total / weight : 1.0 / (Wp.DEFAULT_FLAT_SPEED * f * c);
         }
+        if (steepPool) {
+            poolSteep(values, useRun);
+        }
         return values;
+    }
+
+    // Steep climbs go at a constant vertical speed. Bins of STEEP_GRADE or more with less
+    // than STEEP_OWN weight take the vertical pace pooled over every steep bin with data, so
+    // one long climb teaches all the steep slopes at once. With no steep data yet, they climb
+    // like the nearest known bin of STEEP_FROM or more below them.
+    // It calls nothing: it runs at the bottom of compute's deepest chain (profile, estimator,
+    // model), and a data field's stack is small.
+    (:full)
+    hidden function poolSteep(values as Array<Float>, useRun as Boolean) as Void {
+        var first = ((Wp.STEEP_GRADE - Wp.MIN_GRADE) / Wp.BIN_STEP + 0.5).toNumber();
+        var total = 0.0;
+        var weight = 0.0;
+        var lo = -1;  // the steepest bin below `first` with data
+        for (var i = 0; i < Wp.NUM_BINS; i++) {
+            var pw = stored.weights[i];
+            var tot = useRun ? run.weights[i] + (pw > priorCap ? priorCap : pw) : pw;
+            if (tot < Wp.MIN_WEIGHT) {
+                continue;
+            }
+            if (i < first) {
+                lo = i;
+            } else {
+                total += values[i] * 100.0 / (Wp.MIN_GRADE + i * Wp.BIN_STEP) * tot;
+                weight += tot;
+            }
+        }
+        var vpace;  // s per metre climbed
+        if (weight > 0.0) {
+            vpace = total / weight;
+        } else {
+            var gLo = Wp.MIN_GRADE + lo * Wp.BIN_STEP;
+            if (lo < 0 || gLo < Wp.STEEP_FROM) {
+                return;
+            }
+            vpace = values[lo] * 100.0 / gLo;
+        }
+        for (var i = first; i < Wp.NUM_BINS; i++) {
+            var pw = stored.weights[i];
+            var tot = useRun ? run.weights[i] + (pw > priorCap ? priorCap : pw) : pw;
+            if (weight == 0.0 || tot < Wp.STEEP_OWN) {
+                values[i] = vpace * (Wp.MIN_GRADE + i * Wp.BIN_STEP) / 100.0;
+            }
+        }
+    }
+
+    // The lite build keeps Tobler's shape on steep climbs
+    (:lite)
+    hidden function poolSteep(values as Array<Float>, useRun as Boolean) as Void {
     }
 
     // Speed (m/s) from the pace curve, interpolated in pace

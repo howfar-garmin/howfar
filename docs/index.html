@@ -266,8 +266,8 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="cols-3">
 <div>
 <h3>Your pace on every slope</h3>
-<p class="muted">Every 25 m, it notes how steep the trail is and how fast you're going, on climbs and descents alike.</p>
-<details class="more"><summary>More</summary><p class="muted">For slopes you haven't run yet today, it estimates from the nearest ones you have. It needs no practice run: in your first race it adapts within the first few kilometres. What it remembers from earlier runs helps a little later in the race, and counts less and less as the race goes on.</p></details>
+<p class="muted">Every 25 m, it notes how steep the trail is and how fast you're going, on climbs and descents alike. On steep climbs it counts metres climbed per hour, as mountain runners do.</p>
+<details class="more"><summary>More</summary><p class="muted">For slopes you haven't run yet today, it estimates from the nearest ones you have. It needs no practice run: in your first race it adapts within the first few kilometres. What it remembers from earlier runs helps a little later in the race, and counts less and less as the race goes on. With the course profile, every slope steeper than 12% shares one climbing rate in metres per hour, learned from all your steep stretches so far: one long climb teaches it every steep slope, and on steep climbs it is about 10% closer. Without the profile it knows only the average slope to the checkpoint, which mixes steep and gentle parts, so there it keeps each slope's own pace.</p></details>
 </div>
 <div>
 <h3>The trail ahead</h3>
@@ -308,7 +308,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </details>
 <details class="sources">
 <summary>What else was tried</summary>
-<p class="muted">The same races were used to test other ways to predict: classic hiking rules (Naismith, Tobler), ITRA's km-effort, an energy-cost model of running uphill and downhill, a machine-learning model, a correction for slowing down over distance, carrying today's trend forward, a correction every few kilometres based on the last stretch, and a pace from your past races pasted before the start. None did better, so HowFar doesn't use them. The pasted pace helped in the first hours of races similar to the ones it came from, and hurt in different ones. Learning on the run catches up within a few kilometres anyway.</p>
+<p class="muted">The same races were used to test other ways to predict: classic hiking rules (Naismith, Tobler), ITRA's km-effort, an energy-cost model of running uphill and downhill, a machine-learning model, a correction for slowing down over distance, carrying today's trend forward, a correction every few kilometres based on the last stretch, a pace from your past races pasted before the start, your heart rate (against earlier in the race, or against your usual on that slope), and one descending speed in metres per hour on steep descents. None did better, so HowFar doesn't use them. The pasted pace helped in the first hours of races similar to the ones it came from, and hurt in different ones. Learning on the run catches up within a few kilometres anyway.</p>
 <ul>
 <li>Minetti A.E. et al. (2002), <a href="https://iris.unibs.it/retrieve/ddc633e4-3c03-4e2e-e053-3705fe0a4c80/Minetti%20JAP%202002.pdf">Energy cost of walking and running at extreme uphill and downhill slopes</a>.</li>
 <li><a href="https://en.wikipedia.org/wiki/Naismith%27s_rule">Naismith's rule</a>, and Tobler's hiking function in <a href="https://www.biorxiv.org/content/10.1101/188417.full.pdf">a crowd-sourced revalidation</a>.</li>
@@ -400,7 +400,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <span class="foot-tags" translate="no">#ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning #garmin #connectiq</span>
 </div>
 </footer>
-<script src="demo/torx-s1.js?v=22"></script>
-<script src="js/demo.js?v=46"></script>
+<script src="demo/torx-s1.js?v=23"></script>
+<script src="js/demo.js?v=47"></script>
 </body>
 </html>

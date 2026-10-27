@@ -95,8 +95,29 @@ def test_interpolates_and_extrapolates():
     t = tobler_factor
     pace4 = ((1 / 3) * t(0) / t(4) / 2 + 0.5 * t(10) / t(4) / 3) / (1 / 2 + 1 / 3)
     assert m.predict(4) == pytest.approx(1 / pace4)
+    # steep climbs with no data of their own climb as many metres per hour as the 10% slope
+    assert m.predict(20) == pytest.approx(2.0 * 10 / 20)
+    # without the course profile they keep Tobler's shape
+    m.set_steep_pool(False)
     assert m.predict(20) == pytest.approx(2.0 * tobler_factor(20) / tobler_factor(10))
+    m.set_steep_pool(True)
     assert m.predict(-10) == pytest.approx(3.0 * tobler_factor(-10) / tobler_factor(0))
+
+
+def test_steep_climbs_share_one_climb_rate():
+    m = SpeedGradeModel()
+    m.stored.add(bin_index(0), 3.0, 30)
+    m.stored.add(bin_index(14), 0.8, 30)
+    m.stored.add(bin_index(20), 0.5, 5)
+    m.stored.add(bin_index(30), 0.4, 5)
+    # seconds per metre climbed, over every steep slope with data, by weight
+    vp = (100 / (14 * 0.8) * 30 + 100 / (20 * 0.5) * 5 + 100 / (30 * 0.4) * 5) / 40
+    # a slope with enough data keeps its own pace, the others climb at the pooled rate
+    assert m.predict_prior(14) == pytest.approx(0.8)
+    for g in (20, 24, 30, 40):
+        assert m.predict_prior(g) == pytest.approx(100 / (vp * g))
+    # slopes under 12% are untouched
+    assert m.predict_prior(0) == pytest.approx(3.0)
 
 
 def test_run_data_blends_with_capped_prior(monkeypatch):

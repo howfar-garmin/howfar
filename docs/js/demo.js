@@ -204,8 +204,9 @@
       ? _t("<b>Distance:</b> your watch measures <b>{pct} more</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.", { pct: pct(sc) })
       : _t("<b>Distance:</b> your watch measures <b>{pct} less</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.", { pct: pct(sc) });
     var perKm = function (v) { var p = Math.round(1000 / v); return Math.floor(p / 60) + ":" + pad(p % 60); };
-    $("lForm").innerHTML = _t("{flat}/km on the flat, {up}/km up a 20% slope, {down}/km down one.",
-      { flat: perKm(f[FLAT]), up: perKm(f[UP]), down: perKm(f[DOWN]) });
+    // up a 20% slope: metres climbed an hour, the rate HowFar learns for every steep climb
+    $("lForm").innerHTML = _t("{flat}/km on the flat, {vam} m of climbing an hour up a 20% slope, {down}/km down one.",
+      { flat: perKm(f[FLAT]), vam: num(Math.round(f[UP] * 0.2 * 360) * 10), down: perKm(f[DOWN]) });
     $("lFatigue").innerHTML = Math.abs(fa - 1) < 0.01 ? _t("On the pace it expected.")
       : fa > 1 ? _t("<b>{pct} faster</b> than it expected.", { pct: pct(fa) })
       : _t("<b>{pct} slower</b> than it expected.", { pct: pct(fa) });

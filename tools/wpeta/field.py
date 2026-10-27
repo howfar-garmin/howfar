@@ -75,12 +75,14 @@ class FieldLogic:
             # the next profile point, which may come before the watch's next point
             name = self.profile.target_name(name)
             dist_next = self.profile.target_dist
+            self.model.set_steep_pool(True)
             raw = self.profile.target_time(self.estimator, scale)
             self.using_profile = True
         else:
             grade = 0.0
             if alt is not None and elev_next is not None:
                 grade = clamp((elev_next - alt) / dist_next * 100.0, -40.0, 40.0)
+            self.model.set_steep_pool(False)
             raw = self.estimator.time_for_grade(dist_next, grade, scale)
             self.using_profile = False
 

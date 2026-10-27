@@ -74,6 +74,7 @@ class HowFar:
             self.scale.update(ctx.dist, ctx.dist_dest)
         s = self.scale.ratio if self.raceday else 1.0
         fatigue = self.est.fatigue if self.raceday else 1.0
+        self.model.set_steep_pool(ctx.profile)
         raw = max(1.0, sum(length * s / (self.model.predict(g / s) * fatigue) for length, g in ctx.chunks))
         # same display smoothing as the field
         if ctx.wp_index != self._wp or ctx.dist_next > self._last_dn + 50:

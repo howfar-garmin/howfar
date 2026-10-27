@@ -59,6 +59,45 @@ function testInterpolation(logger as Test.Logger) as Boolean {
     var t4 = Wp.toblerFactor(4.0);
     var pace4 = ((1.0 / 3.0) * Wp.toblerFactor(0.0) / t4 / 2.0 + 0.5 * Wp.toblerFactor(10.0) / t4 / 3.0) / (1.0 / 2.0 + 1.0 / 3.0);
     Test.assert(near(m.predict(4.0), 1.0 / pace4, 0.001));
+    return true;
+}
+
+(:test :full)
+function testSteepClimbFromGentlerOne(logger as Test.Logger) as Boolean {
+    var m = new SpeedGradeModel();
+    m.stored.add(Wp.binIndex(0.0), 3.0, 30.0);
+    m.stored.add(Wp.binIndex(10.0), 2.0, 30.0);
+    // steep climbs with no data of their own climb as many metres per hour as the 10% slope
+    Test.assert(near(m.predict(20.0), 2.0 * 10.0 / 20.0, 0.001));
+    // without the course profile they keep Tobler's shape
+    m.setSteepPool(false);
+    Test.assert(near(m.predict(20.0), 2.0 * Wp.toblerFactor(20.0) / Wp.toblerFactor(10.0), 0.001));
+    return true;
+}
+
+(:test :full)
+function testSteepClimbsShareOneClimbRate(logger as Test.Logger) as Boolean {
+    var m = new SpeedGradeModel();
+    m.stored.add(Wp.binIndex(0.0), 3.0, 30.0);
+    m.stored.add(Wp.binIndex(14.0), 0.8, 30.0);
+    m.stored.add(Wp.binIndex(20.0), 0.5, 5.0);
+    m.stored.add(Wp.binIndex(30.0), 0.4, 5.0);
+    // seconds per metre climbed, over every steep slope with data, by weight
+    var vp = (100.0 / (14.0 * 0.8) * 30.0 + 100.0 / (20.0 * 0.5) * 5.0 + 100.0 / (30.0 * 0.4) * 5.0) / 40.0;
+    // a slope with enough data keeps its own pace, the others climb at the pooled rate
+    Test.assert(near(m.predictPrior(14.0), 0.8, 0.001));
+    Test.assert(near(m.predictPrior(20.0), 100.0 / (vp * 20.0), 0.001));
+    Test.assert(near(m.predictPrior(24.0), 100.0 / (vp * 24.0), 0.001));
+    Test.assert(near(m.predictPrior(40.0), 100.0 / (vp * 40.0), 0.001));
+    Test.assert(near(m.predictPrior(0.0), 3.0, 0.001));
+    return true;
+}
+
+(:test :lite)
+function testLiteKeepsToblerOnSteepClimbs(logger as Test.Logger) as Boolean {
+    var m = new SpeedGradeModel();
+    m.stored.add(Wp.binIndex(0.0), 3.0, 30.0);
+    m.stored.add(Wp.binIndex(10.0), 2.0, 30.0);
     Test.assert(near(m.predict(20.0), 2.0 * Wp.toblerFactor(20.0) / Wp.toblerFactor(10.0), 0.001));
     return true;
 }

@@ -112,6 +112,7 @@ class WaypointEtaView extends WatchUi.DataField {
             if (alt != null && elevNext != null) {
                 grade = WpUtil.clamp((elevNext - alt) / distNext * 100.0, Wp.MIN_GRADE, Wp.MAX_GRADE);
             }
+            _model.setSteepPool(false);
             raw = _estimator.timeForGrade(distNext, grade, scale);
             _usingProfile = false;
         }
@@ -205,6 +206,7 @@ class WaypointEtaView extends WatchUi.DataField {
         if (profile == null || !profile.update(name, distNext, distDest, dist, scale)) {
             return null;
         }
+        _model.setSteepPool(true);
         return [profile.targetName(name), profile.targetDist > 1.0 ? profile.targetDist : 1.0,
             profile.targetTime(_estimator, scale)];
     }

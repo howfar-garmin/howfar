@@ -73,7 +73,7 @@ def main() -> int:
         avg = [(dn, max(-40.0, min(40.0, (elev_next - p.alt) / dn * 100.0)))]
         etas = []
         for _, use_ahead, pr in preds:
-            ctx = S.Ctx(p.t, p.dist, p.alt, dn, total - cd, elev_next, ahead if use_ahead else avg, k)
+            ctx = S.Ctx(p.t, p.dist, p.alt, dn, total - cd, elev_next, ahead if use_ahead else avg, k, use_ahead)
             etas.append(round(pr.predict(ctx)))
         t_arr, s_arr = race.arrival[k]
         recent_stop = race.stops[i] - (race.stops[i - 60] if i >= 60 else 0) > 30

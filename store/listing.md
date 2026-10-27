@@ -39,7 +39,7 @@ Data fields
 
 ## Short description
 
-Beta. The time to the next checkpoint of a long trail run, learned from how you climb and descend.
+The time to the next checkpoint of a long trail run, learned from how you climb and descend.
 
 ## Description
 
@@ -51,7 +51,7 @@ HowFar puts the answer on your wrist. While you follow a course, it shows:
 - the time of day you'll arrive
 - on a full data screen, with a course profile: the points before and after it, in the order you meet them
 
-This is a beta. HowFar is new, and real races are what make it better: try it and tell us how it did, good or bad. The more feedback, the better. Feedback form: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (or Contact Developer on this page).
+HowFar is new, and real races are what make it better: try it and tell us how it did, good or bad. The more feedback, the better. Feedback form: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (or Contact Developer on this page).
 
 Made for long trail runs and ultras, 25 km and more, with real climbs and descents. That's where your average pace says little about the climb ahead, and where HowFar does much better. It isn't meant for a flat 5 or 10 km: there your average pace already works.
 
@@ -95,7 +95,7 @@ First version: next checkpoint, time to it and arrival time; learns your pace by
 
 ## Links
 
-- Store: https://apps.garmin.com/apps/e34840a9-6cd4-4ea6-96b0-051edeb0db73 (0.6.0 submitted for review 27 October 2026)
+- Store: https://apps.garmin.com/apps/e34840a9-6cd4-4ea6-96b0-051edeb0db73 (0.6.0 approved 27 October 2026)
 - Website: https://howfar-garmin.github.io/howfar/
 - Source: https://github.com/howfar-garmin/howfar
 - Feedback: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml
@@ -106,7 +106,7 @@ The store takes a description per language. The app name stays **HowFar**.
 
 ### Italiano
 
-**Descrizione breve:** Beta. Il tempo al prossimo checkpoint di un trail lungo, imparato da come sali e scendi.
+**Descrizione breve:** Il tempo al prossimo checkpoint di un trail lungo, imparato da come sali e scendi.
 
 **Descrizione:**
 
@@ -118,7 +118,7 @@ HowFar ti mette la risposta al polso. Mentre segui un percorso mostra:
 - l'ora a cui arriverai
 - a schermo intero, con il profilo del percorso: i punti prima e dopo, nell'ordine in cui li incontri
 
-Questa è una beta. HowFar è nuovo, e sono le gare vere a renderlo migliore: provalo e raccontaci come è andato, bene o male. Più commenti arrivano, meglio è. Modulo per i commenti: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (oppure Contatta lo sviluppatore in questa pagina).
+HowFar è nuovo, e sono le gare vere a renderlo migliore: provalo e raccontaci come è andato, bene o male. Più commenti arrivano, meglio è. Modulo per i commenti: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (oppure Contatta lo sviluppatore in questa pagina).
 
 Pensato per trail lunghi e ultra, da 25 km in su, con salite e discese vere. È lì che il passo medio dice poco sulla salita che arriva, ed è lì che HowFar fa molto meglio. Non è pensato per 5 o 10 km in piano: lì il passo medio funziona già.
 
@@ -138,7 +138,7 @@ Gratuito e open source. Non affiliato a Garmin.
 
 ### Français
 
-**Description courte :** Bêta. Le temps jusqu'au prochain point de contrôle d'un trail long, appris de ta façon de monter et de descendre.
+**Description courte :** Le temps jusqu'au prochain point de contrôle d'un trail long, appris de ta façon de monter et de descendre.
 
 **Description :**
 
@@ -150,7 +150,7 @@ HowFar te donne la réponse au poignet. Pendant que tu suis un parcours, il affi
 - l'heure à laquelle tu y seras
 - en plein écran, avec le profil du parcours : les points avant et après, dans l'ordre où tu les rencontres
 
-C'est une bêta. HowFar est nouveau, et ce sont les vraies courses qui l'améliorent : essaie-le et dis-nous comment ça s'est passé, en bien ou en mal. Plus il y a de retours, mieux c'est. Formulaire de retour : https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (ou Contacter le développeur sur cette page).
+HowFar est nouveau, et ce sont les vraies courses qui l'améliorent : essaie-le et dis-nous comment ça s'est passé, en bien ou en mal. Plus il y a de retours, mieux c'est. Formulaire de retour : https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (ou Contacter le développeur sur cette page).
 
 Conçu pour les trails longs et les ultras, à partir de 25 km, avec de vraies montées et descentes. C'est là que ton allure moyenne dit peu de la montée à venir, et là que HowFar fait beaucoup mieux. Il n'est pas fait pour un 5 ou 10 km plat : là, l'allure moyenne marche déjà.
 
@@ -170,7 +170,7 @@ Gratuit et open source. Non affilié à Garmin.
 
 ### Deutsch
 
-**Kurzbeschreibung:** Beta. Die Zeit bis zum nächsten Kontrollpunkt eines langen Traillaufs, gelernt daraus, wie du bergauf und bergab läufst.
+**Kurzbeschreibung:** Die Zeit bis zum nächsten Kontrollpunkt eines langen Traillaufs, gelernt daraus, wie du bergauf und bergab läufst.
 
 **Beschreibung:**
 
@@ -182,7 +182,7 @@ HowFar bringt dir die Antwort ans Handgelenk. Während du einer Strecke folgst, 
 - die Uhrzeit, zu der du ankommst
 - im Vollbild, mit Streckenprofil: die Punkte davor und danach, in der Reihenfolge, in der du sie erreichst
 
-Das ist eine Beta. HowFar ist neu, und echte Rennen machen es besser: Probier es aus und erzähl uns, wie es lief, gut oder schlecht. Je mehr Feedback, desto besser. Feedback-Formular: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (oder Entwickler kontaktieren auf dieser Seite).
+HowFar ist neu, und echte Rennen machen es besser: Probier es aus und erzähl uns, wie es lief, gut oder schlecht. Je mehr Feedback, desto besser. Feedback-Formular: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml (oder Entwickler kontaktieren auf dieser Seite).
 
 Gemacht für lange Trailläufe und Ultras ab 25 km, mit echten Anstiegen und Abstiegen. Dort sagt dein Durchschnittstempo wenig über den nächsten Anstieg, und dort ist HowFar viel besser. Für flache 5 oder 10 km ist es nicht gedacht: Da reicht das Durchschnittstempo schon.
 

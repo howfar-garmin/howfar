@@ -2,3 +2,30 @@
 # monkeyc -e -f beta.jungle -o bin/release/HowFar-beta.iq -y developer_key -r
 project.manifest = manifest-beta.xml
 base.sourcePath = source;test
+
+# The full build: everything. The lite build, for watches that give a data field 32 KB: no course
+# profile (its text alone wouldn't fit) and so no list of the points around the checkpoint; its
+# settings have no profile field. Code only the full build has is marked (:full), the lite build's
+# stand-ins (:lite). Keep this list the same in monkey.jungle and beta.jungle, and in the manifests.
+base.excludeAnnotations = lite
+base.resourcePath = resources;settings-full
+enduro.excludeAnnotations = full
+enduro.resourcePath = resources;settings-lite
+fenix5.excludeAnnotations = full
+fenix5.resourcePath = resources;settings-lite
+fenix5s.excludeAnnotations = full
+fenix5s.resourcePath = resources;settings-lite
+fenix6.excludeAnnotations = full
+fenix6.resourcePath = resources;settings-lite
+fenix6s.excludeAnnotations = full
+fenix6s.resourcePath = resources;settings-lite
+fr935.excludeAnnotations = full
+fr935.resourcePath = resources;settings-lite
+instinct2.excludeAnnotations = full
+instinct2.resourcePath = resources;settings-lite
+instinct2s.excludeAnnotations = full
+instinct2s.resourcePath = resources;settings-lite
+instinct2x.excludeAnnotations = full
+instinct2x.resourcePath = resources;settings-lite
+instinctcrossover.excludeAnnotations = full
+instinctcrossover.resourcePath = resources;settings-lite

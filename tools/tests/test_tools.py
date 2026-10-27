@@ -19,7 +19,7 @@ from wpeta.model import (  # noqa: E402
     bin_index,
     tobler_factor,
 )
-from wpeta.profile import ProfileMatcher, best_profile, names_match, parse_profile  # noqa: E402
+from wpeta.profile import ProfileMatcher, best_profile, half_percent, names_match, parse_profile  # noqa: E402
 from wpeta.readers import read_course, read_track  # noqa: E402
 
 HILLY = [(2000, 0, 3.0), (1500, 10, 2.0), (1500, -10, 3.4), (1000, 0, 3.0)]
@@ -169,6 +169,17 @@ def test_profile_time_to_point():
     # longer than the profile: the extra metres at the first grade
     assert p.remaining_time(300, est, 1.0) == pytest.approx(270 / 2.0 + 30 / 3.0)
 
+
+
+def test_profile_grades_to_half_percent():
+    # as the watch keeps them (a byte each): nearest half percent, half away from zero, within 63.5%
+    assert [half_percent(g) for g in (37, -37, 22, -22, 23, -23, 0, 1000, -1000)] == [
+        3.5, -3.5, 2.0, -2.0, 2.5, -2.5, 0.0, 63.5, -63.5]
+    est = EtaEstimator(SpeedGradeModel())
+    p = ProfileMatcher(100, [("X", 300, [37, -37, 1000])])
+    assert p.update("X", 300, 300, 0.0)
+    t = est.time_for_grade(100, 3.5, 1.0) + est.time_for_grade(100, -3.5, 1.0) + est.time_for_grade(100, 63.5, 1.0)
+    assert p.remaining_time(300, est, 1.0) == pytest.approx(t)
 
 # --- course profile ------------------------------------------------------------------
 

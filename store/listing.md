@@ -59,6 +59,8 @@ Nothing to set up: it learns how fast you go on every slope while you run, from 
 
 Before the race, take a few minutes on the race prep page of the website. From your race's course file it makes a course profile to paste into HowFar's settings, so HowFar knows every climb and descent between checkpoints and can show the points around the next one. There you can also add points: the top and bottom of every climb and named huts and villages, found for you, or your own. Make main the points where you stop or face a cutoff, and minor the landmarks in between, shown on the way. It's optional, and the website explains it step by step in English, Italian, French and German.
 
+On older watches with less memory (the first Enduro, fēnix 5, 5S, 6 and 6S, Forerunner 935, Instinct 2, 2S, 2X and Crossover), HowFar runs in a lite version: it has no course profile, so it counts down to the course points the watch knows, from the average slope to each, and shows no points around them. It still learns your pace on every slope and remembers your past runs.
+
 Works without a phone or signal during the race. Time spent stopped at aid stations is not counted.
 
 Website and race prep page: https://howfar-garmin.github.io/howfar/
@@ -66,6 +68,10 @@ Website and race prep page: https://howfar-garmin.github.io/howfar/
 Free and open source. Not affiliated with Garmin.
 
 #ultratrail #trailrunning #ultrarunning #ultramarathon #skyrunning #mountainrunning #trail #ultra
+
+## What's new (0.5.0)
+
+Now on many more watches: fēnix 5 Plus, 5X and 5X Plus, fēnix 6 Pro, 6S Pro and 6X Pro, Forerunner 945, 945 LTE, 955, 965 and 970, MARQ (every generation) and Venu X1. And, in a lite version without the course profile: the first Enduro, fēnix 5, 5S, 6 and 6S, Forerunner 935, and Instinct 2, 2S, 2X and Crossover. Long course profiles load in the first seconds and take less memory.
 
 ## What's new (0.4.1)
 
@@ -116,6 +122,8 @@ Niente da impostare: impara quanto vai veloce su ogni pendenza mentre corri, dal
 
 Prima della gara, dedica qualche minuto alla pagina di preparazione del sito. Dal file del percorso della gara crea un profilo del percorso da incollare nelle impostazioni di HowFar, così HowFar conosce ogni salita e discesa tra i checkpoint e può mostrare i punti intorno al prossimo. Lì puoi anche aggiungere punti: l'inizio e la cima di ogni salita e rifugi e paesi con un nome, trovati per te, o punti tuoi. Rendi principali i punti dove ti fermi o c'è una barriera oraria, e secondari i riferimenti in mezzo, mostrati lungo la strada. È facoltativo, e il sito lo spiega passo per passo, anche in italiano.
 
+Sugli orologi più vecchi con meno memoria (il primo Enduro, fēnix 5, 5S, 6 e 6S, Forerunner 935, Instinct 2, 2S, 2X e Crossover) HowFar funziona in versione lite: non ha il profilo del percorso, quindi conta il tempo fino ai punti del percorso che l'orologio conosce, dalla pendenza media fino a ciascuno, e non mostra i punti intorno. Impara comunque il tuo passo su ogni pendenza e ricorda le tue corse passate.
+
 Funziona senza telefono e senza segnale durante la gara. Il tempo fermo ai ristori non viene contato.
 
 Sito e pagina di preparazione: https://howfar-garmin.github.io/howfar/it/
@@ -146,6 +154,8 @@ Rien à régler : il apprend ta vitesse sur chaque pente pendant que tu cours, d
 
 Avant la course, prends quelques minutes sur la page de préparation du site. À partir du fichier du parcours de ta course, elle crée un profil du parcours à coller dans les réglages de HowFar : HowFar connaît alors chaque montée et descente entre les points de contrôle et peut afficher les points autour du prochain. Tu peux aussi y ajouter des points : le bas et le haut de chaque montée et les refuges et villages qui ont un nom, trouvés pour toi, ou les tiens. Rends principaux les points où tu t'arrêtes ou où il y a une barrière horaire, et secondaires les repères entre les deux, affichés sur le chemin. C'est facultatif, et le site l'explique étape par étape, aussi en français.
 
+Sur les montres plus anciennes qui ont moins de mémoire (la première Enduro, fēnix 5, 5S, 6 et 6S, Forerunner 935, Instinct 2, 2S, 2X et Crossover), HowFar fonctionne en version lite : sans profil du parcours, il compte jusqu'aux points du parcours que la montre connaît, avec la pente moyenne jusqu'à chacun, et n'affiche pas les points autour. Il apprend quand même ta vitesse sur chaque pente et se souvient de tes sorties passées.
+
 Fonctionne sans téléphone ni réseau pendant la course. Le temps passé à l'arrêt aux ravitaillements n'est pas compté.
 
 Site et page de préparation : https://howfar-garmin.github.io/howfar/fr/
@@ -175,6 +185,8 @@ Gemacht für lange Trailläufe und Ultras ab 25 km, mit echten Anstiegen und Abs
 Nichts einzustellen: Es lernt, während du läufst, wie schnell du auf jeder Steigung bist, von steilen Abstiegen bis zu steilen Anstiegen, und lernt das ganze Rennen über weiter. Es merkt sich deine früheren Läufe, folgt dir, wenn du langsamer wirst oder wieder zulegst, und berücksichtigt, dass deine Uhr mehr Strecke misst als die Streckenkarte.
 
 Nimm dir vor dem Rennen ein paar Minuten für die Vorbereitungsseite der Website. Aus der Streckendatei deines Rennens erstellt sie ein Streckenprofil, das du in die Einstellungen von HowFar einfügst: Dann kennt HowFar jeden Anstieg und Abstieg zwischen den Kontrollpunkten und kann die Punkte rund um den nächsten zeigen. Dort kannst du auch Punkte hinzufügen: Fuß und Gipfel jedes Anstiegs und benannte Hütten und Dörfer, für dich gefunden, oder eigene. Mach die Punkte, an denen du anhältst oder ein Zeitlimit hast, zu Hauptpunkten und die Orientierungspunkte dazwischen zu Nebenpunkten, die auf dem Weg erscheinen. Es ist optional, und die Website erklärt es Schritt für Schritt, auch auf Deutsch.
+
+Auf älteren Uhren mit weniger Speicher (die erste Enduro, fēnix 5, 5S, 6 und 6S, Forerunner 935, Instinct 2, 2S, 2X und Crossover) läuft HowFar in einer Lite-Version: Sie hat kein Streckenprofil, zählt also bis zu den Streckenpunkten, die die Uhr kennt, mit der durchschnittlichen Steigung bis dorthin, und zeigt keine Punkte drumherum. Deine Geschwindigkeit auf jeder Steigung lernt sie trotzdem, und sie merkt sich deine früheren Läufe.
 
 Funktioniert während des Rennens ohne Handy und ohne Empfang. Die Zeit an Verpflegungsstationen wird nicht mitgezählt.
 

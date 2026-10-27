@@ -14,7 +14,7 @@ The field predicts the time to the next course point from your **speed at each s
 - **Fatigue:** this run's older observations gradually lose weight (half-life about 3.5 km), and a fatigue factor compares the last couple of km with the model. Its averages start empty, so a slow first few hundred metres (a warm-up, a crowded start, a stop) don't hold it down for kilometres.
 - **Course vs. your distance:** the watch measures more distance than the course file has (about 15% on the Tor des Géants). The field learns that ratio while navigating and scales the remaining distance and grades by it, starting over when the remaining course jumps up (a reroute) or drops by more than you ran (a shortcut).
 
-For the slope ahead it uses a **course profile** when one is set and matches the course ("P" on the watch): the grade of every 25–400 m between course points. The watch gives a data field only the next point's name, distance and elevation, not the course's track, so the profile is made off the watch and pasted into the settings. Without it the field uses the average grade to the next point ("~").
+For the slope ahead it uses a **course profile** when one is set and matches the course ("P" on the watch): the grade of every 25–400 m between course points, kept on the watch to the nearest half percent (a byte each; `half_percent` in `tools/wpeta/profile.py` does the same). The watch gives a data field only the next point's name, distance and elevation, not the course's track, so the profile is made off the watch and pasted into the settings. Without it the field uses the average grade to the next point ("~").
 
 The watch's next point is put **on the profile**, and the time is the profile's stretch that ends there and is `distanceToNextPoint` long:
 
@@ -30,6 +30,19 @@ Profile points are **main or minor**: a minor point's name starts with `+` in th
 On the race prep page, `docs/js/extra-points.js` finds the added points: climbs as in UltraTrailMate (profile resampled every 40 m with a 50 m median, highs and lows standing out by the chosen D+, 900 m apart), places with one Overpass query for the course's bounding box (the only network request the page makes besides loading its libraries). It can also write the course as a FIT file with every ticked checkpoint as a course point, for runners who want the watch itself to know them.
 
 **On the watch**, the time is shown only as precisely as it is known: `h:mm` in 30-minute steps from four hours out, 15-minute steps from two and 5-minute steps from one, whole minutes from 5 minutes out, `m:ss` in the last 5 minutes, each with its unit in small type (the number fonts have no letters); the arrival time is rounded the same way. For the first ~4 km of an activity (160 observations) the digits are grey, with "(learning)" in a free line: today's form is still a guess. A coloured dot before each time says how far off it may be (`WpUtil.reliability`): green under 45 minutes to go, yellow up to 2 hours, red beyond (see `benchmark_ahead.py` below). The main checkpoints after the one counted down to show their leg's moving time, from leaving the checkpoint before (`+h:mm`), since stops there can't be known; minor points show their time from now (`in h:mm`). The arrival time is shown only for the big number.
+
+## Watches, and the lite build
+
+HowFar needs the watch to give a data field the course's next point (`Activity.Info.distanceToNextPoint`, `nameOfNextPoint`, `elevationAtNextPoint`, `distanceToDestination`). Only some watches do: fēnix, epix, Enduro, MARQ, Instinct 2, Venu X1 and the Forerunner 935, 945, 955, 965 and 970. The others (other Forerunners, vívoactive, Venu, Instinct 3 and E) are left out: check `<device>.api.debug.xml` in the SDK's `Devices` folder before adding one.
+
+The manifests list the watches in four groups; the jungle files say which get which build:
+
+- **Full build:** everything. On API 3.x watches (fēnix 5 Plus, 6 Pro, Forerunner 945, MARQ Gen 1) a function may take at most 9 arguments, so the drawing code keeps the colours of each `onUpdate` in members.
+- **Lite build** (`excludeAnnotations = full`, `resourcePath = resources;settings-lite`): watches that give a data field 32 KB (29 KB usable on the Enduro, of which the system takes 6.6 KB). No course profile, and so no list of points around the checkpoint: the profile's text alone is loaded into the field's memory at start-up, before any code can check its size, and the full build's code doesn't fit. Its settings have no profile field. It counts down to the watch's next point at the average grade, learns and remembers like the full build, and keeps a sample only every 2 m (and every 5 s for the stop check), so its 60 m window can start up to 2 m earlier. In the simulator it uses about 23.5 of 29 KB while counting down.
+
+Code only the full build has is marked `(:full)`, the lite build's empty stand-ins `(:lite)`; tests for full-only code are `(:test :full)`. Run the watch tests on both builds (`enduro3` and `enduro` below).
+
+`CourseProfile` reads the text a few hundred characters per second (`parseSome`), so a long profile doesn't trip the watchdog on older watches, and stops (falling back to "~") if it would leave less than 2.5 KB free.
 
 ## Code layout
 
@@ -55,7 +68,7 @@ They must agree: the watch reads the profile text the Python tools and the race 
 ## Build and test
 
 - **Watch code:** *Monkey C: Build for Device* in VS Code, or `monkeyc -f monkey.jungle -o bin/HowFar.prg -y developer_key -d enduro3`.
-- **Watch unit tests:** `monkeyc -t …` then `monkeydo bin/tests.prg enduro3 -t`, or *Monkey C: Run Tests*.
+- **Watch unit tests:** `monkeyc -t …` then `monkeydo bin/tests.prg enduro3 -t`, or *Monkey C: Run Tests*; again for `enduro`, the lite build.
 - **Python:** `.venv/bin/python -m pytest tools/tests`
 - **Browser vs. Python:** `.venv/bin/python tools/tests/make_web_fixtures.py [--private]`, then `cd web-tests && npm test`. With `--private` it also checks the race files in `courses/`, which are not in git.
 - **Simulator:**
@@ -77,7 +90,7 @@ They must agree: the watch reads the profile text the Python tools and the race 
 ## Releasing
 
 - **GitHub release:** build a `.prg` per watch (`-r` for release) and attach them to a release; the website links to the latest one.
-- **Connect IQ Store:** `HowFar.iq` is the public app (`monkey.jungle`, `manifest.xml`), reviewed by Garmin. `HowFar-beta.iq` is a private beta with its own app ID (`beta.jungle`, `manifest-beta.xml`). Keep both manifests' product lists the same. Listing text and upload steps: `store/listing.md`; images: `store/make_images.py` and `store/images/`.
+- **Connect IQ Store:** `HowFar.iq` is the public app (`monkey.jungle`, `manifest.xml`), reviewed by Garmin. `HowFar-beta.iq` is a private beta with its own app ID (`beta.jungle`, `manifest-beta.xml`). Keep both manifests' product lists, and the lite watches in both jungle files, the same. Listing text and upload steps: `store/listing.md`; images: `store/make_images.py` and `store/images/`.
 
 ## How the algorithm was chosen
 
@@ -121,6 +134,7 @@ Tested and dropped, because none did better: predicting from your speed over the
 
 ## Still to check on a real watch
 
+- **The lite build and older firmware:** tried only in the simulator (Enduro, fēnix 5 and 6, Forerunner 935, Instinct 2 and 2S; fēnix 5X and 6 Pro for the full build on API 3.x).
 - **`distanceToNextPoint` and `distanceToDestination`:** the profile logic assumes both are distances along the course, not straight lines.
 - **Settings text length:** how long a text Garmin Connect accepts; the profile tools default to 4,000 characters.
 - **`onTimerReset`:** runs for saved and discarded activities alike; the field learns from any activity with at least about 500 m of moving data.

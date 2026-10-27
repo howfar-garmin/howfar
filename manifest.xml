@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <iq:manifest version="3" xmlns:iq="http://www.garmin.com/xml/connectiq">
-    <iq:application id="70fe11ebc9674894b477e04dba6522a4" type="datafield" name="@Strings.AppName" entry="WaypointEtaApp" launcherIcon="@Drawables.LauncherIcon" minApiLevel="5.2.0">
-        <!-- Check these IDs against ~/Library/Application Support/Garmin/ConnectIQ/Devices after installing the SDK -->
+    <iq:application id="70fe11ebc9674894b477e04dba6522a4" type="datafield" name="@Strings.AppName" entry="WaypointEtaApp" launcherIcon="@Drawables.LauncherIcon" minApiLevel="3.1.0">
         <iq:products>
+            <!-- Full build -->
             <iq:product id="fenix843mm"/>
             <iq:product id="fenix847mm"/>
             <iq:product id="fenix8solar47mm"/>
@@ -30,6 +30,46 @@
             <iq:product id="fenix7xpronowifi"/>
             <iq:product id="epix2"/>
             <iq:product id="enduro4"/>
+
+            <!-- Full build, older firmware (API 3.x) -->
+            <iq:product id="fenix5plus"/>
+            <iq:product id="fenix5splus"/>
+            <iq:product id="fenix5x"/>
+            <iq:product id="fenix5xplus"/>
+            <iq:product id="fenix6pro"/>
+            <iq:product id="fenix6spro"/>
+            <iq:product id="fenix6xpro"/>
+            <iq:product id="fr945"/>
+            <iq:product id="fr945lte"/>
+            <iq:product id="marqadventurer"/>
+            <iq:product id="marqathlete"/>
+            <iq:product id="marqaviator"/>
+            <iq:product id="marqcaptain"/>
+            <iq:product id="marqcommander"/>
+            <iq:product id="marqdriver"/>
+            <iq:product id="marqexpedition"/>
+            <iq:product id="marqgolfer"/>
+
+            <!-- Full build, newer watches -->
+            <iq:product id="fr955"/>
+            <iq:product id="fr965"/>
+            <iq:product id="fr970"/>
+            <iq:product id="venux1"/>
+            <iq:product id="marq2"/>
+            <iq:product id="marq2aviator"/>
+            <iq:product id="marq3"/>
+
+            <!-- Lite build: 32 KB for a data field (see monkey.jungle) -->
+            <iq:product id="enduro"/>
+            <iq:product id="fenix5"/>
+            <iq:product id="fenix5s"/>
+            <iq:product id="fenix6"/>
+            <iq:product id="fenix6s"/>
+            <iq:product id="fr935"/>
+            <iq:product id="instinct2"/>
+            <iq:product id="instinct2s"/>
+            <iq:product id="instinct2x"/>
+            <iq:product id="instinctcrossover"/>
         </iq:products>
         <iq:permissions/>
         <iq:languages>

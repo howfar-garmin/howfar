@@ -84,6 +84,13 @@ def profile_string(entries: list[tuple[str, int, list[int]]], step: int) -> str:
     return ";".join(parts)
 
 
+def half_percent(g: int) -> float:
+    """A grade in tenths of a percent as the watch keeps it: to the nearest half percent (half away
+    from zero), within +-63.5%."""
+    q = (g + 2) // 5 if g >= 0 else -((2 - g) // 5)
+    return max(-127, min(127, q)) * 0.5
+
+
 def parse_profile(s: str) -> tuple[int, list[tuple[str, int, list[int]]]]:
     parts = s.strip().split(";")
     if len(parts) < 2 or parts[0] != PROFILE_PREFIX:
@@ -188,7 +195,7 @@ class ProfileMatcher:
             last = len(grades) - 1
             start = self.starts[self._ci]
             end = start + length if self._ck >= last else start + (self._ck + 1) * self.step
-            grade = grades[self._ck] / 10.0
+            grade = half_percent(grades[self._ck])
             hi = min(end, b)
             if hi >= end:
                 if self._ck >= last:

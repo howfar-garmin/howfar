@@ -5,10 +5,19 @@ import Toybox.Lang;
 class GradeTracker {
     const WINDOW = 60.0;      // metres each observation spans, to smooth altitude noise
     const EMIT_EVERY = 25.0;  // metres between observations
-    const SIZE = 300;         // samples kept: 60 m even on a slow steep climb
+    (:full) const SIZE = 300;  // samples kept: 60 m even on a slow steep climb
+    (:full) const MIN_STEP = 0.0;  // m: every sample is kept
+    // 32 KB watches keep a sample only every 2 m or more, so 40 of them still span 60 m, and one
+    // every 5 s for the stop check. Their windows start up to 2 m or 5 s earlier than with every
+    // sample, as tools/wpeta keeps.
+    (:lite) const SIZE = 40;
+    (:lite) const MIN_STEP = 2.0;
     const STOP_WINDOW = 60.0; // stopped = less than STOP_DIST metres in the last STOP_WINDOW seconds
     const STOP_DIST = 15.0;
-    const STOP_SIZE = 90;
+    (:full) const STOP_SIZE = 90;
+    (:full) const STOP_EVERY = 0.0;  // s
+    (:lite) const STOP_SIZE = 18;
+    (:lite) const STOP_EVERY = 5.0;
     const STILL_DIST = 2.0;   // also stopped: less than this many metres for STILL_TIME seconds (a short stop to read the watch)
     const STILL_TIME = 10.0;
     const MIN_SPEED = 0.2;
@@ -44,16 +53,8 @@ class GradeTracker {
         reset();
     }
 
+    // the buffers' old samples stay: only the _count / _scount newest are ever read
     function reset() as Void {
-        for (var i = 0; i < SIZE; i++) {
-            _d[i] = 0.0;
-            _a[i] = 0.0;
-            _t[i] = 0.0;
-        }
-        for (var i = 0; i < STOP_SIZE; i++) {
-            _sd[i] = 0.0;
-            _st[i] = 0.0;
-        }
         _head = 0;
         _count = 0;
         _shead = 0;
@@ -73,11 +74,13 @@ class GradeTracker {
     // Records the sample and says whether we moved STOP_DIST in the last STOP_WINDOW s.
     // currentSpeed is not used: on steep climbs it often dips to almost zero.
     hidden function isMoving(timeS as Float, dist as Float) as Boolean {
-        _sd[_shead] = dist;
-        _st[_shead] = timeS;
-        _shead = (_shead + 1) % STOP_SIZE;
-        if (_scount < STOP_SIZE) {
-            _scount++;
+        if (_scount == 0 || timeS - _st[(_shead - 1 + STOP_SIZE) % STOP_SIZE] >= STOP_EVERY) {
+            _sd[_shead] = dist;
+            _st[_shead] = timeS;
+            _shead = (_shead + 1) % STOP_SIZE;
+            if (_scount < STOP_SIZE) {
+                _scount++;
+            }
         }
         var stillDist = _stillDist;
         if (stillDist == null || dist - stillDist >= STILL_DIST) {
@@ -121,12 +124,14 @@ class GradeTracker {
             return false;
         }
 
-        _d[_head] = dist;
-        _a[_head] = alt;
-        _t[_head] = movingTime;
-        _head = (_head + 1) % SIZE;
-        if (_count < SIZE) {
-            _count++;
+        if (_count == 0 || dist - _d[(_head - 1 + SIZE) % SIZE] >= MIN_STEP) {
+            _d[_head] = dist;
+            _a[_head] = alt;
+            _t[_head] = movingTime;
+            _head = (_head + 1) % SIZE;
+            if (_count < SIZE) {
+                _count++;
+            }
         }
 
         var lastEmit = _lastEmit;

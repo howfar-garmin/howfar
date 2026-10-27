@@ -1,0 +1,5 @@
+<settings>
+    <setting propertyKey="@Properties.resetModel" title="@Strings.ResetModelTitle">
+        <settingConfig type="boolean"/>
+    </setting>
+</settings>

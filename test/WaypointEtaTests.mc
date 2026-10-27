@@ -20,14 +20,6 @@ function testBinIndex(logger as Test.Logger) as Boolean {
 }
 
 (:test)
-function testSplit(logger as Test.Logger) as Boolean {
-    var p = WpUtil.split("a;;b", ';');
-    Test.assertEqual(p.size(), 3);
-    Test.assert(p[0].equals("a") && p[1].equals("") && p[2].equals("b"));
-    return true;
-}
-
-(:test)
 function testFormatDuration(logger as Test.Logger) as Boolean {
     var a = WpUtil.etaText(65);
     Test.assert(a[0].equals("1:05") && a[1].equals("min"));
@@ -100,14 +92,14 @@ function testFormFactor(logger as Test.Logger) as Boolean {
     return true;
 }
 
-(:test)
+(:test :full)
 function testProfileTime(logger as Test.Logger) as Boolean {
     var m = new SpeedGradeModel();
     m.stored.add(Wp.binIndex(0.0), 3.0, 30.0);
     m.stored.add(Wp.binIndex(10.0), 2.0, 30.0);
     var est = new EtaEstimator(m);
     // segment 230 m: chunks 100, 100, 30 (the 30 m chunk is next to the waypoint)
-    var p = new CourseProfile("p1;100;X|230|100,100,0");
+    var p = new CourseProfile("p1;100;X|230|100,100,0").parseAll();
     Test.assert(p.update("X", 230.0, 230.0, 0.0, 1.0));
     Test.assert(near(p.remainingTime(230.0, est, 1.0), 200.0 / 2.0 + 30.0 / 3.0, 0.01));
     Test.assert(p.update("X", 80.0, 80.0, 150.0, 1.0));
@@ -240,7 +232,7 @@ function testOlderRunObservationsFade(logger as Test.Logger) as Boolean {
     return true;
 }
 
-(:test)
+(:test :full)
 function testNamesMatch(logger as Test.Logger) as Boolean {
     Test.assert(WpUtil.namesMatch("Water", "water"));
     Test.assert(WpUtil.namesMatch("Rifugio Gonella", "Rifugio Gon"));
@@ -249,9 +241,9 @@ function testNamesMatch(logger as Test.Logger) as Boolean {
     return true;
 }
 
-(:test)
+(:test :full)
 function testProfileRepeatedNames(logger as Test.Logger) as Boolean {
-    var p = new CourseProfile("p1;100;Water|1000|0;Water|2000|0;*|500|0");
+    var p = new CourseProfile("p1;100;Water|1000|0;Water|2000|0;*|500|0").parseAll();
     Test.assert(p.isLoaded());
     Test.assert(p.update("Water", 1000.0, 3500.0, 0.0, 1.0) && p.current == 0);
     Test.assert(p.update("Water", 400.0, 2900.0, 600.0, 1.0) && p.current == 0);
@@ -260,34 +252,34 @@ function testProfileRepeatedNames(logger as Test.Logger) as Boolean {
     return true;
 }
 
-(:test)
+(:test :full)
 function testProfilePlacesUnknownPoint(logger as Test.Logger) as Boolean {
-    var p = new CourseProfile("p1;100;Climb|1000|0");
+    var p = new CourseProfile("p1;100;Climb|1000|0").parseAll();
     Test.assert(p.update("Left turn", 300.0, 900.0, 100.0, 1.0));
     Test.assert(p.current == null && near(p.loc as Float, 400.0, 0.01));
     return true;
 }
 
-(:test)
+(:test :full)
 function testProfileSkipsPointsTheWatchLacks(logger as Test.Logger) as Boolean {
-    var p = new CourseProfile("p1;100;A|1000|0;B|1000|0;C|1000|0");
+    var p = new CourseProfile("p1;100;A|1000|0;B|1000|0;C|1000|0").parseAll();
     Test.assert(p.update("C", 3000.0, 3000.0, 0.0, 1.0) && p.current == 2);
     return true;
 }
 
-(:test)
+(:test :full)
 function testProfileRepeatedNameThatFits(logger as Test.Logger) as Boolean {
-    var p = new CourseProfile("p1;100;Water|1000|0;Hut|3000|0;Water|3000|0");
+    var p = new CourseProfile("p1;100;Water|1000|0;Hut|3000|0;Water|3000|0").parseAll();
     Test.assert(p.update("Bridge", 4000.0, 7000.0, 0.0, 1.0) && near(p.loc as Float, 4000.0, 0.01));
     Test.assert(p.update("Water", 3000.0, 3000.0, 4000.0, 1.0) && p.current == 2);
     Test.assert(!p.mismatched);
     return true;
 }
 
-(:test)
+(:test :full)
 function testProfileLongerWatchCourse(logger as Test.Logger) as Boolean {
     // the watch's course is 10% longer than the profile's
-    var p = new CourseProfile("p1;100;A|5000|0;B|5000|0;C|5000|0");
+    var p = new CourseProfile("p1;100;A|5000|0;B|5000|0;C|5000|0").parseAll();
     Test.assert(p.update("A", 1100.0, 12100.0, 4400.0, 1.0) && p.current == 0);
     Test.assert(near(p.ratio as Float, 1.0 / 1.1, 0.0001));
     Test.assert(p.update("Hut", 2200.0, 11000.0, 5500.0, 1.0) && p.current == null);
@@ -295,19 +287,19 @@ function testProfileLongerWatchCourse(logger as Test.Logger) as Boolean {
     return true;
 }
 
-(:test)
+(:test :full)
 function testProfileMismatch(logger as Test.Logger) as Boolean {
-    var p = new CourseProfile("p1;100;Climb|1000|0");
+    var p = new CourseProfile("p1;100;Climb|1000|0").parseAll();
     Test.assert(!p.update("Climb", 2000.0, 2000.0, 0.0, 1.0));
     Test.assert(p.mismatched);
     return true;
 }
 
-(:test)
+(:test :full)
 function testProfileFollowingPoint(logger as Test.Logger) as Boolean {
     var m = new SpeedGradeModel();
     var est = new EtaEstimator(m);
-    var p = new CourseProfile("p1;100;A|1000|0;B|2000|0;*|500|0");
+    var p = new CourseProfile("p1;100;A|1000|0;B|2000|0;*|500|0").parseAll();
     Test.assert(p.update("A", 600.0, 3100.0, 400.0, 1.0));
     var i = p.following() as Number;
     Test.assert(p.followingName(i).equals("B"));
@@ -323,11 +315,11 @@ function testProfileFollowingPoint(logger as Test.Logger) as Boolean {
     return true;
 }
 
-(:test)
+(:test :full)
 function testProfileCountsDownToItsOwnPoints(logger as Test.Logger) as Boolean {
     var est = new EtaEstimator(new SpeedGradeModel());
     // the watch knows only B; the profile also has a climb top 800 m in
-    var p = new CourseProfile("p1;100;Top 900m|800|0;B|1200|0");
+    var p = new CourseProfile("p1;100;Top 900m|800|0;B|1200|0").parseAll();
     Test.assert(p.update("B", 1700.0, 1700.0, 300.0, 1.0));
     Test.assert((p.targetName("B") as String).equals("Top 900m"));
     Test.assert(near(p.targetDist, 500.0, 0.01));
@@ -340,11 +332,11 @@ function testProfileCountsDownToItsOwnPoints(logger as Test.Logger) as Boolean {
     return true;
 }
 
-(:test)
+(:test :full)
 function testProfileMinorPointOnTheWay(logger as Test.Logger) as Boolean {
     var est = new EtaEstimator(new SpeedGradeModel());
     // a climb top marked minor ("+"): the field keeps counting down to B, the top is on the way
-    var p = new CourseProfile("p1;100;+Top 900m|800|0;B|1200|0");
+    var p = new CourseProfile("p1;100;+Top 900m|800|0;B|1200|0").parseAll();
     Test.assert(p.update("B", 1700.0, 1700.0, 300.0, 1.0));
     Test.assert((p.targetName("B") as String).equals("B"));
     Test.assert(near(p.targetDist, 1700.0, 0.01));
@@ -354,9 +346,45 @@ function testProfileMinorPointOnTheWay(logger as Test.Logger) as Boolean {
     Test.assert(p.update("B", 1100.0, 1100.0, 900.0, 1.0));
     Test.assert(p.via == null);
     // the watch's course has the top too, but it's minor: count down to B through it
-    var q = new CourseProfile("p1;100;+Top 900m|800|0;B|1200|0");
+    var q = new CourseProfile("p1;100;+Top 900m|800|0;B|1200|0").parseAll();
     Test.assert(q.update("Top 900m", 500.0, 1700.0, 300.0, 1.0));
     Test.assert((q.targetName("Top 900m") as String).equals("B"));
     Test.assert(near(q.targetDist, 1700.0, 0.01));
+    return true;
+}
+
+(:test :full)
+function testProfileReadInSteps(logger as Test.Logger) as Boolean {
+    var text = "p1;100";
+    for (var i = 0; i < 40; i++) {
+        text += ";P" + i + "|1000|37,-37,120,-120,0,5,-5,1000,-1000,2";
+    }
+    var p = new CourseProfile(text);
+    Test.assert(!p.isLoaded());
+    var calls = 1;
+    while (!p.parseSome()) {
+        calls++;
+    }
+    Test.assert(calls > 1 && p.isLoaded());
+    Test.assert(p.update("P39", 1000.0, 1000.0, 39000.0, 1.0) && p.current == 39);
+    return true;
+}
+
+(:test :full)
+function testProfileSkipsMalformedEntries(logger as Test.Logger) as Boolean {
+    var p = new CourseProfile("p1;100;Bad|1000;A|1000|0;C|5|0|9;B|1000|0").parseAll();
+    Test.assert(p.update("B", 1000.0, 1000.0, 1000.0, 1.0) && p.current == 1);
+    Test.assert(!(new CourseProfile("p2;100;A|1000|0").parseAll().isLoaded()));
+    return true;
+}
+
+(:test :full)
+function testProfileGradesToHalfPercent(logger as Test.Logger) as Boolean {
+    var est = new EtaEstimator(new SpeedGradeModel());
+    // 3.7% -> 3.5%, -3.7% -> -3.5%, 100% -> 63.5% (the model clamps to 40% anyway)
+    var p = new CourseProfile("p1;100;X|300|37,-37,1000").parseAll();
+    Test.assert(p.update("X", 300.0, 300.0, 0.0, 1.0));
+    var t = est.timeForGrade(100.0, 3.5, 1.0) + est.timeForGrade(100.0, -3.5, 1.0) + est.timeForGrade(100.0, 63.5, 1.0);
+    Test.assert(near(p.remainingTime(300.0, est, 1.0), t, 0.01));
     return true;
 }

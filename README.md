@@ -24,7 +24,7 @@ Nothing to set up: it learns your pace on every slope while you run and keeps le
 
 Free in the **[Garmin Connect IQ Store](https://apps.garmin.com/apps/e34840a9-6cd4-4ea6-96b0-051edeb0db73)**: search for *HowFar* in the Connect IQ Store in the Garmin Connect app (or the Connect IQ app), install, and sync your watch. Then add it to a data screen of your Trail Run activity.
 
-Works on the **fēnix 7**, **8** and **9** (Pro and Solar too), **fēnix E**, **epix (Gen 2)** and **epix Pro (Gen 2)**, and **Enduro 2**, **3** and **4**. Without the store, the [latest release](https://github.com/howfar-garmin/howfar/releases/latest) has a file per watch to copy over USB (that way it has no settings).
+Works on the **fēnix 5 Plus**, **5X** and **5X Plus**, **fēnix 6 Pro** (6S and 6X too), **fēnix 7**, **8** and **9** (Pro and Solar too), **fēnix E**, **epix (Gen 2)** and **epix Pro (Gen 2)**, **Enduro 2**, **3** and **4**, **Forerunner 945**, **955**, **965** and **970**, **MARQ** and **Venu X1**. Older watches with less memory get a **lite version**, without the course profile: the first **Enduro**, **fēnix 5**, **5S**, **6** and **6S**, **Forerunner 935** and **Instinct 2** (2S, 2X and Crossover too). Other Forerunner, vívoactive, Venu and Instinct models don't give apps the course's next point, so HowFar can't run on them. Without the store, the [latest release](https://github.com/howfar-garmin/howfar/releases/latest) has a file per watch to copy over USB (that way it has no settings).
 
 ## Prepare a race (optional)
 

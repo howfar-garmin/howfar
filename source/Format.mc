@@ -15,21 +15,6 @@ module WpUtil {
         return x;
     }
 
-    // Splits on a single character. Empty parts are kept.
-    function split(str as String, delim as Char) as Array<String> {
-        var parts = [] as Array<String>;
-        var chars = str.toCharArray();
-        var start = 0;
-        for (var i = 0; i < chars.size(); i++) {
-            if (chars[i] == delim) {
-                parts.add(str.substring(start, i) as String);
-                start = i + 1;
-            }
-        }
-        parts.add(str.substring(start, chars.size()) as String);
-        return parts;
-    }
-
     // Rounding step (s) for a time this far away: the prediction is good to ~10-15% of the
     // time left, so seconds two hours out would promise far more than it knows
     function etaStep(seconds as Number) as Number {
@@ -90,6 +75,7 @@ module WpUtil {
 
     // Case-insensitive; also matches when one name is a prefix (>= 3 chars) of the
     // other, since the watch may truncate course point names.
+    (:full)
     function namesMatch(a as String, b as String) as Boolean {
         a = a.toLower();
         b = b.toLower();

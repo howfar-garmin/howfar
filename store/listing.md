@@ -65,7 +65,11 @@ Website and race prep page: https://howfar-garmin.github.io/howfar/
 
 Free and open source. Not affiliated with Garmin.
 
-#ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning
+#ultratrail #trailrunning #ultrarunning #ultramarathon #skyrunning #mountainrunning #trail #ultra
+
+## What's new (0.4.1)
+
+Now also on the fēnix 7 and 7 Pro (all sizes), Enduro 2, Enduro 4, epix (Gen 2), fēnix 8 Pro, fēnix 9 and fēnix E.
 
 ## What's new (0.4.0)
 
@@ -118,6 +122,8 @@ Sito e pagina di preparazione: https://howfar-garmin.github.io/howfar/it/
 
 Gratuito e open source. Non affiliato a Garmin.
 
+#ultratrail #trailrunning #corsainmontagna #ultramaratona #skyrunning #trail #ultra
+
 ### Français
 
 **Description courte :** Bêta. Le temps jusqu'au prochain point de contrôle d'un trail long, appris de ta façon de monter et de descendre.
@@ -146,6 +152,8 @@ Site et page de préparation : https://howfar-garmin.github.io/howfar/fr/
 
 Gratuit et open source. Non affilié à Garmin.
 
+#ultratrail #trail #courseenmontagne #ultramarathon #skyrunning #ultra
+
 ### Deutsch
 
 **Kurzbeschreibung:** Beta. Die Zeit bis zum nächsten Kontrollpunkt eines langen Traillaufs, gelernt daraus, wie du bergauf und bergab läufst.
@@ -173,4 +181,6 @@ Funktioniert während des Rennens ohne Handy und ohne Empfang. Die Zeit an Verpf
 Website und Vorbereitungsseite: https://howfar-garmin.github.io/howfar/de/
 
 Kostenlos und Open Source. Nicht mit Garmin verbunden.
+
+#Ultratrail #Traillauf #Trailrunning #Berglauf #Ultramarathon #Skyrunning #Ultralauf
 

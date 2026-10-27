@@ -4,7 +4,7 @@
 
 **[Website and demo](https://howfar-garmin.github.io/howfar/)** ([IT](https://howfar-garmin.github.io/howfar/it/) · [FR](https://howfar-garmin.github.io/howfar/fr/) · [DE](https://howfar-garmin.github.io/howfar/de/)) · **[Race prep](https://howfar-garmin.github.io/howfar/prepare.html)** · **[Send feedback](https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml)** · **License:** MIT
 
-**Beta.** Made for long trail runs and ultras with real climbs and descents, where your average pace says little about the climb ahead; not for a flat 5 or 10 km, where the average already works. Try it and [tell us how it did](https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml): the more feedback, the better.
+Made for long trail runs and ultras with real climbs and descents, where your average pace says little about the climb ahead; not for a flat 5 or 10 km, where the average already works. Try it and [tell us how it did](https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml): the more feedback, the better.
 
 ![HowFar on a watch](store/images/hero-1440x720.png)
 

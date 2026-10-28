@@ -72,7 +72,14 @@
   }
   // the prediction before rounding (the chart), and as the watch shows it (watch and readout)
   function eta(f, id) { return f[ETA0 + idx[id]]; }
-  function err(f, id) { return eta(f, id) - (f[ACT] - f[STOPA]); }
+  // the error, as the chart and the readout show it: to the next main checkpoint, the one the big
+  // number counts down to, stops not counted
+  var EXTRA = ETA0 + C.length + 1;
+  function err(f, id) { return eta(f, id) + f[EXTRA][idx[id]] - moving(f); }
+  function moving(f) {
+    var m = mainFrom(f[K]);
+    return m === f[K] ? f[ACT] - f[STOPA] : (WP[m].arrive - f[T]) - (WP[m].stops - f[STOPS]);
+  }
   function cfg(id) { return C[idx[id]]; }
   // the cases' names, short (chart, table) and next to the choice
   var LABELS = {
@@ -192,7 +199,7 @@
     $("rActual").innerHTML = (stopped >= 60
       ? _t("<b>{time}</b>, arrived at {clock}, including {stop} min stopped", { time: dur(took), clock: clock(f[T] + took), stop: Math.round(stopped / 60) })
       : _t("<b>{time}</b>, arrived at {clock}", { time: dur(took), clock: clock(f[T] + took) }));
-    var x = e - (took - stopped);
+    var x = err(f, state.main);
     var ok = Math.abs(x) <= 300;
     $("rErr").innerHTML = _t("<b>{err}</b> (not counting stops)", { err: signedMin(x) }) + " " +
       (ok ? '<span class="chip good">✓ ' + _t("Within 5 min") + "</span>"
@@ -310,13 +317,18 @@
   }
 
   // ---------- error chart
-  var R = { W: 1000, H: 236, l: 72, r: 62, t: 14, b: 50, y0: -45, y1: 25 };
-  function rx(t) { return R.l + ((t - tStart) / (tEnd - tStart)) * (R.W - R.l - R.r); }
+  // the same distance axis as the elevation chart, so the two line up point for point
+  var R = { W: 1000, H: 236, l: E.l, r: E.r, t: 14, b: 50, y0: -45, y1: 25 };
+  function rx(d) { return ex(d); }
+  function frameAtDist(d) {
+    for (var i = 0; i < F.length; i++) if (F[i][CD] >= d) return F[i];
+    return F[F.length - 1];
+  }
   function ry(m) { m = Math.max(R.y0, Math.min(R.y1, m)); return R.t + ((R.y1 - m) / (R.y1 - R.y0)) * (R.H - R.t - R.b); }
-  var errCursor;
+  var errCursor, errDot, errVal;
 
   function seriesPoints(id) {
-    return F.map(function (f) { return rx(f[T]).toFixed(1) + "," + ry(err(f, id) / 60).toFixed(1); }).join(" ");
+    return F.map(function (f) { return rx(f[CD]).toFixed(1) + "," + ry(err(f, id) / 60).toFixed(1); }).join(" ");
   }
   function drawError() {
     var svg = $("err");
@@ -325,16 +337,16 @@
       el("line", { x1: R.l, x2: R.W - R.r, y1: ry(m), y2: ry(m), stroke: m === 0 ? "var(--ink-3)" : "var(--line-soft)", "stroke-width": 1 }, svg);
       txt(svg, R.l - 8, ry(m) + 4, (m > 0 ? "+" : m < 0 ? "−" : "") + Math.abs(m), { "text-anchor": "end" });
     });
-    // which side of zero means what
-    txt(svg, R.W - R.r + 6, ry(0) - 6, _t("earlier"), { fill: "var(--ink-2)" });
-    txt(svg, R.W - R.r + 6, ry(0) + 15, _t("later"), { fill: "var(--ink-2)" });
-    for (var h = 0; h <= (tEnd - tStart) / 3600; h += 2) {
-      txt(svg, rx(tStart + h * 3600), R.H - 30, String(h), { "text-anchor": "middle" });
+    // which side of zero means what, before the first checkpoint where there is no line yet
+    txt(svg, R.l + 8, ry(0) - 6, _t("earlier"), { fill: "var(--ink-2)" });
+    txt(svg, R.l + 8, ry(0) + 15, _t("later"), { fill: "var(--ink-2)" });
+    for (var k = 0; k <= maxD / 1000; k += 5) {
+      txt(svg, rx(k * 1000), R.H - 30, String(k), { "text-anchor": "middle" });
     }
-    axisLabels(svg, R, _t("Race time (h)"), _t("Minutes off"));
+    axisLabels(svg, R, _t("Distance (km)"), _t("Minutes off"));
     WP.forEach(function (w, i) {
-      if (i < D.firstWaypoint || w.arrive == null) return;
-      el("line", { x1: rx(w.arrive), x2: rx(w.arrive), y1: R.t, y2: R.H - R.b, stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": "2 4" }, svg);
+      if (i < D.firstWaypoint || w.arrive == null || w.minor) return;
+      el("line", { x1: rx(w.d), x2: rx(w.d), y1: R.t, y2: R.H - R.b, stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": "2 4" }, svg);
     });
     STEPS.forEach(function (id) {
       var attrs = { points: seriesPoints(id), fill: "none", stroke: COLORS[id], "stroke-width": id === "profile" ? 2 : 1.5, "stroke-linejoin": "round" };
@@ -345,12 +357,15 @@
       return "<span>" + swatch(id) + label(id) + "</span>";
     }).join("");
     errCursor = el("line", { y1: R.t, y2: R.H - R.b, stroke: "var(--ink)", "stroke-width": 1.25 }, svg);
+    // where the readout's "HowFar was off by" is on its line, with the same number
+    errDot = el("circle", { r: 5, fill: COLORS[state.main], stroke: "var(--surface)", "stroke-width": 2 }, svg);
+    errVal = txt(svg, 0, 0, "", { "font-weight": 600, fill: "var(--ink)", stroke: "var(--surface)", "stroke-width": 4, "paint-order": "stroke" });
 
     var box = $("errBox");
     svg.addEventListener("mousemove", function (evt) {
       var p = svgPoint(svg, evt);
-      var f = frameAt(tStart + ((p.x - R.l) / (R.W - R.l - R.r)) * (tEnd - tStart));
-      tipShow(box, _t("<b>{time}</b> · to {name}", { time: hm(f[T]), name: WP[f[K]].name }) +
+      var f = frameAtDist(((p.x - R.l) / (R.W - R.l - R.r)) * maxD);
+      tipShow(box, "<b>" + km(f[CD]) + "</b> · " + _t("<b>{time}</b> · to {name}", { time: hm(f[T]), name: WP[mainFrom(f[K])].name }) +
         STEPS.slice().reverse().map(function (id) {
           return "<br>" + swatch(id) + label(id) + " " + signedMin(err(f, id));
         }).join(""), p.px, p.py);
@@ -358,7 +373,7 @@
     svg.addEventListener("mouseleave", function () { tipHide(box); });
     svg.addEventListener("click", function (evt) {
       var p = svgPoint(svg, evt);
-      state.t = Math.min(tEnd, Math.max(tStart, tStart + ((p.x - R.l) / (R.W - R.l - R.r)) * (tEnd - tStart)));
+      state.t = frameAtDist(((p.x - R.l) / (R.W - R.l - R.r)) * maxD)[T];
       render();
     });
   }
@@ -368,10 +383,17 @@
     elevCursor.setAttribute("x1", x); elevCursor.setAttribute("x2", x);
     elevDot.setAttribute("cx", x); elevDot.setAttribute("cy", ey(f[ALT]));
     elevDone.setAttribute("width", Math.max(0, x - E.l));
-    var xn = ex(WP[f[K]].d);
+    var xn = ex(WP[mainFrom(f[K])].d);  // to the checkpoint the big number counts down to
     elevAhead.setAttribute("x", x); elevAhead.setAttribute("width", Math.max(0, xn - x));
-    var xt = rx(f[T]);
+    var xt = rx(f[CD]);
     errCursor.setAttribute("x1", xt); errCursor.setAttribute("x2", xt);
+    var m = err(f, state.main) / 60, yd = ry(m);
+    errDot.setAttribute("cx", xt); errDot.setAttribute("cy", yd);
+    var right = xt < R.W - R.r - 90;
+    errVal.textContent = signedMin(m * 60);
+    errVal.setAttribute("x", right ? xt + 9 : xt - 9);
+    errVal.setAttribute("y", yd < R.t + 16 ? yd + 18 : yd - 9);
+    errVal.setAttribute("text-anchor", right ? "start" : "end");
   }
 
   // ---------- results table
@@ -470,6 +492,18 @@
 
   drawElevation();
   drawError();
+  // on a narrow screen both charts scroll sideways: keep them scrolled together, km over km
+  (function () {
+    var boxes = [$("elevBox"), $("errBox")], busy = false;
+    boxes.forEach(function (box, i) {
+      box.addEventListener("scroll", function () {
+        if (busy) return;
+        busy = true;
+        boxes[1 - i].scrollLeft = box.scrollLeft;
+        requestAnimationFrame(function () { busy = false; });
+      }, { passive: true });
+    });
+  })();
   buildTable();
   fillTools();
   render();

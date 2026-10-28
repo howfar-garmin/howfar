@@ -85,10 +85,31 @@ def main() -> int:
             t_leg += sum(length * s / (final.model.predict(g / s) * final.est.fatigue)
                          for length, g in S.chunks_ahead(race.elev, wps[j - 1].course_dist, wps[j].course_dist))
             legs.append(round(t_leg))
+        # each prediction's time from the next waypoint on to the next main checkpoint, so the
+        # error chart measures what the big number counts down to: HowFar with the profile as its
+        # legs above, without it at each leg's average grade, the average pace at that pace
+        m = k
+        while m < len(wps) - 1 and wps[m].name in MINOR:
+            m += 1
+        extra = []
+        for cid, _, pr in preds:
+            if cid == "profile":
+                extra.append(legs[m - k - 1] if m > k else 0)
+                continue
+            t_more = 0.0
+            for j in range(k + 1, m + 1):
+                length = wps[j].course_dist - wps[j - 1].course_dist
+                if cid == "average":
+                    t_more += length / pr.speed()
+                    continue
+                g = max(-40.0, min(40.0, (race.elev.at(wps[j].course_dist) - race.elev.at(wps[j - 1].course_dist)) / max(1.0, length) * 100.0))
+                s = pr.scale.ratio
+                t_more += length * s / (pr.model.predict(g / s) * pr.est.fatigue)
+            extra.append(round(t_more))
         frames.append([round(p.t), round(cd), round(p.alt), k, round(dn), round(t_arr - p.t), round(s_arr - race.stops[i]),
                        int(recent_stop), round(final.scale.ratio, 3),
                        *(round(final.model.predict(g), 3) for g in (0.0, 20.0, -20.0)),
-                       round(final.est.fatigue, 3), round(race.stops[i]), *etas, legs])
+                       round(final.est.fatigue, 3), round(race.stops[i]), *etas, legs, extra])
 
     act_text = open(B.RACES[KEY][1]).read(20000)
     start = re.search(r"<time>([^<]+)</time>", act_text[act_text.find("<trkpt"):]).group(1)
@@ -119,7 +140,8 @@ def main() -> int:
         "// metres to it, actual s to it, of which stopped s, standing still now, distance ratio, learned speed (m/s)\n"
         "// on the flat, up 20% and down 20%, fatigue, stopped s so far,\n"
         "// then one predicted time (s) per entry of configs, then HowFar's (profile) time from the next\n"
-        "// waypoint to each later one]\n"
+        "// waypoint to each later one, then each prediction's time (s) from the next waypoint to the next\n"
+        "// main checkpoint, one per entry of configs]\n"
         "window.HOWFAR_DEMO = " + json.dumps(data, separators=(",", ":"), ensure_ascii=False) + ";\n")
     print(len(frames), "frames,", Path(args.out).stat().st_size, "bytes")
     return 0

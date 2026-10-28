@@ -95,7 +95,7 @@ They must agree: the watch reads the profile text the Python tools and the race 
 
 ## How the algorithm was chosen
 
-`tools/research/` replays recorded races against their course files and scores the prediction with each part switched on or off. Each race learns its "past races" from the others. The score is the average error of all predictions made while the course point was at most an hour away, with stops left out.
+`tools/research/` replays recorded races against their course files and scores the prediction with each part switched on or off. Each race learns its "past races" from the others. The score is the average error of all predictions made while the course point was at most an hour away, with stops left out. A stop, looking a minute either side: less than 30 m covered, or less than 90 m with the altitude within 1.5 m (standing at an aid station, GPS drift moves the distance on while the barometer stays put; `tools/replay.py`).
 
 ```bash
 .venv/bin/python tools/research/benchmark.py --out results.json            # exact times, for comparing methods
@@ -107,15 +107,15 @@ On six races: Tor des Géants 2023 on the official 2026 course (legs where the r
 
 | Configuration | Average error | Within 5 min | Within 15 min |
 |---|---|---|---|
-| Distance left at the average moving pace so far (the usual watch estimate) | 8.9 min | 41% | 79% |
-| Current race only | 7.1 min | 48% | 88% |
-| + trail ahead (course profile) | 4.8 min | 62% | 96% |
-| + race-day corrections: the field on a first race | 3.4 min | 77% | 97% |
-| + past runs remembered (the other five races) | 3.6 min | 75% | 97% |
+| Distance left at the average moving pace so far (the usual watch estimate) | 8.4 min | 45% | 81% |
+| Current race only | 6.2 min | 52% | 92% |
+| + trail ahead (course profile) | 4.1 min | 67% | 98% |
+| + race-day corrections: the field on a first race | 2.9 min | 81% | 99% |
+| + past runs remembered (the other five races) | 3.1 min | 79% | 99% |
 
-How good the times further ahead are (`tools/research/benchmark_ahead.py`, the six races, every moment, rounded as shown): the next checkpoint 7.8 min off on average (0.9 h out), the one after 19.8 min (2.1 h out), the one after that 30.5 min (3.2 h out); about 11–12% of the time to go each time, hence the coarser steps far out.
+How good the times further ahead are (`tools/research/benchmark_ahead.py`, the six races, every moment, rounded as shown): the next checkpoint 6.0 min off on average (0.8 h out), the one after 14.1 min (2.0 h out), the one after that 22.4 min (3.1 h out); about 10% of the time to go each time, hence the coarser steps far out.
 
-On the TORX100 the course profile adds little (3.0 min without it, 3.2 with it, but 4.2 → 3.6 min 2 km before a checkpoint): almost every checkpoint is a col or a hut, so each leg is a single climb or descent and the average grade already describes it.
+On the TORX100 the course profile adds little (3.0 min without it, 3.1 with it, but 4.3 → 3.7 min 2 km before a checkpoint): almost every checkpoint is a col or a hut, so each leg is a single climb or descent and the average grade already describes it.
 
 When the profile and the watch's course don't list the same checkpoints (`tools/research/benchmark_missing.py`, the four races and 129 activities with checkpoints every 5 km), placing points on the profile beats the old name-only matching, which fell back to "~" for any point the profile lacked:
 
@@ -136,6 +136,8 @@ Tested and dropped, because none did better: predicting from your speed over the
 One climbing rate for steep climbs (`tools/research/test_vam_hr.py`, the six races, the 129 activities of 25 km or more and the 28 of 50 km or more with checkpoints where the runner stopped, all with the course profile). Above a threshold G, bins either take a constant vertical speed only when they have too little data ("fill"), or share one vertical speed pooled over every steep bin ("pool"), or share it unless they have enough data of their own ("hybrid"). Filling alone changed nothing; pooling cut the error on steep stretches (half or more of the leg above 15%) by 10–13%. G = 12% did best: 15% close, 18% less, 22% and 8% lost most of the gain, 10% matched 12% on the activities but did worse on the Tor des Géants and TORX100. A bin keeping its own pace from 10 observations rather than 20–80 left no race worse (TORX100 3.20 min as before, instead of 3.25) and helped the long runs (19 better, 9 worse), for a slightly smaller gain on steep stretches of the shorter activities (3.58 → 3.23 min instead of 3.14). Without the course profile the same change made things worse (races 5.01 → 5.28 min): a leg's average grade mixes steep and gentle parts, so it is used only with the profile. With it, as the watch rounds them: races 3.66 → 3.42 min on a first race, 3.68 → 3.57 with past runs. The same idea on steep descents (one vertical speed below −12, −18 or −25%) was worse at −12% and within ±3% otherwise, so it was dropped.
 
 Heart rate was tested too (`tools/research/test_vam_hr.py`; four of the races have it, and 128 activities): the heart rate of the last 10 minutes against the race so far, and against today's usual for that slope. On the four races, a heart rate well under the usual for the slope went with legs about 40% longer than predicted (correlation −0.42), but the activities showed nothing (+0.07), and a correction fitted on the races made the activities much worse (3.6 → 5.0 min) while one fitted on the activities did nothing on the races. Not used.
+
+Stops that GPS drift hides (`tools/research/test_stops_alt.py`, the six races). At an aid station the watch's distance can creep on by 10–20 m every 30 s while you stand, so neither the field (less than 15 m in a minute) nor the old yardstick (less than 30 m in two minutes) saw a stop: the TORX S1 runner's 4–5 minutes at La Thuile counted as moving. Also calling it a stop when the altitude stays within 1–2 m and the distance moved less than 30–90 m a minute changed the field's average error by a few seconds at most (3.42 → 3.39 min with the profile, 5.01 → 5.03 without): standing still doesn't change the countdown, and a few metres of drift are a handful of observations among thousands. So the watch keeps its rule. As a yardstick it finds what was missed (TOR330 life bases 23 → 32 h of stops, Abbots Way 50 → 91 min), so `replay.py` uses it: every line scores better, the usual estimate too (8.9 → 8.4 min), HowFar with the profile 3.4 → 2.9 min. The other research paragraphs here were measured with the old yardstick; each compares methods under the same one, so their conclusions stand.
 
 ## Still to check on a real watch
 

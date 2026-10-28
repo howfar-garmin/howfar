@@ -260,7 +260,7 @@
         </div>
         <div class="chart-box" id="errBox"><svg id="err" class="wide" viewBox="0 0 1000 236" role="img" aria-label="How far off each prediction was during the race"></svg></div>
         <details class="more"><summary>How to read this chart</summary>
-        <p class="small muted">For each moment of the race: the time HowFar predicted (before rounding), minus the time it really took to reach the next checkpoint (stops not counted). Above zero, you arrived sooner than predicted; below zero, later. The green band is ±5 minutes. See how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead.</p>
+        <p class="small muted">At each point of the course: the time HowFar predicted (before rounding) to the next main checkpoint, the one the big number counts down to, minus the time it really took (stops not counted). Above zero, you arrived sooner than predicted; below zero, later. The green band is ±5 minutes, and the dot marks where you are, with the same number as “HowFar was off by”. See how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead.</p>
         </details>
       </div>
       <div class="demo-notes">
@@ -318,6 +318,7 @@
         <li><b>Race columns and Average:</b> how many minutes HowFar was off, on average, whenever the next checkpoint was less than an hour away.</li>
         <li><b>Less than 5 or 15 min off:</b> out of every 100 times HowFar showed a time, how many were less than 5 (or 15) minutes off.</li>
         <li><b>Off by, 2 km before:</b> how far off HowFar was 2 km before each checkpoint, when you often decide whether to eat or drink now.</li>
+        <li><b>Stops</b> are left out of the time it really took, as HowFar counts only time moving. A stop is less than 30 m covered in two minutes, or less than 90 m with the altitude unchanged: at an aid station the GPS position drifts while you stand still.</li>
         <li>STL25 had no checkpoints on its route, so it was split into two 13 km parts.</li>
         <li>Abbots Way: the race file has no checkpoints, so they were placed where the runner stopped (mostly aid stations), plus one every 20 km where stops were far apart.</li>
         <li>Tor des Géants: the 2023 race replayed on the official 2026 course. The few legs where the route has changed are left out.</li>
@@ -422,7 +423,7 @@
   </div>
 </footer>
 
-<script src="demo/torx-s1.js?v=23"></script>
-<script src="js/demo.js?v=47"></script>
+<script src="demo/torx-s1.js?v=25"></script>
+<script src="js/demo.js?v=50"></script>
 </body>
 </html>

@@ -42,9 +42,15 @@ class Waypoint:
     course_dist: float  # where it is on the course
 
 
+STOP_DIST = 30.0  # stopped: less than this between 60 s before and 60 s after
+SLOW_DIST = 90.0  # or less than this with the altitude within SLOW_ALT: standing at an aid station
+SLOW_ALT = 1.5  # while GPS drift moves the distance on (a slow steep climb keeps climbing)
+
+
 def stop_time_index(points: list[Point]) -> list[float]:
-    """Cumulative stopped time at each point. Offline rule (it can look ahead):
-    a second is a stop when less than 30 m is covered between 60 s before and 60 s after."""
+    """Cumulative stopped time at each point. Offline rule (it can look ahead): a second is a
+    stop when less than STOP_DIST is covered between 60 s before and 60 s after, or less than
+    SLOW_DIST with the altitude within SLOW_ALT over those two minutes."""
     out = [0.0]
     lo = hi = 0
     n = len(points)
@@ -54,7 +60,11 @@ def stop_time_index(points: list[Point]) -> list[float]:
             lo += 1
         while hi < n - 1 and points[hi].t < t + 60:
             hi += 1
-        stopped = points[hi].dist - points[lo].dist < 30
+        moved = points[hi].dist - points[lo].dist
+        stopped = moved < STOP_DIST
+        if not stopped and moved < SLOW_DIST:
+            alts = [p.alt for p in points[lo:hi + 1]]
+            stopped = None not in alts and max(alts) - min(alts) < SLOW_ALT
         dt = t - points[i - 1].t
         out.append(out[-1] + (dt if stopped and dt < 30 else 0.0))
     return out

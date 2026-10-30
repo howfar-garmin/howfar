@@ -19,7 +19,7 @@
   var _t = window._t || function (s, v) { return v ? s.replace(/\{(\w+)\}/g, function (m, k) { return k in v ? v[k] : m; }) : s; };
 
   // the watch shows HowFar with the course profile; the error chart shows every line
-  var state = { t: tStart + 2.17 * 3600, main: "profile", speed: 300, playing: false, last: 0 };
+  var state = { t: tStart + 2.17 * 3600, main: "profile", target: "main", speed: 300, playing: false, last: 0 };
   var $ = function (id) { return document.getElementById(id); };
   var SVGNS = "http://www.w3.org/2000/svg";
 
@@ -72,10 +72,13 @@
   }
   // the prediction before rounding (the chart), and as the watch shows it (watch and readout)
   function eta(f, id) { return f[ETA0 + idx[id]]; }
-  // the error, as the chart and the readout show it: to the next main checkpoint, the one the big
-  // number counts down to, stops not counted
+  // the error, stops not counted: to the next main checkpoint, the one the big number counts down
+  // to (the readout, and the chart by default), or to the next point, minor ones too (the chart's
+  // "every point" switch: the grey "in" times on the watch)
   var EXTRA = ETA0 + C.length + 1;
   function err(f, id) { return eta(f, id) + f[EXTRA][idx[id]] - moving(f); }
+  function errTo(f, id) { return state.target === "all" ? eta(f, id) - (f[ACT] - f[STOPA]) : err(f, id); }
+  function target(f) { return state.target === "all" ? f[K] : mainFrom(f[K]); }
   function moving(f) {
     var m = mainFrom(f[K]);
     return m === f[K] ? f[ACT] - f[STOPA] : (WP[m].arrive - f[T]) - (WP[m].stops - f[STOPS]);
@@ -201,9 +204,10 @@
       : _t("<b>{time}</b>, arrived at {clock}", { time: dur(took), clock: clock(f[T] + took) }));
     var x = err(f, state.main);
     var ok = Math.abs(x) <= 300;
-    $("rErr").innerHTML = _t("<b>{err}</b> (not counting stops)", { err: signedMin(x) }) + " " +
+    $("rErr").innerHTML = _t("To {name}: <b>{err}</b> (not counting stops)", { name: WP[pts.main].name, err: signedMin(x) }) + " " +
       (ok ? '<span class="chip good">✓ ' + _t("Within 5 min") + "</span>"
-          : '<span class="chip warn">! ' + (x < 0 ? _t("You got there later") : _t("You got there sooner")) + "</span>");
+          : '<span class="chip warn">! ' + (x < 0 ? _t("You got there later") : _t("You got there sooner")) + "</span>") +
+      (WP[f[K]].minor ? '<br><span class="small muted">' + _t("To {name}: {err}", { name: WP[f[K]].name, err: signedMin(eta(f, state.main) - (f[ACT] - f[STOPA])) }) + "</span>" : "");
 
     var sc = f[SCALE], fa = f[FAT];
     var pct = function (r) { return Math.round(Math.abs(r - 1) * 100) + "%"; };
@@ -291,9 +295,12 @@
       if (i < D.firstWaypoint) return;
       var x = ex(w.d), y = ey(w.alt);
       el("line", { x1: x, x2: x, y1: y - 4, y2: row ? 46 : 26, stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": "2 3" }, svg);
-      el("circle", { cx: x, cy: y, r: 4, fill: "var(--surface)", stroke: "var(--ink-2)", "stroke-width": 1.5 }, svg);
+      // main checkpoints filled and in bold, the minor points on the way hollow and grey
+      el("circle", w.minor ? { cx: x, cy: y, r: 3.5, fill: "var(--surface)", stroke: "var(--ink-3)", "stroke-width": 1.5 }
+                           : { cx: x, cy: y, r: 5, fill: "var(--ink)", stroke: "var(--surface)", "stroke-width": 1.5 }, svg);
       var anchor = x > E.W - 90 ? "end" : x < E.l + 60 ? "start" : "middle";
-      txt(svg, x, row ? 42 : 20, w.name.replace("BaseVita-", "Base vita "), { "text-anchor": anchor, fill: "var(--ink-2)" });
+      txt(svg, x, row ? 42 : 20, w.name.replace("BaseVita-", "Base vita "), w.minor
+        ? { "text-anchor": anchor, fill: "var(--ink-3)" } : { "text-anchor": anchor, fill: "var(--ink)", "font-weight": 600 });
       row = 1 - row;
     });
 
@@ -318,7 +325,7 @@
 
   // ---------- error chart
   // the same distance axis as the elevation chart, so the two line up point for point
-  var R = { W: 1000, H: 236, l: E.l, r: E.r, t: 14, b: 50, y0: -45, y1: 25 };
+  var R = { W: 1000, H: 340, l: E.l, r: E.r, t: 14, b: 50, y0: -30, y1: 30 };  // about 4.6 px a minute: 8 min off is clearly out of the 5 min band
   function rx(d) { return ex(d); }
   function frameAtDist(d) {
     for (var i = 0; i < F.length; i++) if (F[i][CD] >= d) return F[i];
@@ -328,12 +335,26 @@
   var errCursor, errDot, errVal;
 
   function seriesPoints(id) {
-    return F.map(function (f) { return rx(f[CD]).toFixed(1) + "," + ry(err(f, id) / 60).toFixed(1); }).join(" ");
+    return F.map(function (f) { return rx(f[CD]).toFixed(1) + "," + ry(errTo(f, id) / 60).toFixed(1); }).join(" ");
+  }
+  // the lines and the checkpoints they count down to, redrawn when the switch changes
+  var errSeries;
+  function drawSeries() {
+    while (errSeries.firstChild) errSeries.removeChild(errSeries.firstChild);
+    WP.forEach(function (w, i) {
+      if (i < D.firstWaypoint || w.arrive == null || (w.minor && state.target === "main")) return;
+      el("line", { x1: rx(w.d), x2: rx(w.d), y1: R.t, y2: R.H - R.b, stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": w.minor ? "1 4" : "2 4" }, errSeries);
+    });
+    STEPS.forEach(function (id) {
+      var attrs = { points: seriesPoints(id), fill: "none", stroke: COLORS[id], "stroke-width": id === "profile" ? 2 : 1.5, "stroke-linejoin": "round" };
+      if (DASHED[id]) attrs["stroke-dasharray"] = "6 4";
+      el("polyline", attrs, errSeries);
+    });
   }
   function drawError() {
     var svg = $("err");
     el("rect", { x: R.l, y: ry(5), width: R.W - R.l - R.r, height: ry(-5) - ry(5), fill: "var(--band)" }, svg);
-    [-40, -20, -5, 0, 5, 20].forEach(function (m) {
+    [-30, -15, -5, 0, 5, 15, 30].forEach(function (m) {
       el("line", { x1: R.l, x2: R.W - R.r, y1: ry(m), y2: ry(m), stroke: m === 0 ? "var(--ink-3)" : "var(--line-soft)", "stroke-width": 1 }, svg);
       txt(svg, R.l - 8, ry(m) + 4, (m > 0 ? "+" : m < 0 ? "−" : "") + Math.abs(m), { "text-anchor": "end" });
     });
@@ -344,30 +365,24 @@
       txt(svg, rx(k * 1000), R.H - 30, String(k), { "text-anchor": "middle" });
     }
     axisLabels(svg, R, _t("Distance (km)"), _t("Minutes off"));
-    WP.forEach(function (w, i) {
-      if (i < D.firstWaypoint || w.arrive == null || w.minor) return;
-      el("line", { x1: rx(w.d), x2: rx(w.d), y1: R.t, y2: R.H - R.b, stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": "2 4" }, svg);
-    });
-    STEPS.forEach(function (id) {
-      var attrs = { points: seriesPoints(id), fill: "none", stroke: COLORS[id], "stroke-width": id === "profile" ? 2 : 1.5, "stroke-linejoin": "round" };
-      if (DASHED[id]) attrs["stroke-dasharray"] = "6 4";
-      el("polyline", attrs, svg);
-    });
+    errSeries = el("g", {}, svg);
+    drawSeries();
     $("errLegend").innerHTML = STEPS.slice().reverse().map(function (id) {
       return "<span>" + swatch(id) + label(id) + "</span>";
     }).join("");
     errCursor = el("line", { y1: R.t, y2: R.H - R.b, stroke: "var(--ink)", "stroke-width": 1.25 }, svg);
-    // where the readout's "HowFar was off by" is on its line, with the same number
-    errDot = el("circle", { r: 5, fill: COLORS[state.main], stroke: "var(--surface)", "stroke-width": 2 }, svg);
+    // where you are on the main line, with its number: the readout's "HowFar was off by" (or, for
+    // every point, its "To ..." line when the next point is a minor one)
+    errDot = el("circle", { r: 4, fill: COLORS[state.main], stroke: "var(--surface)", "stroke-width": 2 }, svg);
     errVal = txt(svg, 0, 0, "", { "font-weight": 600, fill: "var(--ink)", stroke: "var(--surface)", "stroke-width": 4, "paint-order": "stroke" });
 
     var box = $("errBox");
     svg.addEventListener("mousemove", function (evt) {
       var p = svgPoint(svg, evt);
       var f = frameAtDist(((p.x - R.l) / (R.W - R.l - R.r)) * maxD);
-      tipShow(box, "<b>" + km(f[CD]) + "</b> · " + _t("<b>{time}</b> · to {name}", { time: hm(f[T]), name: WP[mainFrom(f[K])].name }) +
+      tipShow(box, "<b>" + km(f[CD]) + "</b> · " + _t("<b>{time}</b> · to {name}", { time: hm(f[T]), name: WP[target(f)].name }) +
         STEPS.slice().reverse().map(function (id) {
-          return "<br>" + swatch(id) + label(id) + " " + signedMin(err(f, id));
+          return "<br>" + swatch(id) + label(id) + " " + signedMin(errTo(f, id));
         }).join(""), p.px, p.py);
     });
     svg.addEventListener("mouseleave", function () { tipHide(box); });
@@ -387,7 +402,7 @@
     elevAhead.setAttribute("x", x); elevAhead.setAttribute("width", Math.max(0, xn - x));
     var xt = rx(f[CD]);
     errCursor.setAttribute("x1", xt); errCursor.setAttribute("x2", xt);
-    var m = err(f, state.main) / 60, yd = ry(m);
+    var m = errTo(f, state.main) / 60, yd = ry(m);
     errDot.setAttribute("cx", xt); errDot.setAttribute("cy", yd);
     var right = xt < R.W - R.r - 90;
     errVal.textContent = signedMin(m * 60);
@@ -483,6 +498,14 @@
     b.addEventListener("click", function () {
       state.speed = +b.getAttribute("data-speed");
       document.querySelectorAll("[data-speed]").forEach(function (o) { o.setAttribute("aria-pressed", o === b); });
+    });
+  });
+  document.querySelectorAll("[data-target]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.target = b.getAttribute("data-target");
+      document.querySelectorAll("[data-target]").forEach(function (o) { o.setAttribute("aria-pressed", o === b); });
+      drawSeries();
+      render();
     });
   });
   $("scrub").addEventListener("input", function () {

@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&amp;family=Public+Sans:wght@400;500;600&amp;family=Saira+Semi+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="css/site.css?v=60" rel="stylesheet"/>
+<link href="css/site.css?v=61" rel="stylesheet"/>
 <link href="https://howfar-garmin.github.io/howfar/" hreflang="en" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/it/" hreflang="it" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/fr/" hreflang="fr" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/de/" hreflang="de" rel="alternate"/><link href="https://howfar-garmin.github.io/howfar/" hreflang="x-default" rel="alternate"/><script>window.HOWFAR_LANG="en";window.HOWFAR_T={};
 window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\}/g,function(m,k){return k in v?v[k]:m}):x};
 (function(){try{var k="howfar.lang";document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-lang]");if(a)localStorage.setItem(k,a.getAttribute("data-lang"))});if(!localStorage.getItem(k)){var l=((navigator.languages&&navigator.languages[0])||navigator.language||"").slice(0,2).toLowerCase();if(["it", "fr", "de"].indexOf(l)>=0){localStorage.setItem(k,l);location.replace(l+"/"+location.pathname.split("/").pop()+location.hash)}}}catch(e){}})();</script></head>
@@ -234,18 +234,23 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="chart-block">
 <div class="chart-head">
 <h3>Where you are on the course</h3>
-<span class="small muted">Green: the trail to the next checkpoint. Click to jump there.</span>
+<div class="legend"><span><i class="pt main"></i>Main checkpoint</span><span><i class="pt minor"></i>Minor point</span></div>
+<span class="small muted">Green: the trail to the next main checkpoint. Click to jump there.</span>
 </div>
 <div class="chart-box" id="elevBox"><svg aria-label="Elevation profile of the course with checkpoints and current position" class="wide" id="elev" role="img" viewbox="0 0 1000 318"></svg></div>
 </div>
 <div class="chart-block">
 <div class="chart-head">
 <h3>How far off HowFar was</h3>
+<div aria-label="Count down to" class="seg" role="group">
+<button aria-pressed="true" data-target="main" type="button">Main checkpoints</button>
+<button aria-pressed="false" data-target="all" type="button">Every point</button>
+</div>
 <div class="legend" id="errLegend"></div>
 </div>
-<div class="chart-box" id="errBox"><svg aria-label="How far off each prediction was during the race" class="wide" id="err" role="img" viewbox="0 0 1000 236"></svg></div>
+<div class="chart-box" id="errBox"><svg aria-label="How far off each prediction was during the race" class="wide" id="err" role="img" viewbox="0 0 1000 340"></svg></div>
 <details class="more"><summary>How to read this chart</summary>
-<p class="small muted">At each point of the course: the time HowFar predicted (before rounding) to the next main checkpoint, the one the big number counts down to, minus the time it really took (stops not counted). Above zero, you arrived sooner than predicted; below zero, later. The green band is ±5 minutes, and the dot marks where you are, with the same number as “HowFar was off by”. See how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead.</p>
+<p class="small muted">At each point of the course: the time HowFar predicted (before rounding) to the next main checkpoint, the one the big number counts down to, minus the time it really took (stops not counted). Above zero, you arrived sooner than predicted; below zero, later. The green band is ±5 minutes, and the dot marks where you are, with the same number as “HowFar was off by”. See how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead. With <i>Every point</i>, each line counts down to the next point, minor ones too (the grey times the watch shows for them), and the dot matches the “To …” line under “HowFar was off by”.</p>
 </details>
 </div>
 <div class="demo-notes">
@@ -402,6 +407,6 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 </div>
 </footer>
 <script src="demo/torx-s1.js?v=25"></script>
-<script src="js/demo.js?v=50"></script>
+<script src="js/demo.js?v=55"></script>
 </body>
 </html>

@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Public+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/site.css?v=60">
+<link rel="stylesheet" href="css/site.css?v=61">
 </head>
 <body>
 
@@ -249,18 +249,23 @@
       <div class="chart-block">
         <div class="chart-head">
           <h3>Where you are on the course</h3>
-          <span class="small muted">Green: the trail to the next checkpoint. Click to jump there.</span>
+          <div class="legend"><span><i class="pt main"></i>Main checkpoint</span><span><i class="pt minor"></i>Minor point</span></div>
+          <span class="small muted">Green: the trail to the next main checkpoint. Click to jump there.</span>
         </div>
         <div class="chart-box" id="elevBox"><svg id="elev" class="wide" viewBox="0 0 1000 318" role="img" aria-label="Elevation profile of the course with checkpoints and current position"></svg></div>
       </div>
       <div class="chart-block">
         <div class="chart-head">
           <h3>How far off HowFar was</h3>
+          <div class="seg" role="group" aria-label="Count down to">
+            <button type="button" data-target="main" aria-pressed="true">Main checkpoints</button>
+            <button type="button" data-target="all" aria-pressed="false">Every point</button>
+          </div>
           <div class="legend" id="errLegend"></div>
         </div>
-        <div class="chart-box" id="errBox"><svg id="err" class="wide" viewBox="0 0 1000 236" role="img" aria-label="How far off each prediction was during the race"></svg></div>
+        <div class="chart-box" id="errBox"><svg id="err" class="wide" viewBox="0 0 1000 340" role="img" aria-label="How far off each prediction was during the race"></svg></div>
         <details class="more"><summary>How to read this chart</summary>
-        <p class="small muted">At each point of the course: the time HowFar predicted (before rounding) to the next main checkpoint, the one the big number counts down to, minus the time it really took (stops not counted). Above zero, you arrived sooner than predicted; below zero, later. The green band is ±5 minutes, and the dot marks where you are, with the same number as “HowFar was off by”. See how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead.</p>
+        <p class="small muted">At each point of the course: the time HowFar predicted (before rounding) to the next main checkpoint, the one the big number counts down to, minus the time it really took (stops not counted). Above zero, you arrived sooner than predicted; below zero, later. The green band is ±5 minutes, and the dot marks where you are, with the same number as “HowFar was off by”. See how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead. With <i>Every point</i>, each line counts down to the next point, minor ones too (the grey times the watch shows for them), and the dot matches the “To …” line under “HowFar was off by”.</p>
         </details>
       </div>
       <div class="demo-notes">
@@ -424,6 +429,6 @@
 </footer>
 
 <script src="demo/torx-s1.js?v=25"></script>
-<script src="js/demo.js?v=50"></script>
+<script src="js/demo.js?v=55"></script>
 </body>
 </html>

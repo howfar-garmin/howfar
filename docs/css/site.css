@@ -277,6 +277,9 @@ section + section { border-top: 1px solid var(--line-soft); }
 .chart-box svg.wide { min-width: 560px; } /* full-width charts scroll sideways on phones instead of shrinking their labels */
 .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; font-size: var(--step--1); color: var(--ink-2); }
 .legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.legend i.pt { width: 9px; height: 9px; border-radius: 50%; box-sizing: border-box; } /* the profile's points */
+.legend i.pt.main { background: var(--ink); }
+.legend i.pt.minor { width: 8px; height: 8px; background: var(--surface); border: 1.5px solid var(--ink-3); }
 .tip {
   position: absolute; pointer-events: none; z-index: 2;
   background: var(--surface); color: var(--ink); border: 1px solid var(--line);

@@ -99,7 +99,7 @@ First version: next checkpoint, time to it and arrival time; learns your pace by
 
 ## Links
 
-- Store: https://apps.garmin.com/apps/e34840a9-6cd4-4ea6-96b0-051edeb0db73 (0.6.0 approved 27 October 2026)
+- Store: https://apps.garmin.com/apps/e34840a9-6cd4-4ea6-96b0-051edeb0db73 (0.6.1 approved 30 October 2026)
 - Website: https://howfar-garmin.github.io/howfar/
 - Source: https://github.com/howfar-garmin/howfar
 - Feedback: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml

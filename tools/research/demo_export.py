@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Writes docs/demo/torx-s1.js: section 1 replayed against the T1 course, with HowFar's prediction
-with and without the course profile at every moment, and the usual watch estimate (the distance
-left at the average pace so far) to compare, plus the benchmark scores for the site's table.
+with and without the course profile at every moment (and with the profile after five past races),
+and the usual watch estimate (the distance left at the average pace so far) to compare, plus the
+benchmark scores for the site's table.
 
     python tools/research/benchmark.py --shown --out results.json
     python tools/research/demo_export.py --results results.json
@@ -30,11 +31,13 @@ KEY = "S1"
 MINOR = {"Col d'Arp", "Col Passo Alto", "Col de la Crosatie", "Lac Du Fond"}
 
 # id, short label (chart, table), label next to the choice, benchmark options (trail ahead
-# decides P/~ on the watch). HowFar's first race: nothing remembered from earlier runs.
+# decides P/~ on the watch). HowFar's first race: nothing remembered from earlier runs, except
+# "past", which remembers the benchmark's other five races (as benchmark.py's past layer).
 CONFIGS = [
     ("average", "Average pace so far", "", B.AVERAGE),
     ("none", "HowFar, no course profile", "Nothing", dict(past=False, ahead=False, raceday=True)),
     ("profile", "HowFar with the course profile", "The course profile", dict(past=False, ahead=True, raceday=True)),
+    ("past", "HowFar with the profile and past races", "The course profile and five past races", dict(past=True, ahead=True, raceday=True)),
 ]
 
 
@@ -46,7 +49,8 @@ def main() -> int:
 
     race = B.race(KEY)
     preds = [(cid, o["ahead"], B.make(o, KEY)) for cid, _, _, o in CONFIGS]
-    final = preds[-1][2]  # HowFar with the course profile: what the watch has learned
+    final = next(pr for cid, _, pr in preds if cid == "profile")  # the watch: first race, with the profile
+    learned = next(pr for cid, _, pr in preds if cid == "past")  # the watch after five past races
 
     wps = race.waypoints
     first = S.first_scored(wps)
@@ -79,20 +83,24 @@ def main() -> int:
         recent_stop = race.stops[i] - (race.stops[i - 60] if i >= 60 else 0) > 30
         # HowFar with the profile, from the next checkpoint on to each later one (unsmoothed, as
         # the field adds them to its countdown)
-        s = final.scale.ratio
-        legs, t_leg = [], 0.0
-        for j in range(k + 1, len(wps)):
-            t_leg += sum(length * s / (final.model.predict(g / s) * final.est.fatigue)
-                         for length, g in S.chunks_ahead(race.elev, wps[j - 1].course_dist, wps[j].course_dist))
-            legs.append(round(t_leg))
+        def legs_of(pr):
+            s = pr.scale.ratio
+            out, t_leg = [], 0.0
+            for j in range(k + 1, len(wps)):
+                t_leg += sum(length * s / (pr.model.predict(g / s) * pr.est.fatigue)
+                             for length, g in S.chunks_ahead(race.elev, wps[j - 1].course_dist, wps[j].course_dist))
+                out.append(round(t_leg))
+            return out
+        legs = legs_of(final)
         # each prediction's time from the next waypoint on to the next main checkpoint, so the
         # error chart measures what the big number counts down to: HowFar with the profile as its
-        # legs above, without it at each leg's average grade, the average pace at that pace
+        # legs above (with past races, the same over its own learned model), without it at each
+        # leg's average grade, the average pace at that pace
         m = k
         while m < len(wps) - 1 and wps[m].name in MINOR:
             m += 1
         extra = []
-        for cid, _, pr in preds:
+        for cid, use_ahead, pr in preds:
             if cid == "profile":
                 extra.append(legs[m - k - 1] if m > k else 0)
                 continue
@@ -102,6 +110,11 @@ def main() -> int:
                 if cid == "average":
                     t_more += length / pr.speed()
                     continue
+                if use_ahead:
+                    s = pr.scale.ratio
+                    t_more += sum(c * s / (pr.model.predict(g / s) * pr.est.fatigue)
+                                  for c, g in S.chunks_ahead(race.elev, wps[j - 1].course_dist, wps[j].course_dist))
+                    continue
                 g = max(-40.0, min(40.0, (race.elev.at(wps[j].course_dist) - race.elev.at(wps[j - 1].course_dist)) / max(1.0, length) * 100.0))
                 s = pr.scale.ratio
                 t_more += length * s / (pr.model.predict(g / s) * pr.est.fatigue)
@@ -109,7 +122,10 @@ def main() -> int:
         frames.append([round(p.t), round(cd), round(p.alt), k, round(dn), round(t_arr - p.t), round(s_arr - race.stops[i]),
                        int(recent_stop), round(final.scale.ratio, 3),
                        *(round(final.model.predict(g), 3) for g in (0.0, 20.0, -20.0)),
-                       round(final.est.fatigue, 3), round(race.stops[i]), *etas, legs, extra])
+                       round(final.est.fatigue, 3), round(race.stops[i]), *etas, legs, extra,
+                       # the watch after five past races: its legs, distance ratio, speeds, fatigue
+                       [legs_of(learned), round(learned.scale.ratio, 3),
+                        *(round(learned.model.predict(g), 3) for g in (0.0, 20.0, -20.0)), round(learned.est.fatigue, 3)]])
 
     act_text = open(B.RACES[KEY][1]).read(20000)
     start = re.search(r"<time>([^<]+)</time>", act_text[act_text.find("<trkpt"):]).group(1)
@@ -141,7 +157,8 @@ def main() -> int:
         "// on the flat, up 20% and down 20%, fatigue, stopped s so far,\n"
         "// then one predicted time (s) per entry of configs, then HowFar's (profile) time from the next\n"
         "// waypoint to each later one, then each prediction's time (s) from the next waypoint to the next\n"
-        "// main checkpoint, one per entry of configs]\n"
+        "// main checkpoint, one per entry of configs, then the same watch after five past races: [its times\n"
+        "// from the next waypoint to each later one, distance ratio, speeds on the flat, up and down, fatigue]]\n"
         "window.HOWFAR_DEMO = " + json.dumps(data, separators=(",", ":"), ensure_ascii=False) + ";\n")
     print(len(frames), "frames,", Path(args.out).stat().st_size, "bytes")
     return 0

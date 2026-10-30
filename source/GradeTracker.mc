@@ -22,6 +22,10 @@ class GradeTracker {
     const STILL_TIME = 10.0;
     const MIN_SPEED = 0.2;
     const MAX_SPEED = 10.0;
+    // standing at an aid station, GPS drift can move the distance on faster than STOP_DIST a
+    // minute: slower than DRIFT_SPEED with the altitude within DRIFT_ALT is no pace to learn
+    const DRIFT_SPEED = 1.0;
+    const DRIFT_ALT = 1.0;
 
     var movingTime as Float = 0.0;
     var observations as Number = 0;
@@ -154,6 +158,9 @@ class GradeTracker {
                 }
                 var v = dd / dt;
                 if (v < MIN_SPEED || v > MAX_SPEED) {
+                    return false;
+                }
+                if (v < DRIFT_SPEED && (alt - _a[idx]).abs() < DRIFT_ALT) {
                     return false;
                 }
                 lastGrade = WpUtil.clamp((alt - _a[idx]) / dd * 100.0, Wp.MIN_GRADE, Wp.MAX_GRADE);

@@ -187,6 +187,23 @@ function testTrackerStop(logger as Test.Logger) as Boolean {
 }
 
 (:test)
+function testTrackerDriftNotLearned(logger as Test.Logger) as Boolean {
+    // GPS drift while standing: 0.4 m/s with the altitude still is no observation, but 0.4 m/s
+    // up 30% is one
+    var t = new GradeTracker();
+    for (var i = 0; i < 600; i++) {
+        t.update(i.toFloat(), i * 0.4, 300.0);
+    }
+    Test.assert(t.observations == 0);
+    t = new GradeTracker();
+    for (var i = 0; i < 600; i++) {
+        t.update(i.toFloat(), i * 0.4, 300.0 + i * 0.12);
+    }
+    Test.assert(t.observations > 0);
+    return true;
+}
+
+(:test)
 function testTrackerShortStop(logger as Test.Logger) as Boolean {
     // 2.5 m/s, a 20 s stop to read the watch at 600 m, then on: no slow observation after it
     var t = new GradeTracker();

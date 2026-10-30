@@ -15,6 +15,7 @@
   --line-average: #d6453d;    /* demo error chart: average pace so far */
   --line-none: #cc9e1a;       /* HowFar without the course profile (also dashed) */
   --line-profile: #127a45;    /* HowFar with the course profile */
+  --line-past: #2a78d6;       /* HowFar with the profile, after past races */
   --series-a: #eb6834;        /* "~": average grade */
   --series-s1: #1baf7a;       /* section 1 */
   --series-s2: #6250d6;       /* section 2 */
@@ -59,6 +60,7 @@
     --line-average: #cc3f3a;
     --line-none: #b98c18;
     --line-profile: #20925a;
+    --line-past: #3987e5;
     --series-a: #d95926;
     --series-s1: #199e70;
     --series-s2: #9085e9;
@@ -86,6 +88,7 @@
   --line-average: #cc3f3a;
   --line-none: #b98c18;
   --line-profile: #20925a;
+  --line-past: #3987e5;
   --series-a: #d95926;
   --series-s1: #199e70;
   --series-s2: #9085e9;

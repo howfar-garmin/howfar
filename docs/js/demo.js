@@ -88,12 +88,17 @@
   var LABELS = {
     average: _t("Average pace so far"),
     none: _t("HowFar, no course profile"),
-    profile: _t("HowFar with the course profile")
+    profile: _t("HowFar with the course profile"),
+    past: _t("HowFar with the profile and past races")
   };
   function label(id) { return LABELS[id] || cfg(id).label; }
   // the error chart's lines, back to front, and their colours
-  var STEPS = ["average", "none", "profile"];
-  var COLORS = { average: "var(--line-average)", none: "var(--line-none)", profile: "var(--line-profile)" };
+  var STEPS = ["average", "none", "past", "profile"];
+  // HowFar with the profile is drawn once: as a first race or after past races, as the switch says
+  function shownSteps() { return STEPS.filter(function (id) { return id !== (state.main === "past" ? "profile" : "past"); }); }
+  var COLORS = { average: "var(--line-average)", none: "var(--line-none)", profile: "var(--line-profile)", past: "var(--line-past)" };
+  // the results table's rows, top to bottom
+  var ROWS = ["average", "none", "profile", "past"];
   var DASHED = { none: true };  // yellow and green are close for some colour-blind readers
   function swatch(id) {
     return '<i style="background:' + (DASHED[id] ? "repeating-linear-gradient(90deg, " + COLORS[id] + " 0 5px, transparent 5px 8px)" : COLORS[id]) + '"></i>';
@@ -111,10 +116,15 @@
   // ---------- main and minor points: the big number counts down to the next main checkpoint;
   // the watch, a field of its own, also lists the minor ones on the way and the main ones after
   var LEGS = ETA0 + C.length;
+  // the same watch after five past races: [its LEGS, distance ratio, speeds flat/up/down, fatigue]
+  var PAST = ETA0 + C.length + 2;
+  function legs(f) { return state.main === "past" ? f[PAST][0] : f[LEGS]; }
+  // what the watch has learned so far: distance ratio, speeds on the flat, up and down 20%, fatigue
+  function learned(f) { return state.main === "past" ? f[PAST].slice(1) : [f[SCALE], f[FLAT], f[UP], f[DOWN], f[FAT]]; }
   // HowFar's time from now to checkpoint j (the next one, k, or a later one), unrounded
   function timeTo(f, j) {
-    var e = eta(f, "profile");
-    return j === f[K] ? e : e + f[LEGS][j - f[K] - 1];
+    var e = eta(f, state.main);
+    return j === f[K] ? e : e + legs(f)[j - f[K] - 1];
   }
   function mainFrom(j) { while (j < WP.length - 1 && WP[j].minor) j++; return j; }
   function points(f) {
@@ -209,7 +219,7 @@
           : '<span class="chip warn">! ' + (x < 0 ? _t("You got there later") : _t("You got there sooner")) + "</span>") +
       (WP[f[K]].minor ? '<br><span class="small muted">' + _t("To {name}: {err}", { name: WP[f[K]].name, err: signedMin(eta(f, state.main) - (f[ACT] - f[STOPA])) }) + "</span>" : "");
 
-    var sc = f[SCALE], fa = f[FAT];
+    var lr = learned(f), sc = lr[0], fa = lr[4];
     var pct = function (r) { return Math.round(Math.abs(r - 1) * 100) + "%"; };
     $("lScale").innerHTML = sc >= 1
       ? _t("<b>Distance:</b> your watch measures <b>{pct} more</b> than the course map (switchbacks, GPS wobble), so it adjusts the distance left.", { pct: pct(sc) })
@@ -217,7 +227,7 @@
     var perKm = function (v) { var p = Math.round(1000 / v); return Math.floor(p / 60) + ":" + pad(p % 60); };
     // up a 20% slope: metres climbed an hour, the rate HowFar learns for every steep climb
     $("lForm").innerHTML = _t("{flat}/km on the flat, {vam} m of climbing an hour up a 20% slope, {down}/km down one.",
-      { flat: perKm(f[FLAT]), vam: num(Math.round(f[UP] * 0.2 * 360) * 10), down: perKm(f[DOWN]) });
+      { flat: perKm(lr[1]), vam: num(Math.round(lr[2] * 0.2 * 360) * 10), down: perKm(lr[3]) });
     $("lFatigue").innerHTML = Math.abs(fa - 1) < 0.01 ? _t("On the pace it expected.")
       : fa > 1 ? _t("<b>{pct} faster</b> than it expected.", { pct: pct(fa) })
       : _t("<b>{pct} slower</b> than it expected.", { pct: pct(fa) });
@@ -345,11 +355,16 @@
       if (i < D.firstWaypoint || w.arrive == null || (w.minor && state.target === "main")) return;
       el("line", { x1: rx(w.d), x2: rx(w.d), y1: R.t, y2: R.H - R.b, stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": w.minor ? "1 4" : "2 4" }, errSeries);
     });
-    STEPS.forEach(function (id) {
-      var attrs = { points: seriesPoints(id), fill: "none", stroke: COLORS[id], "stroke-width": id === "profile" ? 2 : 1.5, "stroke-linejoin": "round" };
+    shownSteps().forEach(function (id) {
+      var attrs = { points: seriesPoints(id), fill: "none", stroke: COLORS[id], "stroke-width": id === state.main ? 2 : 1.5, "stroke-linejoin": "round" };
       if (DASHED[id]) attrs["stroke-dasharray"] = "6 4";
       el("polyline", attrs, errSeries);
     });
+  }
+  function drawLegend() {
+    $("errLegend").innerHTML = shownSteps().reverse().map(function (id) {
+      return "<span>" + swatch(id) + label(id) + "</span>";
+    }).join("");
   }
   function drawError() {
     var svg = $("err");
@@ -367,9 +382,7 @@
     axisLabels(svg, R, _t("Distance (km)"), _t("Minutes off"));
     errSeries = el("g", {}, svg);
     drawSeries();
-    $("errLegend").innerHTML = STEPS.slice().reverse().map(function (id) {
-      return "<span>" + swatch(id) + label(id) + "</span>";
-    }).join("");
+    drawLegend();
     errCursor = el("line", { y1: R.t, y2: R.H - R.b, stroke: "var(--ink)", "stroke-width": 1.25 }, svg);
     // where you are on the main line, with its number: the readout's "HowFar was off by" (or, for
     // every point, its "To ..." line when the next point is a minor one)
@@ -381,7 +394,7 @@
       var p = svgPoint(svg, evt);
       var f = frameAtDist(((p.x - R.l) / (R.W - R.l - R.r)) * maxD);
       tipShow(box, "<b>" + km(f[CD]) + "</b> · " + _t("<b>{time}</b> · to {name}", { time: hm(f[T]), name: WP[target(f)].name }) +
-        STEPS.slice().reverse().map(function (id) {
+        shownSteps().reverse().map(function (id) {
           return "<br>" + swatch(id) + label(id) + " " + signedMin(errTo(f, id));
         }).join(""), p.px, p.py);
     });
@@ -430,7 +443,7 @@
       '<th scope="col" class="num" title="' + _t("Out of every 100 times HowFar showed a time, how many were less than 15 minutes off") + '">' + _t("Less than 15 min off") + "</th>" +
       '<th scope="col" class="num" title="' + _t("How far off HowFar was 2 km before each checkpoint") + '">' + _t("Off by, 2 km before") + "</th>";
     var body = table.querySelector("tbody");
-    STEPS.forEach(function (id) {
+    ROWS.forEach(function (id) {
       var v = mean(id, "mae_hour");
       var row = document.createElement("tr");
       if (id === "profile") row.className = "current";
@@ -498,6 +511,16 @@
     b.addEventListener("click", function () {
       state.speed = +b.getAttribute("data-speed");
       document.querySelectorAll("[data-speed]").forEach(function (o) { o.setAttribute("aria-pressed", o === b); });
+    });
+  });
+  document.querySelectorAll("[data-main]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.main = b.getAttribute("data-main");
+      document.querySelectorAll("[data-main]").forEach(function (o) { o.setAttribute("aria-pressed", o === b); });
+      errDot.setAttribute("fill", COLORS[state.main]);
+      drawSeries();
+      drawLegend();
+      render();
     });
   });
   document.querySelectorAll("[data-target]").forEach(function (b) {

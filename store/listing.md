@@ -69,6 +69,10 @@ Free and open source. Not affiliated with Garmin.
 
 #ultratrail #trailrunning #ultrarunning #ultramarathon #skyrunning #mountainrunning #trail #ultra
 
+## What's new (0.6.1)
+
+Aid stations leave no trace. While you stand still, GPS drift can move the watch's distance on a little, and HowFar used to learn those minutes as very slow walking, so after a stop the next checkpoint came out too far away. Now it ignores them. On six test races, on a first race with the course profile, the time 2 km before a checkpoint is a little closer (2.9 → 2.8 minutes off on average), and after the stop at La Thuile on the TORX the next leg is twice as close.
+
 ## What's new (0.6.0)
 
 Better on steep climbs. With the course profile, every slope steeper than 12% now shares one climbing rate in metres per hour (D+/h), learned from all your steep stretches, so one long climb teaches HowFar every steep slope. Its times on steep climbs are about 10% closer; on six test races, on a first race with the course profile, it was 3.4 minutes off on average instead of 3.7. Without the course profile, and in the lite version, nothing changes.

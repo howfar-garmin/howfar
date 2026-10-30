@@ -267,6 +267,10 @@ class GradeTracker:
     FORGET_STOPS = True  # take the start of a stop back off the moving time (research baselines turn it off)
     MIN_SPEED = 0.2
     MAX_SPEED = 10.0
+    # standing at an aid station, GPS drift can move the distance on faster than STOP_DIST a
+    # minute: slower than DRIFT_SPEED with the altitude within DRIFT_ALT is no pace to learn
+    DRIFT_SPEED = 1.0
+    DRIFT_ALT = 1.0
 
     def __init__(self) -> None:
         self.reset()
@@ -352,6 +356,8 @@ class GradeTracker:
                     return False
                 v = dd / dt
                 if v < self.MIN_SPEED or v > self.MAX_SPEED:
+                    return False
+                if v < self.DRIFT_SPEED and abs(alt - self._a[idx]) < self.DRIFT_ALT:
                     return False
                 self.last_grade = clamp((alt - self._a[idx]) / dd * 100.0, MIN_GRADE, MAX_GRADE)
                 self.last_speed = v

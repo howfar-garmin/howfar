@@ -111,9 +111,9 @@ On six races: Tor des Géants 2023 on the official 2026 course (legs where the r
 | Current race only | 6.2 min | 52% | 92% |
 | + trail ahead (course profile) | 4.1 min | 67% | 98% |
 | + race-day corrections: the field on a first race | 2.9 min | 81% | 99% |
-| + past runs remembered (the other five races) | 3.1 min | 79% | 99% |
+| + past runs remembered (the other five races) | 3.0 min | 79% | 99% |
 
-How good the times further ahead are (`tools/research/benchmark_ahead.py`, the six races, every moment, rounded as shown): the next checkpoint 6.0 min off on average (0.8 h out), the one after 14.1 min (2.0 h out), the one after that 22.4 min (3.1 h out); about 10% of the time to go each time, hence the coarser steps far out.
+How good the times further ahead are (`tools/research/benchmark_ahead.py`, the six races, every moment, rounded as shown): the next checkpoint 5.8 min off on average (0.8 h out), the one after 13.7 min (2.0 h out), the one after that 22.1 min (3.1 h out); about 10% of the time to go each time, hence the coarser steps far out.
 
 On the TORX100 the course profile adds little (3.0 min without it, 3.1 with it, but 4.3 → 3.7 min 2 km before a checkpoint): almost every checkpoint is a col or a hut, so each leg is a single climb or descent and the average grade already describes it.
 
@@ -138,6 +138,8 @@ One climbing rate for steep climbs (`tools/research/test_vam_hr.py`, the six rac
 Heart rate was tested too (`tools/research/test_vam_hr.py`; four of the races have it, and 128 activities): the heart rate of the last 10 minutes against the race so far, and against today's usual for that slope. On the four races, a heart rate well under the usual for the slope went with legs about 40% longer than predicted (correlation −0.42), but the activities showed nothing (+0.07), and a correction fitted on the races made the activities much worse (3.6 → 5.0 min) while one fitted on the activities did nothing on the races. Not used.
 
 Stops that GPS drift hides (`tools/research/test_stops_alt.py`, the six races). At an aid station the watch's distance can creep on by 10–20 m every 30 s while you stand, so neither the field (less than 15 m in a minute) nor the old yardstick (less than 30 m in two minutes) saw a stop: the TORX S1 runner's 4–5 minutes at La Thuile counted as moving. Also calling it a stop when the altitude stays within 1–2 m and the distance moved less than 30–90 m a minute changed the field's average error by a few seconds at most (3.42 → 3.39 min with the profile, 5.01 → 5.03 without): standing still doesn't change the countdown, and a few metres of drift are a handful of observations among thousands. So the watch keeps its rule. As a yardstick it finds what was missed (TOR330 life bases 23 → 32 h of stops, Abbots Way 50 → 91 min), so `replay.py` uses it: every line scores better, the usual estimate too (8.9 → 8.4 min), HowFar with the profile 3.4 → 2.9 min. The other research paragraphs here were measured with the old yardstick; each compares methods under the same one, so their conclusions stand.
+
+What the field learns from that drift (`tools/research/test_drift.py`, the six races). The countdown stays right through a stop, but the minutes of drift are observations of very slow walking on the flat: at La Thuile the field's flat pace fell from 1.72 to 1.23 m/s, and the next checkpoint, 2.5 h away, came out 17 min long. Since 0.6.1 an observation slower than 1 m/s with the altitude within 1 m over its 60 m is not learned (the time still counts as moving). 0.4–1.2 m/s and 1–2.5 m were tried: below about 0.9 m/s it misses most of the drift, which mixes with the walk in and out of the aid station; above 1.1 m/s or with a wider altitude band it starts to drop real slow walking. With the profile, on a first race: the first 2 km after La Thuile 11.7 → 6.3 min off, every prediction whatever the time left 6.80 → 6.72 min, 2 km before a checkpoint 2.88 → 2.81, the hour before 2.92 → 2.90 (Tor des Géants 2.80 → 2.63, no race worse by more than 0.02 min). Without the profile 4.24 → 4.24 (no race worse by more than 0.05), with past runs 3.05 → 3.03.
 
 ## Still to check on a real watch
 

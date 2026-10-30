@@ -504,6 +504,21 @@ def test_tracker_excludes_stops():
     assert t.moving_time == pytest.approx(300, abs=2)
 
 
+def test_tracker_drift_is_not_learned():
+    # GPS drift while standing: 0.4 m/s with the altitude still is no observation, but 0.4 m/s
+    # up 30% is one
+    from wpeta.model import GradeTracker
+
+    t = GradeTracker()
+    for i in range(600):
+        t.update(float(i), i * 0.4, 300.0)
+    assert t.observations == 0
+    t = GradeTracker()
+    for i in range(600):
+        t.update(float(i), i * 0.4, 300.0 + i * 0.12)
+    assert t.observations > 0
+
+
 def test_tracker_short_stop_leaves_no_trace():
     # 2.5 m/s, a 20 s stop to read the watch at 600 m, then on: no slow observation after it
     from wpeta.model import GradeTracker

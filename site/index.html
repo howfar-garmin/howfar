@@ -204,7 +204,7 @@
       </ol>
       </details>
 
-      <p class="muted demo-caption">This is your first race with HowFar (or, with the switch on the “how far off” chart, after five past races), with the course profile in its settings, so it knows every climb and descent to the checkpoint (P). It learns your pace on each slope as you run. Col d'Arp, Col Passo Alto, Col de la Crosatie and Lac du Fond are minor points, shown on the way.</p>
+      <p class="muted demo-caption">This is your first race with HowFar (or, with the switch on the “how far off” chart, after one past race, TORX100 2025), with the course profile in its settings, so it knows every climb and descent to the checkpoint (P). It learns your pace on each slope as you run. Col d'Arp, Col Passo Alto, Col de la Crosatie and Lac du Fond are minor points, shown on the way.</p>
 
       <div class="demo-grid">
         <div class="watch-col">
@@ -258,18 +258,18 @@
         <div class="chart-head">
           <h3>How far off HowFar was</h3>
           <div class="seg" role="group" aria-label="What HowFar remembers">
-            <button type="button" data-main="profile" aria-pressed="true">First race</button>
+            <button type="button" data-main="profile" aria-pressed="true">First HowFar use</button>
             <button type="button" data-main="past" aria-pressed="false">Learned from past races</button>
           </div>
           <div class="seg" role="group" aria-label="Count down to">
-            <button type="button" data-target="main" aria-pressed="true">Main checkpoints</button>
-            <button type="button" data-target="all" aria-pressed="false">Every point</button>
+            <button type="button" data-target="main" aria-pressed="false">Main checkpoints</button>
+            <button type="button" data-target="all" aria-pressed="true">Every checkpoint</button>
           </div>
           <div class="legend" id="errLegend"></div>
         </div>
         <div class="chart-box" id="errBox"><svg id="err" class="wide" viewBox="0 0 1000 340" role="img" aria-label="How far off each prediction was during the race"></svg></div>
         <details class="more"><summary>How to read this chart</summary>
-        <p class="small muted">At each point of the course: the time HowFar predicted (before rounding) to the next main checkpoint, the one the big number counts down to, minus the time it really took (stops not counted). Above zero, you arrived sooner than predicted; below zero, later. The green band is ±5 minutes, and the dot marks where you are, with the same number as “HowFar was off by”. See how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead. With <i>Learned from past races</i>, HowFar (the blue line, and the watch above) also remembers five earlier races, the other ones in the table below. That helps at the start, before it has seen you run today. After the first 10 km or so it goes by how you're moving today, and the line is almost the same as for a first race. With <i>Every point</i>, each line counts down to the next point, minor ones too (the grey times the watch shows for them), and the dot matches the “To …” line under “HowFar was off by”.</p>
+        <p class="small muted">At each point of the course: the time HowFar predicted (before rounding) to the next main checkpoint, the one the big number counts down to, minus the time it really took (stops not counted). Above zero, you arrived sooner than predicted; below zero, later. The green band is ±5 minutes, and the dot marks where you are, with the same number as “HowFar was off by”. See how the error shrinks as each checkpoint gets closer, and how much closer HowFar stays than the average pace, which knows nothing about the climbs ahead. With <i>Learned from past races</i>, HowFar (the blue line, and the watch above) also remembers one earlier race, TORX100 2025: the same mountains, a year before. That helps at the start, before it has seen you run today. After the first 10 km or so it goes by how you're moving today, and the line is almost the same as for a first race. With <i>Every checkpoint</i>, each line counts down to the next point, minor ones too (the grey times the watch shows for them), and the dot matches the “To …” line under “HowFar was off by”.</p>
         </details>
       </div>
       <div class="demo-notes">
@@ -432,7 +432,7 @@
   </div>
 </footer>
 
-<script src="demo/torx-s1.js?v=28"></script>
-<script src="js/demo.js?v=57"></script>
+<script src="demo/torx-s1.js?v=29"></script>
+<script src="js/demo.js?v=59"></script>
 </body>
 </html>

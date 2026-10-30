@@ -19,7 +19,7 @@
   var _t = window._t || function (s, v) { return v ? s.replace(/\{(\w+)\}/g, function (m, k) { return k in v ? v[k] : m; }) : s; };
 
   // the watch shows HowFar with the course profile; the error chart shows every line
-  var state = { t: tStart + 2.17 * 3600, main: "profile", target: "main", speed: 300, playing: false, last: 0 };
+  var state = { t: tStart + 2.17 * 3600, main: "profile", target: "all", speed: 300, playing: false, last: 0 };
   var $ = function (id) { return document.getElementById(id); };
   var SVGNS = "http://www.w3.org/2000/svg";
 
@@ -116,7 +116,7 @@
   // ---------- main and minor points: the big number counts down to the next main checkpoint;
   // the watch, a field of its own, also lists the minor ones on the way and the main ones after
   var LEGS = ETA0 + C.length;
-  // the same watch after five past races: [its LEGS, distance ratio, speeds flat/up/down, fatigue]
+  // the same watch after TORX100 2025: [its LEGS, distance ratio, speeds flat/up/down, fatigue]
   var PAST = ETA0 + C.length + 2;
   function legs(f) { return state.main === "past" ? f[PAST][0] : f[LEGS]; }
   // what the watch has learned so far: distance ratio, speeds on the flat, up and down 20%, fatigue

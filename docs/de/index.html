@@ -191,7 +191,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <li><b>Vergleich</b> die drei Linien im Diagramm „Wie weit HowFar danebenlag“: HowFar mit Streckenprofil, HowFar ohne, und die übliche Schätzung (die restliche Strecke bei deinem bisherigen Durchschnittstempo).</li>
 </ol>
 </details>
-<p class="muted demo-caption">Das ist dein erstes Rennen mit HowFar (oder, mit dem Schalter an der Grafik „Wie weit HowFar danebenlag“, nach fünf früheren Rennen), mit dem Streckenprofil in den Einstellungen, also kennt es jeden Anstieg und Abstieg bis zum Kontrollpunkt (P). Es lernt dein Tempo auf jeder Steigung, während du läufst. Col d'Arp, Col Passo Alto, Col de la Crosatie und Lac du Fond sind Nebenpunkte, die auf dem Weg angezeigt werden.</p>
+<p class="muted demo-caption">Das ist dein erstes Rennen mit HowFar (oder, mit dem Schalter an der Grafik „Wie weit HowFar danebenlag“, nach einem früheren Rennen, dem TORX100 2025), mit dem Streckenprofil in den Einstellungen, also kennt es jeden Anstieg und Abstieg bis zum Kontrollpunkt (P). Es lernt dein Tempo auf jeder Steigung, während du läufst. Col d'Arp, Col Passo Alto, Col de la Crosatie und Lac du Fond sind Nebenpunkte, die auf dem Weg angezeigt werden.</p>
 <div class="demo-grid">
 <div class="watch-col">
 <div aria-label="Uhr, die das HowFar-Feld während des Rennens zeigt" class="watch" role="img">
@@ -240,18 +240,18 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="chart-head">
 <h3>Wie weit HowFar danebenlag</h3>
 <div aria-label="Woran sich HowFar erinnert" class="seg" role="group">
-<button aria-pressed="true" data-main="profile" type="button">Erstes Rennen</button>
+<button aria-pressed="true" data-main="profile" type="button">Erste Nutzung von HowFar</button>
 <button aria-pressed="false" data-main="past" type="button">Aus früheren Rennen gelernt</button>
 </div>
 <div aria-label="Zählt bis" class="seg" role="group">
-<button aria-pressed="true" data-target="main" type="button">Hauptkontrollpunkte</button>
-<button aria-pressed="false" data-target="all" type="button">Jeder Punkt</button>
+<button aria-pressed="false" data-target="main" type="button">Hauptkontrollpunkte</button>
+<button aria-pressed="true" data-target="all" type="button">Jeder Punkt</button>
 </div>
 <div class="legend" id="errLegend"></div>
 </div>
 <div class="chart-box" id="errBox"><svg aria-label="How far off each prediction was during the race" class="wide" id="err" role="img" viewbox="0 0 1000 340"></svg></div>
 <details class="more"><summary>So liest du dieses Diagramm</summary>
-<p class="small muted">An jedem Punkt der Strecke: die von HowFar vorhergesagte Zeit (vor dem Runden) bis zum nächsten Hauptkontrollpunkt, dem der großen Zahl, minus die Zeit, die es wirklich gedauert hat (ohne Pausen). Über null warst du früher da als vorhergesagt, unter null später. Das grüne Band ist ±5 Minuten, und der Punkt zeigt, wo du bist, mit derselben Zahl wie „HowFar lag daneben um“. Sieh, wie der Fehler schrumpft, je näher jeder Kontrollpunkt kommt, und wie viel näher HowFar bleibt als das Durchschnittstempo, das nichts von den kommenden Anstiegen weiß. Mit <i>Aus früheren Rennen gelernt</i> erinnert sich HowFar (die blaue Linie und die Uhr oben) auch an fünf frühere Rennen, die anderen aus der Tabelle unten. Das hilft am Anfang, bevor es dich heute laufen gesehen hat. Nach den ersten etwa 10 km richtet es sich danach, wie du dich heute bewegst, und die Linie ist fast dieselbe wie beim ersten Rennen. Mit <i>Jeder Punkt</i> zählt jede Linie bis zum nächsten Punkt, auch zu Nebenpunkten (die grauen Zeiten, die die Uhr für sie zeigt), und der Punkt entspricht der Zeile „Bis …“ unter „HowFar lag daneben um“.</p>
+<p class="small muted">An jedem Punkt der Strecke: die von HowFar vorhergesagte Zeit (vor dem Runden) bis zum nächsten Hauptkontrollpunkt, dem der großen Zahl, minus die Zeit, die es wirklich gedauert hat (ohne Pausen). Über null warst du früher da als vorhergesagt, unter null später. Das grüne Band ist ±5 Minuten, und der Punkt zeigt, wo du bist, mit derselben Zahl wie „HowFar lag daneben um“. Sieh, wie der Fehler schrumpft, je näher jeder Kontrollpunkt kommt, und wie viel näher HowFar bleibt als das Durchschnittstempo, das nichts von den kommenden Anstiegen weiß. Mit <i>Aus früheren Rennen gelernt</i> erinnert sich HowFar (die blaue Linie und die Uhr oben) auch an ein früheres Rennen, den TORX100 2025: dieselben Berge, ein Jahr zuvor. Das hilft am Anfang, bevor es dich heute laufen gesehen hat. Nach den ersten etwa 10 km richtet es sich danach, wie du dich heute bewegst, und die Linie ist fast dieselbe wie beim ersten Rennen. Mit <i>Jeder Punkt</i> zählt jede Linie bis zum nächsten Punkt, auch zu Nebenpunkten (die grauen Zeiten, die die Uhr für sie zeigt), und der Punkt entspricht der Zeile „Bis …“ unter „HowFar lag daneben um“.</p>
 </details>
 </div>
 <div class="demo-notes">
@@ -407,7 +407,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <span class="foot-tags" translate="no">#ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning #garmin #connectiq</span>
 </div>
 </footer>
-<script src="../demo/torx-s1.js?v=28"></script>
-<script src="../js/demo.js?v=57"></script>
+<script src="../demo/torx-s1.js?v=29"></script>
+<script src="../js/demo.js?v=59"></script>
 </body>
 </html>

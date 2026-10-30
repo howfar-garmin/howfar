@@ -191,7 +191,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <li><b>Compare</b> les trois lignes du graphique « De combien HowFar s'est trompé » : HowFar avec le profil du parcours, HowFar sans, et l'estimation habituelle (la distance restante à ton allure moyenne jusqu'ici).</li>
 </ol>
 </details>
-<p class="muted demo-caption">C'est ta première course avec HowFar (ou, avec le sélecteur du graphique « De combien HowFar s’est trompé », après cinq courses passées), avec le profil du parcours dans ses réglages, donc il connaît chaque montée et descente jusqu'au point de contrôle (P). Il apprend ton allure sur chaque pente pendant que tu cours. Col d'Arp, Col Passo Alto, Col de la Crosatie et Lac du Fond sont des points secondaires, affichés sur le chemin.</p>
+<p class="muted demo-caption">C'est ta première course avec HowFar (ou, avec le sélecteur du graphique « De combien HowFar s’est trompé », après une course passée, le TORX100 2025), avec le profil du parcours dans ses réglages, donc il connaît chaque montée et descente jusqu'au point de contrôle (P). Il apprend ton allure sur chaque pente pendant que tu cours. Col d'Arp, Col Passo Alto, Col de la Crosatie et Lac du Fond sont des points secondaires, affichés sur le chemin.</p>
 <div class="demo-grid">
 <div class="watch-col">
 <div aria-label="Montre affichant le champ HowFar pendant la course" class="watch" role="img">
@@ -240,18 +240,18 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <div class="chart-head">
 <h3>De combien HowFar s'est trompé</h3>
 <div aria-label="Ce dont HowFar se souvient" class="seg" role="group">
-<button aria-pressed="true" data-main="profile" type="button">Première course</button>
+<button aria-pressed="true" data-main="profile" type="button">Première utilisation de HowFar</button>
 <button aria-pressed="false" data-main="past" type="button">Appris des courses passées</button>
 </div>
 <div aria-label="Compte jusqu'à" class="seg" role="group">
-<button aria-pressed="true" data-target="main" type="button">Points de contrôle principaux</button>
-<button aria-pressed="false" data-target="all" type="button">Chaque point</button>
+<button aria-pressed="false" data-target="main" type="button">Points de contrôle principaux</button>
+<button aria-pressed="true" data-target="all" type="button">Chaque point</button>
 </div>
 <div class="legend" id="errLegend"></div>
 </div>
 <div class="chart-box" id="errBox"><svg aria-label="How far off each prediction was during the race" class="wide" id="err" role="img" viewbox="0 0 1000 340"></svg></div>
 <details class="more"><summary>Comment lire ce graphique</summary>
-<p class="small muted">En chaque point du parcours : le temps prévu par HowFar (avant arrondi) jusqu'au prochain point de contrôle principal, celui du grand chiffre, moins le temps qu'il a vraiment fallu (arrêts non comptés). Au-dessus de zéro, tu es arrivé plus tôt que prévu ; en dessous, plus tard. La bande verte correspond à ±5 minutes, et le point marque où tu es, avec le même chiffre que « HowFar s'est trompé de ». Regarde comme l'erreur diminue à l'approche de chaque point, et combien HowFar reste plus proche que l'allure moyenne, qui ne sait rien des montées à venir. Avec <i>Appris des courses passées</i>, HowFar (la ligne bleue, et la montre ci-dessus) se souvient aussi de cinq courses précédentes, les autres du tableau ci-dessous. Ça aide au départ, avant qu'il t'ait vu courir aujourd'hui. Après les 10 premiers km environ, il suit ta façon d'avancer du jour, et la ligne est presque la même que pour une première course. Avec <i>Chaque point</i>, chaque ligne compte jusqu'au point suivant, secondaires compris (les temps en gris que la montre affiche pour eux), et le point correspond à la ligne « À … » sous « HowFar s'est trompé de ».</p>
+<p class="small muted">En chaque point du parcours : le temps prévu par HowFar (avant arrondi) jusqu'au prochain point de contrôle principal, celui du grand chiffre, moins le temps qu'il a vraiment fallu (arrêts non comptés). Au-dessus de zéro, tu es arrivé plus tôt que prévu ; en dessous, plus tard. La bande verte correspond à ±5 minutes, et le point marque où tu es, avec le même chiffre que « HowFar s'est trompé de ». Regarde comme l'erreur diminue à l'approche de chaque point, et combien HowFar reste plus proche que l'allure moyenne, qui ne sait rien des montées à venir. Avec <i>Appris des courses passées</i>, HowFar (la ligne bleue, et la montre ci-dessus) se souvient aussi d'une course précédente, le TORX100 2025 : les mêmes montagnes, un an plus tôt. Ça aide au départ, avant qu'il t'ait vu courir aujourd'hui. Après les 10 premiers km environ, il suit ta façon d'avancer du jour, et la ligne est presque la même que pour une première course. Avec <i>Chaque point</i>, chaque ligne compte jusqu'au point suivant, secondaires compris (les temps en gris que la montre affiche pour eux), et le point correspond à la ligne « À … » sous « HowFar s'est trompé de ».</p>
 </details>
 </div>
 <div class="demo-notes">
@@ -407,7 +407,7 @@ window._t=function(s,v){var x=window.HOWFAR_T[s]||s;return v?x.replace(/\{(\w+)\
 <span class="foot-tags" translate="no">#ultratrail #trailrunning #ultrarunning #skyrunning #mountainrunning #garmin #connectiq</span>
 </div>
 </footer>
-<script src="../demo/torx-s1.js?v=28"></script>
-<script src="../js/demo.js?v=57"></script>
+<script src="../demo/torx-s1.js?v=29"></script>
+<script src="../js/demo.js?v=59"></script>
 </body>
 </html>

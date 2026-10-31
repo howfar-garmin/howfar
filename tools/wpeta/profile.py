@@ -145,6 +145,9 @@ class ProfileMatcher:
 
     SLACK = 100.0  # m: a stretch may start this far before the profile's start
     PASSED = 5.0  # m: a profile point this close behind or ahead counts as reached
+    # stretches walked in one second past which the list's legs are left out (the watch's
+    # watchdog: CourseProfile.mc keeps a time per metre for each grade, here it's the same walk)
+    MAX_WALK = 1200
     own_points = True  # count down to the profile's own points too (research replays turn it off)
     MIN_RATIO_DIST = 2000.0  # m to the finish below which the ratio isn't updated any more
     RATIO_LO = 0.8
@@ -160,6 +163,7 @@ class ProfileMatcher:
             self.starts.append(d)
             d += length
         self.total = d
+        self.walked = 0  # stretches walked this second (MAX_WALK)
         self.reset()
 
     def reset(self) -> None:
@@ -206,6 +210,7 @@ class ProfileMatcher:
             if hi > self._ca:
                 use = hi - self._ca
                 self._ca = hi
+                self.walked += 1
                 return use, grade
         return 0.0, 0.0
 
@@ -250,6 +255,7 @@ class ProfileMatcher:
         scale: float = 1.0,
     ) -> bool:
         """Returns True when the next point has a place on the profile."""
+        self.walked = 0
         if self.ratio is None and dist_dest is not None and dist_dest > 0:
             # first guess: you start at the start of both courses
             r = self.total / (dist_dest + (watch_dist or 0.0) / scale)
@@ -375,3 +381,14 @@ class ProfileMatcher:
         """Time from the point the field counts down to, to profile point i."""
         assert self.target_end is not None
         return self._time_between(self.target_end, self.starts[i] + self.entries[i][1], estimator, scale)
+
+    def leg_time(self, i: int, j: int, estimator, scale: float) -> float:
+        """Time from profile point i to profile point j."""
+        return self._time_between(self._end(i), self._end(j), estimator, scale)
+
+    def can_walk(self, i: int | None, j: int) -> bool:
+        """Whether walking on to profile point j, from point i (None: what the field counts down
+        to), still fits this second (MAX_WALK)."""
+        a = self._end(i) if i is not None else self.target_end
+        assert a is not None
+        return self.walked + (self._end(j) - a) / self.step <= self.MAX_WALK

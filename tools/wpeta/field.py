@@ -102,15 +102,15 @@ class FieldLogic:
             self.via_eta = int(self.profile.via_time(self.estimator, scale) + 0.5)
         if self.using_profile:
             i = self.profile.following()
-            if i is not None:
+            # leg times: stops at the checkpoints in between can't be known; left out when the
+            # legs are too long to walk in this second
+            if i is not None and self.profile.can_walk(None, i):
                 self.then_name = self.profile.following_name(i)
-                # leg times: stops at the checkpoints in between can't be known
-                t1 = self.profile.following_time(i, self.estimator, scale)
-                self.then_leg = int(t1 + 0.5)
+                self.then_leg = int(self.profile.following_time(i, self.estimator, scale) + 0.5)
                 i2 = self.profile.following_after(i)
-                if i2 is not None:
+                if i2 is not None and self.profile.can_walk(i, i2):
                     self.then2_name = self.profile.following_name(i2)
-                    self.then2_leg = int(self.profile.following_time(i2, self.estimator, scale) - t1 + 0.5)
+                    self.then2_leg = int(self.profile.leg_time(i, i2, self.estimator, scale) + 0.5)
         return eta
 
     def timer_reset(self) -> bool:

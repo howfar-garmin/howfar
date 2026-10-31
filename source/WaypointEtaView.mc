@@ -234,21 +234,22 @@ class WaypointEtaView extends WatchUi.DataField {
         var profile = _profile as CourseProfile;
         var vias = profile.vias;
         _minorCount = vias.size();
-        for (var j = 0; j < vias.size() && j < MAX_MINOR_LINES; j++) {
+        var viaTimes = profile.viaTimes;  // by targetTime, this second
+        for (var j = 0; j < vias.size() && j < viaTimes.size() && j < MAX_MINOR_LINES; j++) {
             _minorNames.add(profile.followingName(vias[j]));
-            _minorSecs.add((profile.minorTime(vias[j], _estimator, scale) + 0.5).toNumber());
+            _minorSecs.add((viaTimes[j] + 0.5).toNumber());
         }
+        // leg times: stops at the checkpoints in between can't be known, so these don't count
+        // from now but from leaving the point before; left out when the legs are too long to
+        // walk in this second
         var i = profile.following();
-        if (i != null) {
-            // leg times: stops at the checkpoints in between can't be known, so these don't
-            // count from now but from leaving the point before
-            var t1 = profile.followingTime(i, _estimator, scale);
+        if (i != null && profile.canWalk(null, i)) {
             _thenName = profile.followingName(i);
-            _thenSec = (t1 + 0.5).toNumber();
+            _thenSec = (profile.followingTime(i, _estimator, scale) + 0.5).toNumber();
             var i2 = profile.followingAfter(i);
-            if (i2 != null) {
+            if (i2 != null && profile.canWalk(i, i2)) {
                 _then2Name = profile.followingName(i2);
-                _then2Sec = (profile.followingTime(i2, _estimator, scale) - t1 + 0.5).toNumber();
+                _then2Sec = (profile.legTime(i, i2, _estimator, scale) + 0.5).toNumber();
             }
         }
     }

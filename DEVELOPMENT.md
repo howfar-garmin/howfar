@@ -45,6 +45,8 @@ Code only the full build has is marked `(:full)`, the lite build's empty stand-i
 
 `CourseProfile` reads the text a few hundred characters per second (`parseSome`), so a long profile doesn't trip the watchdog on older watches, and stops (falling back to "~") if it would leave less than 2.5 KB free.
 
+Every second the field walks the profile ahead, a stretch at a time: to the checkpoint it counts down to (and the minor points on the way, in the same walk) and, for the full-screen list, the next two legs. A data field's `compute` must finish within the watchdog's limit (240,000 instructions on the Enduro 3, from its `simulator.json`); 0.6.1 asked the model for every stretch and walked some legs twice, and tripped it on an Enduro 3 (October 2026). Since 0.6.2 the walk keeps the time per metre for each grade during the second (`timeBetween`, `walk`: about 5 times faster per stretch in the simulator) and leaves out the list's legs that would take the second past `MAX_WALK` (1,200) stretches. The unit tests don't trip the watchdog, so they can't catch this: keep `walk` lean.
+
 ## Code layout
 
 | Watch (Monkey C) | Python | Browser | What |

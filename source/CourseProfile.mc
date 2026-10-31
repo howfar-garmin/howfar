@@ -42,7 +42,7 @@ class CourseProfile {
     hidden var _minor as Array<Boolean>;
     hidden var _lengths as Array<Float>;
     hidden var _starts as Array<Float>;
-    // every entry's grades in one array, a byte each in half percents (gradeAt), entry i's from _first[i]
+    // every entry's grades in one array, a byte each in half percents (next), entry i's from _first[i]
     hidden var _grades as ByteArray = []b;
     hidden var _first as Array<Number>;
     hidden var _pointer as Number = 0;
@@ -50,11 +50,18 @@ class CourseProfile {
     hidden var _lastDist as Float = 0.0;
     hidden var _here as Float?;       // where you were at the last update with a located point
     hidden var _hereWatch as Float?;  // and the watch's distance then
-    // walking cursor
-    hidden var _ci as Number = 0;
-    hidden var _ck as Number = 0;
-    hidden var _ca as Float = 0.0;
-    hidden var _cg as Float = 0.0;
+
+    // The times of one second walk the profile ahead stretch by stretch, and all of it must run
+    // well within the watchdog's limit (an Enduro 3 tripped it with a few legs ahead at a 25 m
+    // step). So the walk keeps the time per metre at each grade (by its byte) instead of asking
+    // the model each time (the model, fatigue, ratio and scale don't change within a second),
+    // and walked counts this second's stretches: the list's legs are left out when they would
+    // take it past MAX_WALK.
+    const MAX_WALK = 1200;
+    var walked as Number = 0;
+    var viaTimes as Array<Float> = [] as Array<Float>;  // time to each of vias, by targetTime
+    hidden var _paces as Array<Float?> = new [256] as Array<Float?>;
+    hidden var _paceKey as Array<Float> = [0.0, 0.0, 0.0] as Array<Float>;  // ratio, scale, fatigue
 
     // Reading the text, a little at a time (parseSome): reading all of a long profile at once
     // trips the watchdog on older watches, and splitting it all at once takes several times its size
@@ -218,16 +225,6 @@ class CourseProfile {
         _entry = [] as Array<Number>;
     }
 
-    // Grade k of entry i, in percent
-    hidden function gradeAt(i as Number, k as Number) as Float {
-        var v = _grades[_first[i] + k];
-        return (v >= 128 ? v - 256 : v) * 0.5;
-    }
-
-    hidden function gradeCount(i as Number) as Number {
-        return (i + 1 < _first.size() ? _first[i + 1] : _grades.size()) - _first[i];
-    }
-
     function isLoaded() as Boolean {
         return _text == null && _names.size() > 0;
     }
@@ -246,46 +243,6 @@ class CourseProfile {
         targetIndex = null;
         targetDist = 0.0;
         setVias(null);
-    }
-
-    // --- walking the profile: stretches of constant grade
-
-    hidden function seek(a as Float) as Void {
-        var i = 0;
-        while (i + 1 < _starts.size() && _starts[i + 1] <= a) {
-            i++;
-        }
-        var k = ((a - _starts[i]) / step).toNumber();
-        var last = gradeCount(i) - 1;
-        _ci = i;
-        _ck = k < 0 ? 0 : (k > last ? last : k);
-        _ca = a;
-    }
-
-    // Length of the next stretch of constant grade, ending at b at most; its grade (%) in _cg
-    hidden function next(b as Float) as Float {
-        while (_ci < _names.size() && _ca < b) {
-            var last = gradeCount(_ci) - 1;
-            var start = _starts[_ci];
-            var end = _ck >= last ? start + _lengths[_ci] : start + (_ck + 1) * step;
-            var grade = gradeAt(_ci, _ck);
-            var hi = end < b ? end : b;
-            if (hi >= end) {
-                if (_ck >= last) {
-                    _ci++;
-                    _ck = 0;
-                } else {
-                    _ck++;
-                }
-            }
-            if (hi > _ca) {
-                var use = hi - _ca;
-                _ca = hi;
-                _cg = grade;
-                return use;
-            }
-        }
-        return 0.0;
     }
 
     // --- following the next point
@@ -334,6 +291,9 @@ class CourseProfile {
 
     // Returns true when the next point has a place on the profile
     function update(name as String?, distNext as Float, distDest as Float?, watchDist as Float?, scale as Float) as Boolean {
+        walked = 0;
+        viaTimes = [] as Array<Float>;
+        _paces = new [256] as Array<Float?>;  // the model may have learned since the last second
         if (ratio == null && distDest != null && distDest > 0.0) {
             // first guess: you start at the start of both courses
             var r = total / (distDest + (watchDist != null ? watchDist : 0.0) / scale);
@@ -426,32 +386,79 @@ class CourseProfile {
         return followingName(i);
     }
 
-    // Time from where you are to what the field counts down to
+    // Time from where you are to what the field counts down to; on the way, the time to each of
+    // vias into viaTimes, so the profile ahead is walked once
     function targetTime(estimator as EtaEstimator, scale as Float) as Float {
-        var t = timeBetween(_here as Float, targetEnd as Float, estimator, scale);
+        var a = _here as Float;
+        var t = 0.0;
+        viaTimes = [] as Array<Float>;
+        for (var j = 0; j < vias.size(); j++) {
+            var end = _starts[vias[j]] + _lengths[vias[j]];
+            t += timeBetween(a, end, estimator, scale);
+            viaTimes.add(t > 1.0 ? t : 1.0);
+            a = end;
+        }
+        t += timeBetween(a, targetEnd as Float, estimator, scale);
         return t > 1.0 ? t : 1.0;
     }
 
     // Time over the profile from a to b; profile metres before its start count at the first grade
     hidden function timeBetween(a as Float, b as Float, estimator as EtaEstimator, scale as Float) as Float {
         var r = ratio != null ? ratio : 1.0;
-        var t = 0.0;
-        var first = null;
-        seek(a > 0.0 ? a : 0.0);
-        while (true) {
-            var use = next(b);
-            if (use <= 0.0) {
-                break;
+        if (r != _paceKey[0] || scale != _paceKey[1] || estimator.fatigue != _paceKey[2]) {
+            _paces = new [256] as Array<Float?>;
+            _paceKey = [r, scale, estimator.fatigue] as Array<Float>;
+        }
+        // the model builds its curve here if it must, outside walk's frame: a data field's stack
+        // is small, and building the curve is the deepest chain the field has
+        estimator.timeForGrade(1.0, 0.0, scale);
+        return walk(a, b, estimator, scale, r);
+    }
+
+    // timeBetween's walk, stretch by stretch of constant grade. One loop on locals, the fewest
+    // that will do: it's the field's hottest code (see MAX_WALK).
+    hidden function walk(a as Float, b as Float, estimator as EtaEstimator, scale as Float, r as Float) as Float {
+        var paces = _paces;
+        var n = _starts.size();
+        var t = 0.0;  // profile metres times s per metre, divided by r at the end
+        var first = null;  // the first stretch's s per metre
+        var x = a > 0.0 ? a : 0.0;
+        var i = 0;
+        while (i + 1 < n && _starts[i + 1] <= x) {
+            i++;
+        }
+        for (; i < n && x < b; i++) {
+            var start = _starts[i];
+            var end = start + _lengths[i];
+            end = end < b ? end : b;
+            var f = _first[i];
+            var last = (i + 1 < n ? _first[i + 1] : _grades.size()) - f - 1;
+            var k = ((x - start) / step).toNumber();
+            k = k < 0 ? 0 : (k > last ? last : k);
+            while (x < end) {
+                var hi = k >= last ? end : start + (k + 1) * step;
+                hi = hi < end ? hi : end;
+                if (hi > x) {
+                    var raw = _grades[f + k];
+                    var pace = paces[raw];
+                    if (pace == null) {
+                        pace = estimator.timeForGrade(1.0, (raw >= 128 ? raw - 256 : raw) * 0.5 * r, scale);
+                        paces[raw] = pace;
+                    }
+                    if (first == null) {
+                        first = pace;
+                    }
+                    t += (hi - x) * pace;
+                    x = hi;
+                    walked++;
+                }
+                k++;
             }
-            if (first == null) {
-                first = _cg;
-            }
-            t += estimator.timeForGrade(use / r, _cg * r, scale);
         }
         if (a < 0.0) {
-            t += estimator.timeForGrade(-a / r, (first != null ? first : 0.0) * r, scale);
+            t += -a * (first != null ? first : estimator.timeForGrade(1.0, 0.0, scale));
         }
-        return t;
+        return t / r;
     }
 
     // Time over the profile's stretch ending at loc, distNext watch course metres long
@@ -504,5 +511,17 @@ class CourseProfile {
     // Time from the point the field counts down to, to profile point i
     function followingTime(i as Number, estimator as EtaEstimator, scale as Float) as Float {
         return timeBetween(targetEnd as Float, _starts[i] + _lengths[i], estimator, scale);
+    }
+
+    // Time from profile point i to profile point j
+    function legTime(i as Number, j as Number, estimator as EtaEstimator, scale as Float) as Float {
+        return timeBetween(_starts[i] + _lengths[i], _starts[j] + _lengths[j], estimator, scale);
+    }
+
+    // Whether walking on to profile point j, from point i (null: what the field counts down to),
+    // still fits this second (MAX_WALK)
+    function canWalk(i as Number?, j as Number) as Boolean {
+        var a = i != null ? _starts[i] + _lengths[i] : targetEnd as Float;
+        return walked + (_starts[j] + _lengths[j] - a) / step <= MAX_WALK;
     }
 }

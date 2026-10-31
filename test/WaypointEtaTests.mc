@@ -1,4 +1,5 @@
 import Toybox.Lang;
+import Toybox.System;
 import Toybox.Test;
 
 // Same cases as tools/tests/test_tools.py, run on the watch code (monkeyc -t, then the simulator).
@@ -442,5 +443,49 @@ function testProfileGradesToHalfPercent(logger as Test.Logger) as Boolean {
     Test.assert(p.update("X", 300.0, 300.0, 0.0, 1.0));
     var t = est.timeForGrade(100.0, 3.5, 1.0) + est.timeForGrade(100.0, -3.5, 1.0) + est.timeForGrade(100.0, 63.5, 1.0);
     Test.assert(near(p.remainingTime(300.0, est, 1.0), t, 0.01));
+    return true;
+}
+
+(:test :full)
+function testProfileOneSecondsWork(logger as Test.Logger) as Boolean {
+    var m = new SpeedGradeModel();
+    var est = new EtaEstimator(m);
+    // a 3,500-character profile at a 25 m step, as the race prep page makes them: 5 km legs,
+    // two minor points before A
+    var text = "p1;25";
+    var names = ["+M1", "+M2", "A", "B", "C", "*"];
+    var lens = [2000, 1500, 1500, 5000, 5000, 5000];
+    var gs = ["37", "-120", "85", "0", "-15", "210", "-260", "5"];
+    for (var e = 0; e < names.size(); e++) {
+        text += ";" + names[e] + "|" + lens[e] + "|";
+        for (var k = 0; k < lens[e] / 25; k++) {
+            text += (k > 0 ? "," : "") + gs[(k + e) % gs.size()];
+        }
+    }
+    var p = new CourseProfile(text);
+    while (!p.parseSome()) {
+    }
+    m.setSteepPool(true);
+    Test.assert(p.update("A", 5000.0, 20000.0, 0.0, 1.0));
+    // one second, as compute and updateList do it
+    var t0 = System.getTimer();
+    var t = p.targetTime(est, 1.0);
+    var i = p.following() as Number;
+    var i2 = p.followingAfter(i) as Number;
+    Test.assert(p.canWalk(null, i) && p.canWalk(i, i2));
+    var t1 = p.followingTime(i, est, 1.0);
+    var leg2 = p.legTime(i, i2, est, 1.0);
+    logger.debug("one second: " + (System.getTimer() - t0) + " ms, " + p.walked + " stretches");
+    // the same times as walking each one on its own
+    Test.assert(p.viaTimes.size() == 2);
+    Test.assert(near(p.viaTimes[0], p.minorTime(p.vias[0], est, 1.0), 0.01));
+    Test.assert(near(p.viaTimes[1], p.minorTime(p.vias[1], est, 1.0), 0.01));
+    Test.assert(near(leg2, p.followingTime(i2, est, 1.0) - t1, 0.05));
+    Test.assert(t > 1.0 && t1 > 1.0 && leg2 > 1.0);
+    // a leg that would take this second past MAX_WALK is left out
+    p.walked = p.MAX_WALK - 100;
+    Test.assert(p.canWalk(i, i2) == false && p.canWalk(null, i) == false);
+    p.walked = p.MAX_WALK - 200;
+    Test.assert(p.canWalk(null, i));
     return true;
 }

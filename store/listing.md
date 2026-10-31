@@ -69,6 +69,10 @@ Free and open source. Not affiliated with Garmin.
 
 #ultratrail #trailrunning #ultrarunning #ultramarathon #skyrunning #mountainrunning #trail #ultra
 
+## What's new (0.6.2)
+
+Fixes a crash. Following a course with the course profile, HowFar could stop after a few seconds and show only the Connect IQ icon ("IQ…" on the Enduro 3): working out the times to the next checkpoints took the watch too long. It now does that work several times faster, and leaves out the list's later checkpoints when their legs are too long to work out in one go. The times themselves don't change.
+
 ## What's new (0.6.1)
 
 Aid stations leave no trace. While you stand still, GPS drift can move the watch's distance on a little, and HowFar used to learn those minutes as very slow walking, so after a stop the next checkpoint came out too far away. Now it ignores them. On six test races, on a first race with the course profile, the time 2 km before a checkpoint is a little closer (2.9 → 2.8 minutes off on average), and after the stop at La Thuile on the TORX the next leg is twice as close.
@@ -99,7 +103,7 @@ First version: next checkpoint, time to it and arrival time; learns your pace by
 
 ## Links
 
-- Store: https://apps.garmin.com/apps/e34840a9-6cd4-4ea6-96b0-051edeb0db73 (0.6.1 approved 30 October 2026)
+- Store: https://apps.garmin.com/apps/e34840a9-6cd4-4ea6-96b0-051edeb0db73 (0.6.1 approved 30 October 2026; 0.6.2 submitted 31 October 2026)
 - Website: https://howfar-garmin.github.io/howfar/
 - Source: https://github.com/howfar-garmin/howfar
 - Feedback: https://github.com/howfar-garmin/howfar/issues/new?template=feedback.yml
